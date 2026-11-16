@@ -24,15 +24,15 @@
 
     <style>
         :root {
-            --primary:     #0f172a;        
+            --primary:     #0f172a;       
             --accent:      #2563eb;          
             --accent-hover:#1d4ed8;
-            --success:     #059669;        
+            --success:     #059669;       
             --danger:      #dc2626;          
-            --bg-color:    #f8fafc;        
+            --bg-color:    #f8fafc;       
             --card-bg:     #ffffff;
             --text-main:   #1e293b;
-            --text-sub:    #334155;        
+            --text-sub:    #334155;       
             --border:      #cbd5e1;
         }
 
@@ -270,7 +270,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyFtb2kOcgVYFeDorZTH0awtlgfzoWarQlrORwElj_qrk-G-_QiHtBP3IGJSJmc4KnK_w/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbx6v7f7_HD8mCwYT4-S7Ofvwhos_GvrRe-fi2ZRp3L_e_pMOTUX07Hl8vQyomnBjvoULA/exec";
 
     let globalMembers = [];
     let globalRaces = [];
@@ -720,7 +720,7 @@
         refreshUI();
 
         try {
-            const url = `${API_URL}?action=applyRace&raceId=${encodeURIComponent(selectedRaceId)}&memberName=${encodeURIComponent(memberName)}&course=${encodeURIComponent(course)}`;
+            const url = `${API_URL}?action=applyRace&raceId=${encodeURIComponent(selectedRaceId)}&memberName=${encodeURIComponent(memberName)}&course=${encodeURIComponent(course || "")}`;
             fetch(url);
         } catch(e) { console.error("서버 반영 오류:", e); }
     }
@@ -935,7 +935,14 @@
                 if (chk.value === cName) {
                     chk.checked = true;
                     matched = true;
-                    const priceInput = document.getElementById(`price-${cName === '5km' ? '5km' : cName === '10km' ? '10km' : cName === '하프' ? 'half' : cName === '풀코스' ? 'full' : 'event-1'}`);
+                    let priceInput = null;
+                    if (cName === '5km') priceInput = document.getElementById('price-5km');
+                    else if (cName === '10km') priceInput = document.getElementById('price-10km');
+                    else if (cName === '하프') priceInput = document.getElementById('price-half');
+                    else if (cName === '풀코스') priceInput = document.getElementById('price-full');
+                    else if (cName === '참석') priceInput = document.getElementById('price-event-1');
+                    else if (cName === '불참') priceInput = document.getElementById('price-event-2');
+
                     if (priceInput) priceInput.value = cPrice;
                 }
             });
@@ -999,7 +1006,14 @@
                     cName = document.getElementById('custom-course-2-name').value.trim() || '기타2';
                     cPrice = document.getElementById('price-custom-2').value.trim() || '0';
                 } else {
-                    const priceInput = document.getElementById(`price-${cName === '5km' ? '5km' : cName === '10km' ? '10km' : cName === '하프' ? 'half' : cName === '풀코스' ? 'full' : 'event-1'}`);
+                    let priceInput = null;
+                    if (cName === '5km') priceInput = document.getElementById('price-5km');
+                    else if (cName === '10km') priceInput = document.getElementById('price-10km');
+                    else if (cName === '하프') priceInput = document.getElementById('price-half');
+                    else if (cName === '풀코스') priceInput = document.getElementById('price-full');
+                    else if (cName === '참석') priceInput = document.getElementById('price-event-1');
+                    else if (cName === '불참') priceInput = document.getElementById('price-event-2');
+
                     cPrice = priceInput ? (priceInput.value.trim() || '0') : '0';
                 }
 
@@ -1033,7 +1047,8 @@
 
         try {
             const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(id)}&type=${encodeURIComponent(type)}&raceName=${encodeURIComponent(name)}&location=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}&deadline=${encodeURIComponent(deadline)}&courses=${encodeURIComponent(coursesStr)}&status=${encodeURIComponent(status)}`;
-            fetch(url).then(() => fetchServerData(true));
+            await fetch(url);
+            fetchServerData(true);
         } catch(e) { console.error("서버 저장 오류:", e); }
     }
 
@@ -1042,6 +1057,11 @@
         globalRaces = globalRaces.filter(r => r.id !== id);
         selectedRaceId = globalRaces.length > 0 ? globalRaces[0].id : "";
         refreshUI();
+
+        try {
+            const url = `${API_URL}?action=deleteRace&raceId=${encodeURIComponent(id)}`;
+            await fetch(url);
+        } catch(e) { console.error("서버 삭제 오류:", e); }
     }
 
     async function addNewMemberByAdmin() {
