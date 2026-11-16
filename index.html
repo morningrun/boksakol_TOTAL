@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>복사골마라톤클럽 대회 및 행사 접수</title>
+    <title>복사골마라톤클럽 대회접수</title>
     
-    <!-- 카카오톡 미리보기 -->
-    <meta property="og:title" content="복사골마라톤클럽 대회 및 행사 접수">
-    <meta property="og:description" content="복사골마라톤클럽 대회 및 행사 접수와 참가 현황을 확인하세요!">
+    <!-- 카카오톡 대회접수 미리보기 -->
+    <meta property="og:title" content="복사골마라톤클럽 대회접수">
+    <meta property="og:description" content="복사골마라톤클럽 대회 접수 및 참가 현황을 확인하세요!">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://morningrun.github.io/RACE/">
     <meta property="og:image" content="https://raw.githubusercontent.com/morningrun/RACE/main/boksagol_event_registration_og.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
+    <!-- 스마트폰 홈 화면 추가 아이콘 및 앱 설정 -->
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/morningrun/RACE/main/boksagol_event_registration_og.jpg">
     <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/morningrun/RACE/main/boksagol_event_registration_og.jpg">
     <link rel="manifest" href="./manifest.json">
@@ -46,11 +47,15 @@
         .tab-btn { flex: 1; padding: 11px 4px; font-size: 0.85rem; border: none; background: transparent; color: var(--text-sub); font-weight: 700; border-radius: 9px; cursor: pointer; transition: all 0.2s; text-align: center; white-space: nowrap; }
         .tab-btn.active { background: var(--card-bg); color: var(--accent); box-shadow: 0 3px 10px rgba(0,0,0,0.08); font-weight: 800; }
 
+        /* 🔍 검색창 스타일 */
         .search-box { margin-bottom: 10px; }
         .search-input { width: 100%; padding: 8px 12px; font-size: 0.88rem; border: 1.5px solid var(--border); border-radius: 8px; background: #ffffff; outline: none; box-sizing: border-box; transition: border-color 0.2s; font-weight: 600; }
         .search-input:focus { border-color: var(--accent); }
 
+        /* 📦 콘텐츠 전체를 하나로 감싸는 큰 박스 컨테이너 */
         .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+
+        /* 📦 상단 대회 안내 영역 (은은한 파란색 계통 배경 적용 및 스크롤) */
         .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); max-height: 420px; overflow-y: auto; }
 
         .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
@@ -59,19 +64,20 @@
         .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
+        /* 🏁 대회 아코디언 카드 스타일 */
         .race-card-item { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .race-card-item:last-child { margin-bottom: 0; }
         
+        /* 💡 클릭 여부와 무관하게 진행 중인 대회는 기본적으로 테두리 강조 및 활성 스타일 적용 */
         .race-card-item.active-race { border-color: #86efac !important; box-shadow: 0 4px 12px rgba(5,150,105,0.08); }
+        /* 사용자가 현재 선택(클릭)한 카드는 파란색 외곽선으로 추가 강조 */
         .race-card-item.selected-target { border-color: var(--accent) !important; box-shadow: 0 6px 16px rgba(37,99,235,0.12); }
+        
         .race-card-item.ended-race { border-color: #cbd5e1 !important; opacity: 0.85; }
         
         .race-card-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; background: #ffffff; }
         .race-card-title-area { font-size: 1.02rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #1e293b; flex-wrap: wrap; }
         
-        .category-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
-        .category-badge.event-badge { background: #fae8ff; color: #86198f; border: 1px solid #f5d0fe; }
-
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
         .status-badge.ended { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
@@ -82,12 +88,14 @@
         .race-card-body { padding: 0 14px 12px 14px; display: none; border-top: 1px solid #e2e8f0; margin-top: 2px; padding-top: 10px; background: #ffffff; }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
 
+        /* 종료된 대회 모음 섹션 아코디언 스타일 */
         .ended-section-container { margin-top: 10px; border: 2px dashed #94a3b8; border-radius: 12px; background: #ffffff; overflow: hidden; padding: 6px; }
         .ended-section-header { padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 800; font-size: 0.9rem; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; user-select: none; }
         .ended-section-body { padding: 8px 4px 4px 4px; display: none; flex-direction: column; gap: 6px; }
         .ended-section-container.expanded .ended-section-body { display: flex; }
         .ended-section-container.expanded .ended-toggle-icon { transform: rotate(180deg); }
 
+        /* 🏃‍♂️ 대회 신청 탭 회원 카드 컴팩트 스타일 */
         .member-card { display: flex; flex-direction: column; padding: 8px 10px; margin-bottom: 6px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.15s; }
         .member-card:hover { border-color: #94a3b8; }
         
@@ -148,23 +156,27 @@
 
 <div class="container">
     <div class="main-title-box">
-        <div class="main-title">복사골마라톤클럽 대회 및 행사 접수</div>
+        <div class="main-title">복사골마라톤클럽 대회접수</div>
         <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
     </div>
     
+    <!-- 1. 대회 안내 카드 영역 -->
     <div class="race-content-card-box" id="race-selector-wrapper">
         <div id="race-card-container"></div>
     </div>
 
+    <!-- 2. 탭 버튼 영역 -->
     <div class="tab-group">
         <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
-        <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
+        <button class="tab-btn" id="tab-apply-btn">대회 신청</button>
         <button class="tab-btn" id="tab-members-btn">전체 회원현황</button>
     </div>
 
+    <!-- 3. 좌우 스와이프 및 패널 영역을 감싸는 큰 카드 박스 -->
     <div class="content-card-box">
         <div class="swipe-wrapper" id="swipe-wrapper">
             <div id="swipe-container" class="swipe-container">
+                <!-- 1번 패널: 접수 현황 -->
                 <div class="swipe-pane active-pane" id="pane-status">
                     <div id="status-summary-box" style="margin-bottom: 12px;"></div>
                     <div class="search-box">
@@ -172,12 +184,14 @@
                     </div>
                     <div id="status-detail-list" style="margin-top: 10px;"></div>
                 </div>
+                <!-- 2번 패널: 대회 신청 -->
                 <div class="swipe-pane" id="pane-apply">
                     <div class="search-box">
                         <input type="text" id="apply-search-input" class="search-input" placeholder="🔍 회원 이름 검색 (예: 이실권)" oninput="renderMemberList()">
                     </div>
                     <div id="member-list-wrapper"></div>
                 </div>
+                <!-- 3번 패널: 전체 회원현황 -->
                 <div class="swipe-pane" id="pane-members">
                     <div id="member-stats-summary"></div>
                     <div class="search-box" style="margin-top: 12px;">
@@ -189,41 +203,33 @@
         </div>
     </div>
 
+    <!-- 관리자 통합 패널 -->
     <div id="admin-panel" class="admin-panel hidden">
         <h3>구글 시트 연동 관리자 설정</h3>
         
         <div style="background:#1e293b; padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:14px;">
-            <h3 style="margin:0 0 8px 0; color:#38bdf8;">현재 선택된 항목 명부 엑셀 다운로드</h3>
-            <button class="excel-down-btn" id="excel-down-action-btn" style="margin-top:0;">현재 선택된 항목 엑셀(CSV) 다운로드</button>
+            <h3 style="margin:0 0 8px 0; color:#38bdf8;">현재 대회 신청자 명부 엑셀 다운로드</h3>
+            <button class="excel-down-btn" id="excel-down-action-btn" style="margin-top:0;">현재 선택된 대회 엑셀(CSV) 다운로드</button>
         </div>
 
-        <h3 id="race-form-title" style="margin-top:6px;">새 마라톤 대회 또는 행사 등록</h3>
+        <h3 id="race-form-title" style="margin-top:6px;">새 마라톤 대회 등록</h3>
         <div class="admin-input-group">
             <input type="hidden" id="edit-race-id" value="">
-            
-            <div style="display:flex; align-items:center; gap:8px;">
-                <label style="font-size:0.85rem; font-weight:700; color:#38bdf8; min-width:70px;">구분 선택:</label>
-                <select id="new-race-category" style="flex:1; padding:8px 10px; border-radius:6px; background:#0f172a; color:white; font-weight:700;">
-                    <option value="대회">🏃‍♂️ 마라톤 대회</option>
-                    <option value="행사">🎉 행사 (총회/야유회/송년회 등)</option>
-                </select>
-            </div>
-
-            <input type="text" id="new-race-name" placeholder="명칭 (예: 삼척황영조마라톤 또는 정기총회)">
-            <input type="text" id="new-race-location" placeholder="장소 (예: 삼척시민운동장 또는 식당명)">
-            <input type="text" id="new-race-date" placeholder="일자 및 요일 (예: 2025.04.13(일))">
+            <input type="text" id="new-race-name" placeholder="대회명 (예: 2025 삼척황영조마라톤)">
+            <input type="text" id="new-race-location" placeholder="대회 장소 (예: 삼척시민운동장)">
+            <input type="text" id="new-race-date" placeholder="대회일자 및 요일 (예: 2025.04.13(일))">
             <input type="text" id="new-race-deadline" placeholder="접수마감일 (예: 2025.03.15까지)">
             
             <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
-                <label style="font-size:0.85rem; font-weight:700; color:#38bdf8;">진행 상태:</label>
+                <label style="font-size:0.85rem; font-weight:700; color:#38bdf8;">대회 진행 상태:</label>
                 <select id="new-race-status" style="padding:6px 10px; border-radius:6px; background:#0f172a; color:white; font-weight:700;">
-                    <option value="자동(날짜기준)">자동 (일자 지나면 자동 종료)</option>
+                    <option value="자동(날짜기준)">자동 (대회일 지나면 자동 종료)</option>
                     <option value="진행중">항상 진행중 (수동)</option>
                     <option value="종료">항상 종료 (수동)</option>
                 </select>
             </div>
             
-            <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:4px;">참가 코스 또는 구분 항목 및 비용 설정</div>
+            <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:4px;">코스 및 참가비 설정 (체크 및 금액 입력)</div>
             <div class="course-setting-grid">
                 <div class="course-row">
                     <label><input type="checkbox" class="race-course-chk" value="5km" checked> 5km</label>
@@ -254,12 +260,12 @@
             </div>
 
             <div style="display:flex; gap:6px; margin-top:4px;">
-                <button id="race-save-btn" style="flex:1; background:#2563eb; color:white; border:none; padding:10px; border-radius:8px; font-weight:800; cursor:pointer;">등록하기</button>
+                <button id="race-save-btn" style="flex:1; background:#2563eb; color:white; border:none; padding:10px; border-radius:8px; font-weight:800; cursor:pointer;">대회 추가하기</button>
                 <button id="race-cancel-btn" style="background:#475569; color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:800; cursor:pointer; display:none;">취소</button>
             </div>
         </div>
 
-        <h3 style="margin-top:14px;">등록된 대회/행사 목록 관리 (수정/삭제)</h3>
+        <h3 style="margin-top:14px;">등록된 대회 목록 관리 (수정/삭제)</h3>
         <div id="admin-race-list"></div>
 
         <h3 style="margin-top:16px;">신규 회원 직접 추가</h3>
@@ -294,6 +300,7 @@
         <button id="admin-close-btn" style="width:100%; margin-top:16px; background:#475569; color:white; border:none; padding:11px; border-radius:8px; cursor:pointer; font-weight:800;">관리자 설정 닫기</button>
     </div>
 
+    <!-- 하단 오른쪽 구석 톱니바퀴 아이콘 -->
     <div class="footer-setting-box">
         <button class="admin-gear-icon-btn" id="admin-open-btn" title="관리자 설정">⚙️</button>
     </div>
@@ -306,7 +313,7 @@
     let globalRaces = [];
     let globalApplications = {};
     let adminPassword = "1234";
-    let selectedRaceId = localStorage.getItem('boksagol_selected_race_v26') || "";
+    let selectedRaceId = localStorage.getItem('boksagol_selected_race_v24') || "";
     let activePaneIndex = 0;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4 };
@@ -510,7 +517,7 @@
         container.innerHTML = '';
         
         if (globalRaces.length === 0) {
-            container.innerHTML = "<div style='font-size:0.85rem; color:#dc2626; font-weight:700; padding:6px;'>⚠️ 등록된 대회나 행사가 없습니다. 관리자 설정(⚙️)에서 추가해주세요!</div>";
+            container.innerHTML = "<div style='font-size:0.85rem; color:#dc2626; font-weight:700; padding:6px;'>⚠️ 등록된 마라톤 대회가 없습니다. 관리자 설정(⚙️)에서 대회를 먼저 등록해주세요!</div>";
             return;
         }
 
@@ -547,7 +554,7 @@
             endedSection.innerHTML = `
                 <div class="ended-section-header" onclick="this.parentElement.classList.toggle('expanded');">
                     <div style="display:flex; align-items:center; gap:6px;">
-                        <span>🏁 종료된 목록 (${endedRaces.length}개)</span>
+                        <span>🏁 종료된 대회 목록 (${endedRaces.length}개)</span>
                     </div>
                     <div class="ended-toggle-icon" style="transition: transform 0.2s;">▼</div>
                 </div>
@@ -567,11 +574,12 @@
         const isSelected = (race.id === selectedRaceId);
         const isExpanded = isSelected;
         
+        // 💡 클릭 여부와 무관하게 진행 중인 대회는 기본적으로 'active-race' 적용, 선택되면 'selected-target' 추가
         let cardClasses = ['race-card-item'];
         if (isEnded) {
             cardClasses.push('ended-race');
         } else {
-            cardClasses.push('active-race');
+            cardClasses.push('active-race'); // 진행 중인 대회는 기본 초록 계열 테두리/그림자 유지
         }
         if (isSelected) cardClasses.push('selected-target');
         if (isExpanded) cardClasses.push('expanded');
@@ -586,19 +594,14 @@
             });
         }
 
-        const category = race.category || "대회";
-        const categoryBadgeHtml = category === "행사" 
-            ? `<span class="category-badge event-badge">행사</span>` 
-            : `<span class="category-badge">마라톤</span>`;
-
+        // 💡 진행 중인 대회는 클릭하지 않아도 항상 '진행중' 초록색 활성 뱃지 표시
         const badgeHtml = isEnded 
-            ? `<span class="status-badge ended">종료</span>` 
+            ? `<span class="status-badge ended">종료</span>`
             : `<span class="status-badge active-badge">진행중</span>`;
 
         card.innerHTML = `
             <div class="race-card-header">
                 <div class="race-card-title-area">
-                    ${categoryBadgeHtml}
                     ${badgeHtml}
                     <span>${race.name}</span>
                 </div>
@@ -606,15 +609,15 @@
             </div>
             <div class="race-card-body">
                 <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #1e293b; font-weight: 700;">
-                    <div>• 일정: ${race.date}</div>
+                    <div>• 대회일: ${race.date}</div>
                     <div>• 장소: ${race.location || '장소 미정'}</div>
                     <div style="margin-top: 1px;">
-                        <div>• 구분 및 참가비:</div>
+                        <div>• 코스 및 참가비:</div>
                         <div style="padding-left: 12px; margin-top: 1px;">
-                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">• 5km(50,000원)</div>'}
+                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">• 5km(50,000원)</div><div style="font-size: 0.82rem; color: #1e293b;">• 10km(50,000원)</div>'}
                         </div>
                     </div>
-                    <div style="margin-top: 1px;">• 신청마감: ${race.deadline}</div>
+                    <div style="margin-top: 1px;">• 접수마감일: ${race.deadline}</div>
                 </div>
             </div>
         `;
@@ -627,7 +630,7 @@
                 card.classList.toggle('expanded');
             } else {
                 selectedRaceId = race.id;
-                localStorage.setItem('boksagol_selected_race_v26', selectedRaceId);
+                localStorage.setItem('boksagol_selected_race_v24', selectedRaceId);
                 refreshUI();
             }
         };
@@ -641,7 +644,7 @@
         wrapper.innerHTML = '';
 
         if (globalRaces.length === 0 || !selectedRaceId) {
-            wrapper.innerHTML = "<div style='text-align:center; padding:30px; color:#94a3b8; font-weight:700;'>관리자 모드에서 대회나 행사를 먼저 등록해주세요.</div>";
+            wrapper.innerHTML = "<div style='text-align:center; padding:30px; color:#94a3b8; font-weight:700;'>관리자 모드에서 신청할 대회를 먼저 등록해주세요.</div>";
             updateSwipeWrapperHeight();
             return;
         }
@@ -719,7 +722,7 @@
                     const pureCourseName = courseWithPrice.replace(/\s*\(.*?\)/g, "").trim();
                     
                     btn.onclick = function() {
-                        if (confirm(`[${member.name}]님을 [${currentRace.name}] '${pureCourseName}' 항목으로 신청하시겠습니까?`)) {
+                        if (confirm(`[${member.name}]님을 [${currentRace.name}] '${pureCourseName}' 코스로 신청하시겠습니까?`)) {
                             handleApply(member.name, pureCourseName);
                         }
                     };
@@ -784,7 +787,7 @@
         detailList.innerHTML = '';
 
         if (globalRaces.length === 0 || !selectedRaceId) {
-            summaryBox.innerHTML = "<div style='text-align:center; padding:30px; color:#94a3b8; font-weight:700;'>등록된 항목이 없습니다.</div>";
+            summaryBox.innerHTML = "<div style='text-align:center; padding:30px; color:#94a3b8; font-weight:700;'>등록된 대회가 없습니다.</div>";
             updateSwipeWrapperHeight();
             return;
         }
@@ -835,7 +838,7 @@
         `;
         summaryBox.innerHTML = summaryHtml;
 
-        let detailHtml = `<div style="font-weight:800; font-size:0.92rem; margin-top:6px; margin-bottom:6px; color:var(--primary);">항목별 신청 현황</div>`;
+        let detailHtml = `<div style="font-weight:800; font-size:0.92rem; margin-top:6px; margin-bottom:6px; color:var(--primary);">코스별 신청 현황</div>`;
         detailHtml += `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap:6px;">`;
 
         availableCourses.forEach(courseName => {
@@ -1013,7 +1016,7 @@
     function downloadExcel() {
         const currentRace = globalRaces.find(r => r.id === selectedRaceId);
         if (!currentRace) {
-            alert("다운로드할 항목을 선택해주세요.");
+            alert("다운로드할 대회를 선택해주세요.");
             return;
         }
 
@@ -1040,7 +1043,7 @@
             return a.name.localeCompare(b.name, 'ko');
         });
 
-        let csvContent = "\uFEFF번호,이름,성별,생년월일,핸드폰번호,옷사이즈,신청항목,명칭\n";
+        let csvContent = "\uFEFF번호,이름,성별,생년월일,핸드폰번호,옷사이즈,신청코스,대회명\n";
         
         appliedMembersList.forEach((m, idx) => {
             const course = raceApps[m.name];
@@ -1051,7 +1054,7 @@
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `복사골_${currentRace.category || '대회'}_${currentRace.name}_신청명부.csv`);
+        link.setAttribute("download", `복사골마라톤_${currentRace.name}_신청명부.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1082,18 +1085,17 @@
         if (!listDiv) return;
         listDiv.innerHTML = '';
         if (globalRaces.length === 0) {
-            listDiv.innerHTML = "<div style='font-size:0.82rem; color:#94a3b8;'>등록된 항목이 없습니다.</div>";
+            listDiv.innerHTML = "<div style='font-size:0.82rem; color:#94a3b8;'>등록된 대회가 없습니다.</div>";
             return;
         }
 
         globalRaces.forEach(race => {
             const ended = isRaceEnded(race);
-            const cat = race.category || "대회";
             const statusLabel = race.status === "종료" ? "종료(수동)" : (race.status === "진행중" ? "진행중(수동)" : (ended ? "종료(자동)" : "진행중(자동)"));
             const row = document.createElement('div');
             row.className = 'race-admin-row';
             row.innerHTML = `
-                <div style="font-size:0.85rem;">[${cat}] <strong>${race.name}</strong> <span style="font-size:0.7rem; color:${ended?'#94a3b8':'#38bdf8'};">[${statusLabel}]</span><br><span style="font-size:0.72rem; color:#cbd5e1;">항목/비용: ${race.courses}</span><br><span style="font-size:0.7rem; color:#94a3b8;">${race.date} / ${race.deadline}</span></div>
+                <div style="font-size:0.85rem;"><strong>${race.name}</strong> <span style="font-size:0.7rem; color:${ended?'#94a3b8':'#38bdf8'};">[${statusLabel}]</span><br><span style="font-size:0.72rem; color:#cbd5e1;">종목/비용: ${race.courses}</span><br><span style="font-size:0.7rem; color:#94a3b8;">${race.date} / ${race.deadline}</span></div>
                 <div style="display:flex; gap:4px;">
                     <button class="race-edit-btn" data-id="${race.id}" style="background:#2563eb; color:white; border:none; padding:5px 8px; border-radius:5px; cursor:pointer; font-size:0.75rem; font-weight:700;">수정</button>
                     <button class="race-del-btn" data-id="${race.id}" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:5px; cursor:pointer; font-size:0.75rem; font-weight:700;">삭제</button>
@@ -1115,7 +1117,6 @@
         if (!race) return;
 
         document.getElementById('edit-race-id').value = race.id;
-        document.getElementById('new-race-category').value = race.category || "대회";
         document.getElementById('new-race-name').value = race.name;
         document.getElementById('new-race-location').value = race.location || "";
         document.getElementById('new-race-date').value = race.date;
@@ -1178,7 +1179,7 @@
             }
         });
 
-        document.getElementById('race-form-title').textContent = "대회 또는 행사 정보 수정";
+        document.getElementById('race-form-title').textContent = "마라톤 대회 정보 수정";
         document.getElementById('race-save-btn').textContent = "수정 완료하기";
         document.getElementById('race-cancel-btn').style.display = 'block';
 
@@ -1187,7 +1188,6 @@
 
     function resetRaceForm() {
         document.getElementById('edit-race-id').value = "";
-        document.getElementById('new-race-category').value = "대회";
         document.getElementById('new-race-name').value = "";
         document.getElementById('new-race-location').value = "";
         document.getElementById('new-race-date').value = "";
@@ -1211,14 +1211,13 @@
         document.getElementById('price-custom-2').value = "50,000";
         document.getElementById('price-custom-2').disabled = true;
 
-        document.getElementById('race-form-title').textContent = "새 마라톤 대회 또는 행사 등록";
-        document.getElementById('race-save-btn').textContent = "등록하기";
+        document.getElementById('race-form-title').textContent = "새 마라톤 대회 등록";
+        document.getElementById('race-save-btn').textContent = "대회 추가하기";
         document.getElementById('race-cancel-btn').style.display = 'none';
     }
 
     async function saveRaceAction() {
         const raceId = document.getElementById('edit-race-id').value.trim();
-        const category = document.getElementById('new-race-category').value;
         const name = document.getElementById('new-race-name').value.trim();
         const location = document.getElementById('new-race-location').value.trim();
         const date = document.getElementById('new-race-date').value.trim();
@@ -1226,7 +1225,7 @@
         const status = document.getElementById('new-race-status').value;
 
         if (!name || !date) {
-            alert("명칭과 일자는 필수 입력입니다.");
+            alert("대회명과 대회일자는 필수 입력입니다.");
             return;
         }
 
@@ -1265,7 +1264,7 @@
         });
 
         if (selectedCourses.length === 0) {
-            alert("최소 하나 이상의 항목을 선택하고 명칭을 입력해주세요.");
+            alert("최소 하나 이상의 코스를 선택하고 명칭을 입력해주세요.");
             return;
         }
 
@@ -1273,12 +1272,11 @@
 
         if (!raceId) {
             const tempId = "race_" + Date.now();
-            globalRaces.push({ id: tempId, category: category, name: name, location: location, date: date, deadline: deadline || "마감일 미정", courses: coursesStr, status: status });
+            globalRaces.push({ id: tempId, name: name, location: location, date: date, deadline: deadline || "마감일 미정", courses: coursesStr, status: status });
             selectedRaceId = tempId;
         } else {
             const target = globalRaces.find(r => r.id === raceId);
             if (target) {
-                target.category = category;
                 target.name = name;
                 target.location = location;
                 target.date = date;
@@ -1290,10 +1288,10 @@
 
         refreshUI();
         resetRaceForm();
-        alert(raceId ? "정보가 수정되었습니다." : `[${name}] 항목이 성공적으로 등록되었습니다.`);
+        alert(raceId ? "대회 정보가 수정되었습니다." : `[${name}] 대회가 성공적으로 등록되었습니다.`);
 
         try {
-            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(raceId)}&category=${encodeURIComponent(category)}&raceName=${encodeURIComponent(name)}&location=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}&deadline=${encodeURIComponent(deadline || "마감일 미정")}&courses=${encodeURIComponent(coursesStr)}&status=${encodeURIComponent(status)}`;
+            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(raceId)}&raceName=${encodeURIComponent(name)}&location=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}&deadline=${encodeURIComponent(deadline || "마감일 미정")}&courses=${encodeURIComponent(coursesStr)}&status=${encodeURIComponent(status)}`;
             fetch(url).then(() => fetchServerData(true));
         } catch(e) {
             console.error("서버 저장 오류:", e);
@@ -1301,14 +1299,14 @@
     }
 
     async function removeRace(raceId) {
-        if (!confirm("정말 이 항목을 삭제하시겠습니까? 신청된 기록도 함께 삭제됩니다.")) return;
+        if (!confirm("정말 이 대회를 삭제하시겠습니까? 신청된 기록도 함께 삭제됩니다.")) return;
         
         globalRaces = globalRaces.filter(r => r.id !== raceId);
         if (globalRaces.length > 0) selectedRaceId = globalRaces[0].id;
         else selectedRaceId = "";
         
         refreshUI();
-        alert("삭제되었습니다.");
+        alert("대회가 삭제되었습니다.");
 
         try {
             const url = `${API_URL}?action=deleteRace&raceId=${encodeURIComponent(raceId)}`;
