@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>복사골마라톤클럽 대회 및 행사 접수</title>
     
-    <!-- 카카오톡 대회접수 미리보기 -->
+    <!-- 카카오톡 미리보기 -->
     <meta property="og:title" content="복사골마라톤클럽 대회 및 행사 접수">
     <meta property="og:description" content="복사골마라톤클럽 대회 및 행사 접수와 참가 현황을 확인하세요!">
     <meta property="og:type" content="website">
@@ -14,7 +14,6 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
-    <!-- 스마트폰 홈 화면 추가 아이콘 및 앱 설정 -->
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/morningrun/RACE/main/boksagol_event_registration_og.jpg">
     <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/morningrun/RACE/main/boksagol_event_registration_og.jpg">
     <link rel="manifest" href="./manifest.json">
@@ -47,15 +46,11 @@
         .tab-btn { flex: 1; padding: 11px 4px; font-size: 0.85rem; border: none; background: transparent; color: var(--text-sub); font-weight: 700; border-radius: 9px; cursor: pointer; transition: all 0.2s; text-align: center; white-space: nowrap; }
         .tab-btn.active { background: var(--card-bg); color: var(--accent); box-shadow: 0 3px 10px rgba(0,0,0,0.08); font-weight: 800; }
 
-        /* 🔍 검색창 스타일 */
         .search-box { margin-bottom: 10px; }
         .search-input { width: 100%; padding: 8px 12px; font-size: 0.88rem; border: 1.5px solid var(--border); border-radius: 8px; background: #ffffff; outline: none; box-sizing: border-box; transition: border-color 0.2s; font-weight: 600; }
         .search-input:focus { border-color: var(--accent); }
 
-        /* 📦 콘텐츠 전체를 하나로 감싸는 큰 박스 컨테이너 */
         .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-
-        /* 📦 상단 대회/행사 안내 영역 */
         .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); max-height: 420px; overflow-y: auto; }
 
         .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
@@ -64,7 +59,6 @@
         .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
-        /* 🏁 대회/행사 아코디언 카드 스타일 */
         .race-card-item { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .race-card-item:last-child { margin-bottom: 0; }
         
@@ -88,14 +82,12 @@
         .race-card-body { padding: 0 14px 12px 14px; display: none; border-top: 1px solid #e2e8f0; margin-top: 2px; padding-top: 10px; background: #ffffff; }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
 
-        /* 종료된 목록 아코디언 스타일 */
         .ended-section-container { margin-top: 10px; border: 2px dashed #94a3b8; border-radius: 12px; background: #ffffff; overflow: hidden; padding: 6px; }
         .ended-section-header { padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 800; font-size: 0.9rem; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; user-select: none; }
         .ended-section-body { padding: 8px 4px 4px 4px; display: none; flex-direction: column; gap: 6px; }
         .ended-section-container.expanded .ended-section-body { display: flex; }
         .ended-section-container.expanded .ended-toggle-icon { transform: rotate(180deg); }
 
-        /* 🏃‍♂️ 신청 탭 회원 카드 컴팩트 스타일 */
         .member-card { display: flex; flex-direction: column; padding: 8px 10px; margin-bottom: 6px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.15s; }
         .member-card:hover { border-color: #94a3b8; }
         
@@ -160,23 +152,19 @@
         <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
     </div>
     
-    <!-- 1. 대회/행사 안내 카드 영역 -->
     <div class="race-content-card-box" id="race-selector-wrapper">
         <div id="race-card-container"></div>
     </div>
 
-    <!-- 2. 탭 버튼 영역 -->
     <div class="tab-group">
         <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
         <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
         <button class="tab-btn" id="tab-members-btn">전체 회원현황</button>
     </div>
 
-    <!-- 3. 좌우 스와이프 및 패널 영역 -->
     <div class="content-card-box">
         <div class="swipe-wrapper" id="swipe-wrapper">
             <div id="swipe-container" class="swipe-container">
-                <!-- 1번 패널: 접수 현황 -->
                 <div class="swipe-pane active-pane" id="pane-status">
                     <div id="status-summary-box" style="margin-bottom: 12px;"></div>
                     <div class="search-box">
@@ -184,14 +172,12 @@
                     </div>
                     <div id="status-detail-list" style="margin-top: 10px;"></div>
                 </div>
-                <!-- 2번 패널: 참가 신청 -->
                 <div class="swipe-pane" id="pane-apply">
                     <div class="search-box">
                         <input type="text" id="apply-search-input" class="search-input" placeholder="🔍 회원 이름 검색 (예: 이실권)" oninput="renderMemberList()">
                     </div>
                     <div id="member-list-wrapper"></div>
                 </div>
-                <!-- 3번 패널: 전체 회원현황 -->
                 <div class="swipe-pane" id="pane-members">
                     <div id="member-stats-summary"></div>
                     <div class="search-box" style="margin-top: 12px;">
@@ -203,7 +189,6 @@
         </div>
     </div>
 
-    <!-- 관리자 통합 패널 -->
     <div id="admin-panel" class="admin-panel hidden">
         <h3>구글 시트 연동 관리자 설정</h3>
         
@@ -309,7 +294,6 @@
         <button id="admin-close-btn" style="width:100%; margin-top:16px; background:#475569; color:white; border:none; padding:11px; border-radius:8px; cursor:pointer; font-weight:800;">관리자 설정 닫기</button>
     </div>
 
-    <!-- 하단 오른쪽 구석 톱니바퀴 아이콘 -->
     <div class="footer-setting-box">
         <button class="admin-gear-icon-btn" id="admin-open-btn" title="관리자 설정">⚙️</button>
     </div>
@@ -322,7 +306,7 @@
     let globalRaces = [];
     let globalApplications = {};
     let adminPassword = "1234";
-    let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
+    let selectedRaceId = localStorage.getItem('boksagol_selected_race_v26') || "";
     let activePaneIndex = 0;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4 };
@@ -643,7 +627,7 @@
                 card.classList.toggle('expanded');
             } else {
                 selectedRaceId = race.id;
-                localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
+                localStorage.setItem('boksagol_selected_race_v26', selectedRaceId);
                 refreshUI();
             }
         };
