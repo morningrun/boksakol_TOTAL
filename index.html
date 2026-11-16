@@ -110,7 +110,8 @@
         .admin-panel { background: var(--primary); color: white; padding: 16px; border-radius: 14px; margin-top: 24px; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); }
         .admin-panel h3 { margin: 12px 0 8px 0; font-size: 0.95rem; color: #38bdf8; }
         .admin-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
-        .admin-input-group input, .admin-input-group select { padding: 9px 12px; border-radius: 8px; border: none; font-size: 0.88rem; outline: none; }
+        .admin-input-group input, .admin-input-group select { padding: 9px 12px; border-radius: 8px; border: 1px solid #475569; background-color: #0f172a; color: #ffffff; font-size: 0.88rem; font-weight: 700; outline: none; cursor: pointer; }
+        .admin-input-group select option { background-color: #0f172a; color: #ffffff; padding: 8px; }
         
         .mode-select-grid { display: flex; gap: 8px; margin-bottom: 8px; }
         .mode-card-btn { flex: 1; padding: 12px 8px; border-radius: 10px; border: 2px solid #475569; background: #0f172a; color: #94a3b8; font-weight: 800; font-size: 0.95rem; cursor: pointer; text-align: center; transition: all 0.2s; }
@@ -213,7 +214,7 @@
             
             <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
                 <label style="font-size:0.85rem; font-weight:700; color:#38bdf8;">진행 상태:</label>
-                <select id="new-race-status" style="padding:6px 10px; border-radius:6px; background:#0f172a; color:white; font-weight:700;">
+                <select id="new-race-status">
                     <option value="자동(날짜기준)">자동 (일자 지나면 자동 종료)</option>
                     <option value="진행중">항상 진행중 (수동)</option>
                     <option value="종료">항상 종료 (수동)</option>
@@ -578,6 +579,9 @@
         }
 
         const badgeHtml = isEnded ? `<span class="status-badge ended">종료</span>` : `<span class="status-badge active-badge">진행중</span>`;
+        const statusTypeLabel = race.status || "자동(날짜기준)";
+        const statusBadgeHtml = `<span class="status-badge" style="background:#fef3c7; color:#d97706; border:1px solid #fde68a;">${statusTypeLabel}</span>`;
+        
         const isMarathon = (race.type || '마라톤대회') === '마라톤대회';
         const typeBadge = `<span class="type-badge ${isMarathon ? '' : 'event'}">${race.type || '마라톤대회'}</span>`;
 
@@ -585,6 +589,7 @@
             <div class="race-card-header">
                 <div class="race-card-title-area">
                     ${badgeHtml}
+                    ${statusBadgeHtml}
                     ${typeBadge}
                     <span>${race.name}</span>
                 </div>
@@ -896,7 +901,7 @@
         globalRaces.forEach(r => {
             list.innerHTML += `
                 <div class="race-admin-row">
-                    <div style="font-size:0.85rem;"><strong>[${r.type || '마라톤'}] ${r.name}</strong><br><span style="font-size:0.7rem; color:#cbd5e1;">옵션: ${r.courses}</span></div>
+                    <div style="font-size:0.85rem;"><strong>[${r.status || '자동'}] ${r.name}</strong><br><span style="font-size:0.7rem; color:#cbd5e1;">구분: ${r.type || '마라톤대회'} / 옵션: ${r.courses}</span></div>
                     <div style="display:flex; gap:4px;">
                         <button onclick="editRace('${r.id}')" style="background:#2563eb; color:white; border:none; padding:5px 8px; border-radius:5px; font-weight:700; cursor:pointer; font-size:0.75rem;">수정</button>
                         <button onclick="removeRace('${r.id}')" style="background:#dc2626; color:white; border:none; padding:5px 8px; border-radius:5px; font-weight:700; cursor:pointer; font-size:0.75rem;">삭제</button>
@@ -977,6 +982,7 @@
         document.getElementById('new-race-location').value = "";
         document.getElementById('new-race-date').value = "";
         document.getElementById('new-race-deadline').value = "";
+        document.getElementById('new-race-status').value = "자동(날짜기준)";
         document.getElementById('race-form-title').textContent = "새로운 대회 또는 행사 등록";
         document.getElementById('race-save-btn').textContent = "등록하기";
         document.getElementById('race-cancel-btn').style.display = 'none';
