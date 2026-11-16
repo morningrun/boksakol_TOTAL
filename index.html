@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>복사골마라톤클럽 행사 및 대회 통합 관리</title>
+    <title>복사골마라톤클럽 대회 및 행사 통합 관리</title>
     
     <!-- 카카오톡 미리보기 메타 태그 -->
     <meta property="og:title" content="복사골마라톤클럽 대회 및 행사 신청">
@@ -110,11 +110,18 @@
         .stat-box-title { font-size: 0.82rem; font-weight: 800; color: var(--text-sub); margin-bottom: 6px; }
         .stat-box-val { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
 
+        /* 🌟 관리자 모드 강조 스타일 */
         .admin-panel { background: var(--primary); color: white; padding: 16px; border-radius: 14px; margin-top: 24px; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); }
         .admin-panel h3 { margin: 12px 0 8px 0; font-size: 0.95rem; color: #38bdf8; }
         .admin-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
         .admin-input-group input, .admin-input-group select { padding: 9px 12px; border-radius: 8px; border: none; font-size: 0.88rem; outline: none; }
         
+        /* 모드 선택 카드 버튼 스타일 (눈에 확 띄게 설계) */
+        .mode-select-grid { display: flex; gap: 8px; margin-bottom: 8px; }
+        .mode-card-btn { flex: 1; padding: 12px 8px; border-radius: 10px; border: 2px solid #475569; background: #0f172a; color: #94a3b8; font-weight: 800; font-size: 0.95rem; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .mode-card-btn.active-mode-marathon { background: #1e3a8a; border-color: #3b82f6; color: #ffffff; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .mode-card-btn.active-mode-event { background: #78350f; border-color: #f59e0b; color: #ffffff; box-shadow: 0 4px 12px rgba(245,158,11,0.3); }
+
         .course-setting-grid { display: flex; flex-direction: column; gap: 6px; background: #1e293b; padding: 12px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 6px; }
         .course-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.82rem; font-weight: 700; }
         .course-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; min-width: 90px; }
@@ -197,13 +204,13 @@
         <div class="admin-input-group">
             <input type="hidden" id="edit-race-id" value="">
             
-            <div style="display:flex; align-items:center; gap:8px;">
-                <label style="font-size:0.85rem; font-weight:700; color:#38bdf8;">구분 선택:</label>
-                <select id="new-race-type" style="padding:6px 10px; border-radius:6px; background:#0f172a; color:white; font-weight:700;" onchange="onEventTypeChange()">
-                    <option value="마라톤대회" selected>마라톤 대회</option>
-                    <option value="일반행사">일반 행사 (송년회, 야유회, 총회 등)</option>
-                </select>
+            <!-- 🌟 크게 눈에 띄는 마라톤/행사 모드 선택 카드 버튼 영역 -->
+            <label style="font-size:0.85rem; font-weight:700; color:#38bdf8; margin-bottom:2px;">등록 구분 선택:</label>
+            <div class="mode-select-grid">
+                <button type="button" id="btn-mode-marathon" class="mode-card-btn active-mode-marathon" onclick="setEventType('마라톤대회')">🏃 마라톤 대회</button>
+                <button type="button" id="btn-mode-event" class="mode-card-btn" onclick="setEventType('일반행사')">🎉 일반 행사 (송년회 등)</button>
             </div>
+            <input type="hidden" id="new-race-type" value="마라톤대회">
 
             <input type="text" id="new-race-name" placeholder="대회명 또는 행사명 (예: 2026 복사골 송년회)">
             <input type="text" id="new-race-location" placeholder="장소 (예: 부천시민운동장 / 연회장)">
@@ -278,7 +285,7 @@
     let globalRaces = [];
     let globalApplications = {};
     let adminPassword = "1234";
-    let selectedRaceId = localStorage.getItem('boksagol_selected_event_v27') || "";
+    let selectedRaceId = localStorage.getItem('boksagol_selected_event_v28') || "";
     let activePaneIndex = 0;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "참석": 1, "참석(회비있음)": 1, "참석(무료)": 2, "불참": 5 };
@@ -456,7 +463,23 @@
         updateSwipeWrapperHeight();
     }
 
-    // 관리자 모드에서 대회 vs 일반 행사 선택 시 폼 변경
+    // 🌟 상단 모드 카드 버튼 클릭 시 실행되는 함수
+    function setEventType(type) {
+        document.getElementById('new-race-type').value = type;
+        const btnM = document.getElementById('btn-mode-marathon');
+        const btnE = document.getElementById('btn-mode-event');
+
+        if (type === '마라톤대회') {
+            btnM.className = "mode-card-btn active-mode-marathon";
+            btnE.className = "mode-card-btn";
+        } else {
+            btnM.className = "mode-card-btn";
+            btnE.className = "mode-card-btn active-mode-event";
+        }
+        onEventTypeChange();
+    }
+
+    // 마라톤 대회 vs 일반 행사별 입력 폼 구성 (기타1, 기타2 공통 포함)
     function onEventTypeChange() {
         const type = document.getElementById('new-race-type').value;
         const container = document.getElementById('course-setting-container');
@@ -480,7 +503,6 @@
             `;
         }
 
-        // 커스텀 체크박스 바인딩
         const chk1 = document.getElementById('chk-custom-1');
         const chk2 = document.getElementById('chk-custom-2');
         if (chk1) chk1.onchange = () => toggleCustomInput(1);
@@ -598,7 +620,7 @@
                 card.classList.toggle('expanded');
             } else {
                 selectedRaceId = race.id;
-                localStorage.setItem('boksagol_selected_event_v27', selectedRaceId);
+                localStorage.setItem('boksagol_selected_event_v28', selectedRaceId);
                 refreshUI();
             }
         };
@@ -789,7 +811,6 @@
 
         let maleCount = 0, femaleCount = 0, totalAgeSum = 0, validAgeCount = 0;
         const ageGroupCounts = { "30대": 0, "40대": 0, "50대": 0, "60대": 0, "70대 이상": 0, "기타/미지정": 0 };
-        let unassigned = [];
 
         globalMembers.forEach(m => {
             if (m.gender === "남") maleCount++;
@@ -798,7 +819,7 @@
             if (age !== null) { totalAgeSum += age; validAgeCount++; }
             let group = calculateAgeGroup(m);
             if (ageGroupCounts[group] !== undefined) ageGroupCounts[group]++;
-            else { ageGroupCounts["기타/미지정"]++; unassigned.push(m.name); }
+            else ageGroupCounts["기타/미지정"]++;
         });
 
         const avgAge = validAgeCount > 0 ? (totalAgeSum / validAgeCount).toFixed(1) : "0.0";
@@ -901,14 +922,53 @@
         if (!r) return;
 
         document.getElementById('edit-race-id').value = r.id;
-        document.getElementById('new-race-type').value = r.type || '마라톤대회';
+        setEventType(r.type || '마라톤대회');
         document.getElementById('new-race-name').value = r.name;
         document.getElementById('new-race-location').value = r.location || "";
         document.getElementById('new-race-date').value = r.date;
         document.getElementById('new-race-deadline').value = r.deadline;
         document.getElementById('new-race-status').value = r.status || "자동(날짜기준)";
 
-        onEventTypeChange();
+        // 코스 및 가격 파싱 복원
+        const chks = document.querySelectorAll('.race-course-chk');
+        chks.forEach(chk => chk.checked = false);
+        const parts = parseCourses(r.courses || "");
+
+        parts.forEach(part => {
+            const match = part.match(/^(.+?)\s*\(([^)]+)\)$/);
+            let cName = part, cPrice = "0";
+            if (match) {
+                cName = match[1].trim();
+                cPrice = match[2].trim().replace("원", "");
+            }
+
+            let matched = false;
+            chks.forEach(chk => {
+                if (chk.value === cName) {
+                    chk.checked = true;
+                    matched = true;
+                    const priceInput = document.getElementById(`price-${cName === '5km' ? '5km' : cName === '10km' ? '10km' : cName === '하프' ? 'half' : cName === '풀코스' ? 'full' : 'event-1'}`);
+                    if (priceInput) priceInput.value = cPrice;
+                }
+            });
+
+            if (!matched) {
+                const custom1Chk = document.getElementById('chk-custom-1');
+                const custom2Chk = document.getElementById('chk-custom-2');
+                if (custom1Chk && !custom1Chk.checked) {
+                    custom1Chk.checked = true;
+                    toggleCustomInput(1);
+                    document.getElementById('custom-course-1-name').value = cName;
+                    document.getElementById('price-custom-1').value = cPrice;
+                } else if (custom2Chk && !custom2Chk.checked) {
+                    custom2Chk.checked = true;
+                    toggleCustomInput(2);
+                    document.getElementById('custom-course-2-name').value = cName;
+                    document.getElementById('price-custom-2').value = cPrice;
+                }
+            }
+        });
+
         document.getElementById('race-form-title').textContent = "정보 수정하기";
         document.getElementById('race-save-btn').textContent = "수정 완료";
         document.getElementById('race-cancel-btn').style.display = 'block';
@@ -917,12 +977,11 @@
 
     function resetRaceForm() {
         document.getElementById('edit-race-id').value = "";
-        document.getElementById('new-race-type').value = "마라톤대회";
+        setEventType('마라톤대회');
         document.getElementById('new-race-name').value = "";
         document.getElementById('new-race-location').value = "";
         document.getElementById('new-race-date').value = "";
         document.getElementById('new-race-deadline').value = "";
-        onEventTypeChange();
         document.getElementById('race-form-title').textContent = "새로운 대회 또는 행사 등록";
         document.getElementById('race-save-btn').textContent = "등록하기";
         document.getElementById('race-cancel-btn').style.display = 'none';
@@ -944,15 +1003,17 @@
             if (chk.checked) {
                 let cName = chk.value;
                 let cPrice = "0";
-                if (cName === '기타1') cName = document.getElementById('custom-course-1-name').value.trim() || '기타1';
-                if (cName === '기타2') cName = document.getElementById('custom-course-2-name').value.trim() || '기타2';
 
-                if (cName === '5km') cPrice = document.getElementById('price-5km').value.trim() || '50000';
-                else if (cName === '10km') cPrice = document.getElementById('price-10km').value.trim() || '50000';
-                else if (cName === '하프') cPrice = document.getElementById('price-half').value.trim() || '50000';
-                else if (cName === '풀코스') cPrice = document.getElementById('price-full').value.trim() || '50000';
-                else if (chk.value === '기타1') cPrice = document.getElementById('price-custom-1').value.trim() || '0';
-                else if (chk.value === '기타2') cPrice = document.getElementById('price-custom-2').value.trim() || '0';
+                if (cName === '기타1') {
+                    cName = document.getElementById('custom-course-1-name').value.trim() || '기타1';
+                    cPrice = document.getElementById('price-custom-1').value.trim() || '0';
+                } else if (cName === '기타2') {
+                    cName = document.getElementById('custom-course-2-name').value.trim() || '기타2';
+                    cPrice = document.getElementById('price-custom-2').value.trim() || '0';
+                } else {
+                    const priceInput = document.getElementById(`price-${cName === '5km' ? '5km' : cName === '10km' ? '10km' : cName === '하프' ? 'half' : cName === '풀코스' ? 'full' : 'event-1'}`);
+                    cPrice = priceInput ? (priceInput.value.trim() || '0') : '0';
+                }
 
                 courses.push(`${cName}(${cPrice}원)`);
             }
@@ -1042,7 +1103,7 @@
         document.getElementById('admin-open-btn').onclick = toggleAdminMode;
         document.getElementById('admin-close-btn').onclick = toggleAdminMode;
 
-        onEventTypeChange();
+        setEventType('마라톤대회');
 
         const swipeContainer = document.getElementById('swipe-container');
         let startX = 0;
