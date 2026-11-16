@@ -71,7 +71,6 @@
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
         .status-badge.ended { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
-        
         .type-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 5px; font-weight: 800; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
         .type-badge.event { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
 
@@ -164,14 +163,14 @@
                 <div class="swipe-pane active-pane" id="pane-status">
                     <div id="status-summary-box" style="margin-bottom: 12px;"></div>
                     <div class="search-box">
-                        <input type="text" id="status-search-input" class="search-input" placeholder="🔍 참여자 이름 검색 (예: 이실권)" oninput="renderStatusTab()">
+                        <input type="text" id="status-search-input" class="search-input" placeholder="🔍 참여자 이름 검색 (예: 홍길동)" oninput="renderStatusTab()">
                     </div>
                     <div id="status-detail-list" style="margin-top: 10px;"></div>
                 </div>
                 <!-- 2번 패널: 신청 및 체크 -->
                 <div class="swipe-pane" id="pane-apply">
                     <div class="search-box">
-                        <input type="text" id="apply-search-input" class="search-input" placeholder="🔍 회원 이름 검색 (예: 이실권)" oninput="renderMemberList()">
+                        <input type="text" id="apply-search-input" class="search-input" placeholder="🔍 회원 이름 검색 (예: 홍길동)" oninput="renderMemberList()">
                     </div>
                     <div id="member-list-wrapper"></div>
                 </div>
@@ -179,7 +178,7 @@
                 <div class="swipe-pane" id="pane-members">
                     <div id="member-stats-summary"></div>
                     <div class="search-box" style="margin-top: 12px;">
-                        <input type="text" id="members-search-input" class="search-input" placeholder="🔍 전체 회원 이름 검색 (예: 이실권)" oninput="renderAllMembersTab()">
+                        <input type="text" id="members-search-input" class="search-input" placeholder="🔍 전체 회원 이름 검색 (예: 홍길동)" oninput="renderAllMembersTab()">
                     </div>
                     <div id="all-member-list-wrapper" style="margin-top: 12px;"></div>
                 </div>
@@ -200,7 +199,6 @@
         <div class="admin-input-group">
             <input type="hidden" id="edit-race-id" value="">
             
-            <!-- 마라톤대회 vs 일반행사 선택 버튼 -->
             <label style="font-size:0.85rem; font-weight:700; color:#38bdf8; margin-bottom:2px;">등록 구분 선택:</label>
             <div class="mode-select-grid">
                 <button type="button" id="btn-mode-marathon" class="mode-card-btn active-mode-marathon" onclick="setEventType('마라톤대회')">🏃 마라톤 대회</button>
@@ -210,7 +208,7 @@
 
             <input type="text" id="new-race-name" placeholder="대회명 또는 행사명 (예: 2026 복사골 송년회)">
             <input type="text" id="new-race-location" placeholder="장소 (예: 부천시민운동장 / 연회장)">
-            <input type="text" id="new-race-date" placeholder="일시 및 요일 (예: 2026.04.13(일) 또는 12.19(토))">
+            <input type="text" id="new-race-date" placeholder="일시 및 요일 (예: 2026.04.13(일))">
             <input type="text" id="new-race-deadline" placeholder="신청/마감일 (예: 2026.03.15까지)">
             
             <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
