@@ -25,7 +25,6 @@
 
     <style>
         :root {
-            --primary: int #0f172a;        
             --primary: #0f172a;        
             --accent: #2563eb;         
             --accent-hover: #1d4ed8;
@@ -334,10 +333,11 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbypcUfmHxWwLWDThRirGHyXtUscWYlEr0CdECJeONokfhFOvPzofsIpvou_IPQJuO6B/exec";
+    // 💡 새롭게 배포한 구글 Apps Script 웹 앱 URL을 여기에 넣어주세요!
+    const API_URL = "https://script.google.com/macros/s/AKfycbwtJD3jVUS8mQSMmwISN8OubKd4dl1-C9i-X5N8Uhz7mjbIs-NoYji056vLeY5eg6DBkw/exec";
 
     let globalMembers = [];
-    let globalRaces = []; // 대회 및 행사 통합 배열 (category: 'race' 또는 'event')
+    let globalRaces = []; 
     let globalApplications = {};
     let adminPassword = "1234";
     let selectedRaceId = localStorage.getItem('boksagol_selected_item_v25') || "";
@@ -441,6 +441,7 @@
     }
 
     async function fetchServerData() {
+        if (!API_URL || API_URL.includes("여기에")) return;
         try {
             const response = await fetch(API_URL + "?action=getData");
             const data = await response.json();
@@ -729,10 +730,12 @@
 
         refreshUI();
 
-        try {
-            const url = `${API_URL}?action=applyRace&raceId=${encodeURIComponent(selectedRaceId)}&memberName=${encodeURIComponent(memberName)}&course=${encodeURIComponent(option)}`;
-            fetch(url);
-        } catch(e) { console.error("서버 반영 오류:", e); }
+        if (API_URL && !API_URL.includes("여기에")) {
+            try {
+                const url = `${API_URL}?action=applyRace&raceId=${encodeURIComponent(selectedRaceId)}&memberName=${encodeURIComponent(memberName)}&course=${encodeURIComponent(option || "")}`;
+                fetch(url);
+            } catch(e) { console.error("서버 반영 오류:", e); }
+        }
     }
 
     function renderStatusTab() {
@@ -1017,6 +1020,13 @@
         refreshUI();
         resetItemForm();
         alert("저장되었습니다.");
+
+        if (API_URL && !API_URL.includes("여기에")) {
+            try {
+                const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(id)}&category=${encodeURIComponent(category)}&raceName=${encodeURIComponent(name)}&location=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}&deadline=${encodeURIComponent(deadline || "")}&courses=${encodeURIComponent(coursesStr)}&status=${encodeURIComponent(status)}`;
+                fetch(url).then(() => fetchServerData());
+            } catch(e) { console.error("서버 저장 오류:", e); }
+        }
     }
 
     function resetItemForm() {
@@ -1035,6 +1045,13 @@
         globalRaces = globalRaces.filter(r => r.id !== id);
         selectedRaceId = globalRaces.length > 0 ? globalRaces[0].id : "";
         refreshUI();
+
+        if (API_URL && !API_URL.includes("여기에")) {
+            try {
+                const url = `${API_URL}?action=deleteRace&raceId=${encodeURIComponent(id)}`;
+                fetch(url).then(() => fetchServerData());
+            } catch(e) { console.error("서버 삭제 오류:", e); }
+        }
     }
 
     async function addNewMemberByAdmin() {
@@ -1050,6 +1067,13 @@
         refreshUI();
         document.getElementById('admin-add-name').value = '';
         alert(`[${name}] 회원이 추가되었습니다.`);
+
+        if (API_URL && !API_URL.includes("여기에")) {
+            try {
+                const url = `${API_URL}?action=saveMember&oldName=${encodeURIComponent(name)}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone||"-")}&birth=${encodeURIComponent(birth||"-")}&gender=${encodeURIComponent(gender)}&join=${encodeURIComponent(join||"-")}&size=${encodeURIComponent(size)}`;
+                fetch(url).then(() => fetchServerData());
+            } catch(e) { console.error("회원 추가 오류:", e); }
+        }
     }
 
     function renderAdminMemberList() {
@@ -1071,6 +1095,13 @@
         if (!confirm(`[${name}] 회원을 삭제하시겠습니까?`)) return;
         globalMembers = globalMembers.filter(m => m.name !== name);
         refreshUI();
+
+        if (API_URL && !API_URL.includes("여기에")) {
+            try {
+                const url = `${API_URL}?action=deleteMember&name=${encodeURIComponent(name)}`;
+                fetch(url).then(() => fetchServerData());
+            } catch(e) { console.error("회원 삭제 오류:", e); }
+        }
     }
 
     async function changePassword() {
@@ -1078,6 +1109,13 @@
         if (!newPwd) { alert("새 비밀번호를 입력해주세요."); return; }
         adminPassword = newPwd;
         alert("비밀번호가 변경되었습니다.");
+
+        if (API_URL && !API_URL.includes("여기에")) {
+            try {
+                const url = `${API_URL}?action=saveAdminPassword&password=${encodeURIComponent(newPwd)}`;
+                fetch(url);
+            } catch(e) { console.error("비밀번호 저장 오류:", e); }
+        }
     }
 
     function initEventBindings() {
