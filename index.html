@@ -852,13 +852,11 @@
             </div>
         `;
         
-        // [핵심 수정 로직]
-        // 1. 이미 최상단(1번 자리)에 있는 박스를 클릭한 경우 -> 하단 목록들의 숨김/표시를 토글함
-        // 2. 하단에 있는 다른 박스(예: 3번)를 클릭한 경우 -> 그 박스가 즉시 최상단으로 올라오고, 하단 목록은 보이도록(숨김 해제) 초기화함
+        // [수정된 클릭 동작 로직]
         card.onclick = function(e) {
             e.stopPropagation();
             if (isTopMost) {
-                // 이미 최상단인 박스를 다시 누름 -> 하단 박스들 토글 (숨김 <-> 표시)
+                // 이미 최상단인 박스를 다시 클릭한 경우 -> 하단 박스들 토글 (숨김 <-> 표시)
                 isOtherRacesHidden = !isOtherRacesHidden;
                 const wrapper = document.getElementById('other-races-wrapper');
                 if (wrapper) {
@@ -870,9 +868,10 @@
                     setTimeout(updateSwipeWrapperHeight, 400);
                 }
             } else {
-                // 하단에 있던 다른 박스(예: 3번)를 누름 -> 그 박스가 즉시 맨 위로 이동하고 하단 박스들은 보이게 펼쳐짐
+                // 하단에 있던 다른 박스(예: 3번)를 클릭한 경우:
+                // -> 맨 위로 올라감과 동시에 하단 박스들이 숨겨지도록 isOtherRacesHidden을 true로 설정!
                 selectedRaceId = race.id;
-                isOtherRacesHidden = false;
+                isOtherRacesHidden = true; 
                 localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
                 refreshUI();
             }
