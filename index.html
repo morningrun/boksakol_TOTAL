@@ -37,7 +37,7 @@
             --border: #cbd5e1;
         }
 
-        /* 💡 부드러운 스크롤 애니메이션 활성화 */
+        /* 부드러운 스크롤 애니메이션 활성화 */
         html {
             scroll-behavior: smooth;
         }
@@ -76,13 +76,6 @@
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
         #race-card-container { display: flex; flex-direction: column; gap: 8px; }
-        
-        #race-card-container.compact-view .race-card-item:not(.selected-target) {
-            display: none !important;
-        }
-        #race-card-container.compact-view .ended-section-container {
-            display: none !important;
-        }
 
         .race-card-item { 
             background: #ffffff; 
@@ -91,7 +84,6 @@
             overflow: hidden; 
             transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1); 
             box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
-            will-change: transform, order;
         }
         
         .race-card-item.selected-target { 
@@ -125,7 +117,6 @@
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
         .status-badge.ended { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
 
-        /* D-Day 배지 스타일 */
         .dday-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
         .dday-badge.d-day { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 
@@ -398,7 +389,6 @@
     let adminPassword = "1234";
     let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
     let activePaneIndex = 0;
-    let isCompactRaceView = false;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
 
@@ -446,7 +436,6 @@
         return result.filter(c => c.trim().length > 0);
     }
 
-    // 💡 날짜 문자열에서 D-Day 계산 함수
     function calculateDDay(dateStr) {
         if (!dateStr) return "";
         const match = dateStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
@@ -630,12 +619,6 @@
             return;
         }
 
-        if (isCompactRaceView) {
-            container.classList.add('compact-view');
-        } else {
-            container.classList.remove('compact-view');
-        }
-
         container.innerHTML = '';
 
         let sortedRaces = [...globalRaces].sort((a, b) => {
@@ -695,18 +678,15 @@
     function createRaceCardElement(race, isEnded) {
         const card = document.createElement('div');
         const isSelected = (race.id === selectedRaceId);
-        const isExpanded = isSelected && !isCompactRaceView; 
         
         card.setAttribute('data-race-id', race.id);
 
         let cardClasses = ['race-card-item'];
-        if (isEnded) {
-            cardClasses.push('ended-race');
-        } else {
-            cardClasses.push('active-race');
-        }
-        if (isSelected) cardClasses.push('selected-target');
-        if (isExpanded) cardClasses.push('expanded');
+        if (isEnded) cardClasses.push('ended-race');
+        else cardClasses.push('active-race');
+        
+        if (isSelected) cardClasses.push('selected-target expanded');
+        else cardClasses.push('expanded'); // 모든 카드가 항상 펼쳐진 상태 유지 (접히는 기능 제거)
 
         card.className = cardClasses.join(' ');
         
@@ -743,9 +723,9 @@
                     ${ddayBadgeHtml}
                     <span>${race.name}</span>
                 </div>
-                <div class="race-toggle-icon">▼</div>
+                <div class="race-toggle-icon" style="transform: rotate(180deg);">▼</div>
             </div>
-            <div class="race-card-body">
+            <div class="race-card-body" style="display: flex; flex-direction: column; gap: 4px;">
                 <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #1e293b; font-weight: 700;">
                     <div>• 일자: ${race.date}</div>
                     <div>• 장소: ${race.location || '장소 미정'}</div>
@@ -763,20 +743,11 @@
         const header = card.querySelector('.race-card-header');
         header.onclick = function(e) {
             e.stopPropagation();
-            
-            if (selectedRaceId === race.id) {
-                // 이미 선택된 카드를 다시 누른 경우: 컴팩트 뷰 토글
-                isCompactRaceView = !isCompactRaceView;
-                refreshUI();
-            } else {
-                // 새로운 카드를 선택한 경우: 선택 변경 후 화면 재렌더링
-                selectedRaceId = race.id;
-                isCompactRaceView = false;
-                localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
-                refreshUI();
-            }
+            selectedRaceId = race.id;
+            localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
+            refreshUI();
 
-            // 💡 렌더링 및 레이아웃 축소 변동이 완전히 끝난 직후에 안전하게 상단 스크롤 실행
+            // 클릭 시 부드럽게 상단으로 스크롤 이동
             setTimeout(() => {
                 const updatedCard = document.querySelector(`[data-race-id="${race.id}"]`);
                 if (updatedCard) {
@@ -784,16 +755,17 @@
                     const absoluteTop = window.pageYOffset + rect.top;
                     
                     window.scrollTo({
-                        top: absoluteTop - 10, // 상단 여백 10px 두고 부드럽게 이동
+                        top: absoluteTop - 10,
                         behavior: 'smooth'
                     });
                 }
-            }, 100);
+            }, 50);
         };
 
         return card;
     }
 
+    // 💡 2번 패널 (참가 신청): 항목별로 그룹화하여 각각 1부터 번호 매기기
     function renderMemberList() {
         const wrapper = document.getElementById('member-list-wrapper');
         if (!wrapper) return;
@@ -814,126 +786,144 @@
         }
 
         const raceApps = globalApplications[selectedRaceId] || {};
+        const availableCourses = parseCourses(currentRace.courses).map(c => c.replace(/\s*\(.*?\)/g, "").trim()).filter(c => c.length > 0);
 
         const searchInput = document.getElementById('apply-search-input');
         const keyword = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
-        const filteredMembers = globalMembers.filter(m => {
-            const name = String(m.name || "").trim();
-            return name.toLowerCase().includes(keyword);
-        });
+        // 항목별로 회원 분류
+        const courseGroups = {};
+        availableCourses.forEach(c => courseGroups[c] = []);
+        const unappliedMembers = [];
 
-        const sortedMembers = [...filteredMembers].sort((a, b) => {
-            const appA = raceApps[a.name] ? 0 : 1;
-            const appB = raceApps[b.name] ? 0 : 1;
-            if (appA !== appB) return appA - appB;
+        globalMembers.forEach(member => {
+            const name = String(member.name || "").trim();
+            if (keyword && !name.toLowerCase().includes(keyword)) return;
 
-            if (appA === 0) {
-                const rankA = getCourseRank(raceApps[a.name]);
-                const rankB = getCourseRank(raceApps[b.name]);
-                if (rankA !== rankB) return rankA - rankB;
-            }
-
-            return a.name.localeCompare(b.name, 'ko');
-        });
-
-        if (sortedMembers.length === 0) {
-            wrapper.innerHTML = "<div style='text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;'>검색된 회원이 없습니다.</div>";
-            updateSwipeWrapperHeight();
-            return;
-        }
-
-        const availableCoursesWithPrice = parseCourses(currentRace.courses);
-
-        sortedMembers.forEach((member, index) => {
-            const appliedCourse = raceApps[member.name] || null;
-            const isApplied = (appliedCourse !== null);
-
-            const card = document.createElement('div');
-            let badgeHtml = "";
-            let cardStyleClass = "";
-
-            if (isApplied) {
-                cardStyleClass = getCourseStyleClass(appliedCourse);
-                card.className = `member-card`;
-                let displayApplied = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
-                badgeHtml = `<span class="applied-badge ${cardStyleClass}">✅ ${displayApplied} 신청완료</span>`;
+            const appliedCourseRaw = raceApps[name];
+            if (appliedCourseRaw) {
+                const cleanCourse = appliedCourseRaw.replace(/\s*\(.*?\)/g, "").trim();
+                if (courseGroups[cleanCourse]) {
+                    courseGroups[cleanCourse].push(member);
+                } else {
+                    // 정의되지 않은 기타 코스일 경우 첫 번째 그룹이나 별도 처리
+                    if (availableCourses.length > 0) {
+                        courseGroups[availableCourses[0]].push(member);
+                    }
+                }
             } else {
-                card.className = `member-card`;
-                badgeHtml = `<span style="font-size:0.68rem; background:#f1f5f9; color:#64748b; padding:1px 4px; border-radius:4px; font-weight:700; white-space:nowrap;">미신청</span>`;
+                if (!keyword) {
+                    unappliedMembers.push(member);
+                }
             }
+        });
 
-            card.innerHTML = `
-                <div class="member-info">
-                    <div class="member-name-area">
-                        <span style="color:#64748b; font-weight:700; min-width:18px;">${index + 1}.</span> 
-                        <strong style="font-size:0.85rem; white-space:nowrap;">${member.name}</strong>
+        let htmlContent = "";
+
+        // 각 항목별로 그룹화하여 렌더링 (각 항목별로 번호 1부터 부여)
+        availableCourses.forEach(courseName => {
+            const membersInCourse = courseGroups[courseName] || [];
+            if (membersInCourse.length === 0 && keyword) return; // 검색어가 있을 때 비어있으면 패스
+
+            const badgeStyle = getCourseStyleClass(courseName);
+
+            htmlContent += `
+                <div style="margin-bottom: 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px;">
+                    <div style="font-weight: 800; font-size: 0.9rem; color: var(--primary); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4px;">
+                        <span class="${badgeStyle}">• ${courseName}</span>
+                        <span style="font-size: 0.75rem; background: #e2e8f0; color: #334155; padding: 1px 6px; border-radius: 4px;">${membersInCourse.length}명</span>
                     </div>
-                    <div>${badgeHtml}</div>
-                </div>
             `;
 
-            const btnGroup = document.createElement('div');
-            btnGroup.className = 'btn-group';
-
-            if (!ended) {
-                if (!isApplied) {
-                    availableCoursesWithPrice.forEach(courseWithPrice => {
-                        if(!courseWithPrice.trim()) return;
-                        const btn = document.createElement('button');
-                        
-                        let displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
-                        btn.textContent = displayBtnText;
-                        btn.className = "course-btn-style";
-                        
-                        btn.onclick = function() {
-                            if (confirm(`[${member.name}]님을 [${currentRace.name}] '${displayBtnText}'(으)로 신청하시겠습니까?`)) {
-                                handleApply(member.name, courseWithPrice);
-                            }
-                        };
-                        btnGroup.appendChild(btn);
-                    });
-                } else {
-                    let displaySelected = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
-                    const selectedBtn = document.createElement('button');
-                    selectedBtn.textContent = `신청: ${displaySelected}`;
-                    selectedBtn.className = `selected-course ${cardStyleClass}`;
-                    selectedBtn.disabled = true;
-
-                    const cancelBtn = document.createElement('button');
-                    cancelBtn.textContent = '신청취소';
-                    cancelBtn.className = 'btn-cancel';
-                    
-                    cancelBtn.onclick = function() {
-                        if (confirm(`[${member.name}]님의 [${currentRace.name}] '${displaySelected}' 신청을 취소하시겠습니까?`)) {
-                            handleApply(member.name, null);
-                        }
-                    };
-
-                    btnGroup.appendChild(selectedBtn);
-                    btnGroup.appendChild(cancelBtn);
-                }
+            if (membersInCourse.length === 0) {
+                htmlContent += `<div style="text-align:center; padding:8px; color:#94a3b8; font-size:0.8rem;">신청자가 없습니다.</div>`;
             } else {
-                if (isApplied) {
-                    let displayFinished = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
-                    const selectedBtn = document.createElement('button');
-                    selectedBtn.textContent = `신청완료: ${displayFinished}`;
-                    selectedBtn.className = `selected-course ${cardStyleClass}`;
-                    selectedBtn.disabled = true;
-                    btnGroup.appendChild(selectedBtn);
-                } else {
-                    const noneBtn = document.createElement('button');
-                    noneBtn.textContent = '종료됨';
-                    noneBtn.disabled = true;
-                    noneBtn.style.background = '#f1f5f9';
-                    noneBtn.style.color = '#94a3b8';
-                    btnGroup.appendChild(noneBtn);
-                }
+                // 가나다순 정렬
+                membersInCourse.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+
+                membersInCourse.forEach((member, index) => {
+                    const appliedCourse = raceApps[member.name];
+                    const cardStyleClass = getCourseStyleClass(appliedCourse);
+                    const displayApplied = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
+                    
+                    const availableCoursesWithPrice = parseCourses(currentRace.courses);
+                    let btnGroupHtml = `<div class="btn-group">`;
+
+                    if (!ended) {
+                        let displaySelected = displayApplied;
+                        const selectedBtnText = `신청: ${displaySelected}`;
+                        
+                        btnGroupHtml += `
+                            <button class="selected-course ${cardStyleClass}" disabled>${selectedBtnText}</button>
+                            <button class="btn-cancel" onclick="handleApply('${member.name}', null)">신청취소</button>
+                        `;
+                    } else {
+                        btnGroupHtml += `<button class="selected-course ${cardStyleClass}" disabled>신청완료: ${displayApplied}</button>`;
+                    }
+                    btnGroupHtml += `</div>`;
+
+                    htmlContent += `
+                        <div class="member-card">
+                            <div class="member-info">
+                                <div class="member-name-area">
+                                    <span style="color:#64748b; font-weight:700; min-width:18px;">${index + 1}.</span> 
+                                    <strong style="font-size:0.85rem; white-space:nowrap;">${member.name}</strong>
+                                </div>
+                                <div><span class="applied-badge ${cardStyleClass}">✅ ${displayApplied} 신청완료</span></div>
+                            </div>
+                            ${btnGroupHtml}
+                        </div>
+                    `;
+                });
             }
 
-            card.appendChild(btnGroup);
-            wrapper.appendChild(card);
+            htmlContent += `</div>`;
         });
+
+        // 미신청 회원 섹션 (검색어가 없을 때만 하단에 표시)
+        if (!keyword && unappliedMembers.length > 0) {
+            unappliedMembers.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+            
+            htmlContent += `
+                <div style="margin-top: 16px; background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 8px;">
+                    <div style="font-weight: 800; font-size: 0.9rem; color: #991b1b; margin-bottom: 6px; border-bottom: 1.5px solid #fca5a5; padding-bottom: 4px;">
+                        • 미신청 회원 (${unappliedMembers.length}명)
+                    </div>
+            `;
+
+            const availableCoursesWithPrice = parseCourses(currentRace.courses);
+
+            unappliedMembers.forEach((member, index) => {
+                let btnGroupHtml = `<div class="btn-group">`;
+                if (!ended) {
+                    availableCoursesWithPrice.forEach(courseWithPrice => {
+                        if(!courseWithPrice.trim()) return;
+                        let displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
+                        btnGroupHtml += `<button class="course-btn-style" onclick="handleApply('${member.name}', '${courseWithPrice}')">${displayBtnText}</button>`;
+                    });
+                } else {
+                    btnGroupHtml += `<button style="background:#f1f5f9; color:#94a3b8;" disabled>종료됨</button>`;
+                }
+                btnGroupHtml += `</div>`;
+
+                htmlContent += `
+                    <div class="member-card" style="background:#fffcfc;">
+                        <div class="member-info">
+                            <div class="member-name-area">
+                                <span style="color:#94a3b8; font-weight:700; min-width:18px;">${index + 1}.</span> 
+                                <strong style="font-size:0.85rem; white-space:nowrap;">${member.name}</strong>
+                            </div>
+                            <div><span style="font-size:0.68rem; background:#f1f5f9; color:#64748b; padding:1px 4px; border-radius:4px; font-weight:700;">미신청</span></div>
+                        </div>
+                        ${btnGroupHtml}
+                    </div>
+                `;
+            });
+
+            htmlContent += `</div>`;
+        }
+
+        wrapper.innerHTML = htmlContent;
         updateSwipeWrapperHeight();
     }
 
@@ -1227,7 +1217,6 @@
         });
 
         let csvContent = "\uFEFF번호,신청항목,이름,핸드폰번호,성별,옷사이즈,명칭\n";
-        
         let courseCounts = {};
 
         appliedMembersList.forEach((m, idx) => {
