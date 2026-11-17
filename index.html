@@ -177,13 +177,13 @@
         .member-name-area { font-weight: 800; font-size: 0.85rem; color: var(--primary); display: flex; align-items: center; gap: 4px; overflow: hidden; }
         
         .applied-badge { font-size: 0.68rem; padding: 1px 5px; border-radius: 4px; font-weight: 800; display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
-        .applied-badge.style-full { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
-        .applied-badge.style-half { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-        .applied-badge.style-10k { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
-        .applied-badge.style-5k { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-        .applied-badge.style-attend { background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; }
-        .applied-badge.style-family { background: #f3e8ff; color: #9333ea; border: 1px solid #d8b4fe; }
-        .applied-badge.style-etc { background: #fce7f3; color: #be185d; border: 1px solid #f472b6; }
+        .applied-badge.style-full { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+        .applied-badge.style-half { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        .applied-badge.style-10k { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+        .applied-badge.style-5k { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .applied-badge.style-attend { background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
+        .applied-badge.style-family { background: #faf5ff; color: #9333ea; border: 1px solid #e9d5ff; }
+        .applied-badge.style-etc { background: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8; }
 
         .btn-group { display: flex; gap: 3px; width: 100%; flex-wrap: wrap; margin-bottom: 2px; }
         .btn-group button { flex: 1; min-width: 60px; padding: 3px 2px; font-size: 0.72rem; border: 1.5px solid var(--border); border-radius: 4px; cursor: pointer; font-weight: 800; text-align: center; }
@@ -199,7 +199,7 @@
         .course-btn-style { background: #ffffff; color: var(--text-main); border-color: #cbd5e1; }
         .course-btn-style:hover { background: #f8fafc; border-color: var(--accent); color: var(--accent); }
 
-        /* 신청 완료 상태 버튼 (파스텔 톤 배경 및 차분한 글자색으로 변경) */
+        /* 신청 완료 상태 버튼 (파스텔 톤 배경 및 차분한 글자색) */
         button.selected-course { 
             font-weight: 800; 
             flex: 1.4 !important; 
@@ -210,7 +210,7 @@
             border-radius: 6px !important; 
         }
         
-        /* 항목별 파스텔 톤 컬러 테마 적용 (눈이 편안한 은은한 색감) */
+        /* 항목별 파스텔 톤 컬러 테마 적용 */
         button.selected-course.style-10k { background: #f0f9ff !important; border-color: #bae6fd !important; color: #0369a1 !important; }
         button.selected-course.style-5k { background: #f0fdf4 !important; border-color: #bbf7d0 !important; color: #15803d !important; }
         button.selected-course.style-half { background: #fffbeb !important; border-color: #fde68a !important; color: #b45309 !important; }
@@ -949,22 +949,22 @@
 
         globalMembers.forEach(member => {
             const name = String(member.name || "").trim();
-            if (keyword && !name.toLowerCase().includes(keyword)) return;
-
             const appliedCourseRaw = raceApps[name];
+
+            // 검색어가 있을 때 코스별 그룹 내 필터링 대신, 전체 명부에서 이름이 포함된 회원을 모든 코스/미신청 영역에서 일관되게 매칭
+            const matchesKeyword = !keyword || name.toLowerCase().includes(keyword);
+
             if (appliedCourseRaw) {
                 const cleanCourse = appliedCourseRaw.replace(/\s*\(.*?\)/g, "").trim();
                 if (courseGroups[cleanCourse]) {
-                    courseGroups[cleanCourse].push(member);
+                    courseGroups[cleanCourse].push({ member, matchesKeyword });
                 } else {
                     if (availableCourses.length > 0) {
-                        courseGroups[availableCourses[0]].push(member);
+                        courseGroups[availableCourses[0]].push({ member, matchesKeyword });
                     }
                 }
             } else {
-                if (!keyword) {
-                    unappliedMembers.push(member);
-                }
+                unappliedMembers.push({ member, matchesKeyword });
             }
         });
 
@@ -972,8 +972,11 @@
         const isEventItem = (currentRace.itemType === 'event');
 
         availableCourses.forEach(courseName => {
-            const membersInCourse = courseGroups[courseName] || [];
-            if (membersInCourse.length === 0 && keyword) return;
+            const itemsInCourse = courseGroups[courseName] || [];
+            // 검색어 입력 시 해당 검색어에 매칭되는 회원만 필터링
+            const filteredItems = keyword ? itemsInCourse.filter(item => item.matchesKeyword) : itemsInCourse;
+
+            if (filteredItems.length === 0 && keyword) return;
 
             const badgeStyle = getCourseStyleClass(courseName);
 
@@ -981,16 +984,17 @@
                 <div style="margin-bottom: 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px;">
                     <div style="font-weight: 800; font-size: 0.9rem; color: var(--primary); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4px;">
                         <span class="${badgeStyle}">• ${courseName}</span>
-                        <span style="font-size: 0.75rem; background: #e2e8f0; color: #334155; padding: 1px 6px; border-radius: 4px;">${membersInCourse.length}명</span>
+                        <span style="font-size: 0.75rem; background: #e2e8f0; color: #334155; padding: 1px 6px; border-radius: 4px;">${filteredItems.length}명</span>
                     </div>
             `;
 
-            if (membersInCourse.length === 0) {
+            if (filteredItems.length === 0) {
                 htmlContent += `<div style="text-align:center; padding:8px; color:#94a3b8; font-size:0.8rem;">신청자가 없습니다.</div>`;
             } else {
-                membersInCourse.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+                filteredItems.sort((a, b) => a.member.name.localeCompare(b.member.name, 'ko'));
 
-                membersInCourse.forEach((member, index) => {
+                filteredItems.forEach((item, index) => {
+                    const member = item.member;
                     const appliedCourse = raceApps[member.name];
                     const cardStyleClass = getCourseStyleClass(appliedCourse);
                     const displayApplied = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
@@ -1027,17 +1031,20 @@
             htmlContent += `</div>`;
         });
 
-        if (!keyword && unappliedMembers.length > 0) {
-            unappliedMembers.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+        const filteredUnapplied = keyword ? unappliedMembers.filter(item => item.matchesKeyword) : unappliedMembers;
+
+        if (filteredUnapplied.length > 0 && (!keyword || filteredUnapplied.length > 0)) {
+            filteredUnapplied.sort((a, b) => a.member.name.localeCompare(b.member.name, 'ko'));
             
             htmlContent += `
                 <div style="margin-top: 16px; background: transparent; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px;">
                     <div style="font-weight: 800; font-size: 0.9rem; color: #475569; margin-bottom: 6px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4px;">
-                        • 미신청 회원 (${unappliedMembers.length}명)
+                        • 미신청 회원 (${filteredUnapplied.length}명)
                     </div>
             `;
 
-            unappliedMembers.forEach((member, index) => {
+            filteredUnapplied.forEach((item, index) => {
+                const member = item.member;
                 let btnGroupHtml = `<div class="btn-group">`;
                 if (!ended) {
                     availableCoursesWithPrice.forEach(courseWithPrice => {
@@ -1220,7 +1227,7 @@
 
         activeCourses.forEach(courseName => {
             const membersInCourse = courseGroups[courseName] || [];
-            if (membersInCourse.length === 0) return;
+            if (membersInCourse.length === 0 && keyword) return;
 
             const badgeStyle = getCourseStyleClass(courseName);
 
@@ -1241,7 +1248,7 @@
                         <span style="font-size:0.68rem; font-weight:800; background:#e2e8f0; color:#334155; padding:1px 4px; border-radius:3px;">${membersInCourse.length}명</span>
                     </div>
                     <div style="display:flex; flex-direction:column; gap:2px;">
-                        ${membersTagsHtml}
+                        ${membersTagsHtml || '<div style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:4px;">검색 결과 없음</div>'}
                     </div>
                 </div>
             `;
