@@ -781,6 +781,12 @@
             ddayBadgeHtml = `<span class="dday-badge ${isDDay ? 'd-day' : ''}">${ddayText}</span>`;
         }
 
+        // [변경 포인트] 강제마감 되었거나 접수가 끝난(ended) 경우 마감일 칸에 적색으로 '접수마감' 표시
+        const ended = isRaceEnded(race);
+        const deadlineDisplay = ended 
+            ? `<span style="color: var(--danger); font-weight: 800;">${race.deadline} <span style="background: #fef2f2; padding: 1px 4px; border-radius: 4px; border: 1px solid #fecaca; font-size: 0.75rem;">🔴 접수마감</span></span>` 
+            : race.deadline;
+
         card.innerHTML = `
             <div class="race-card-header">
                 <div class="race-card-title-area">
@@ -801,7 +807,7 @@
                             ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">- 참석</div>'}
                         </div>
                     </div>
-                    <div style="margin-top: 1px;">• 마감일: ${race.deadline}</div>
+                    <div style="margin-top: 1px;">• 마감일: ${deadlineDisplay}</div>
                 </div>
             </div>
         `;
@@ -1396,7 +1402,7 @@
             alert(`[${race.name}] 항목의 강제 마감이 해제되었습니다. (접수 재개)`);
         } else {
             race.status = "강제마감";
-            alert(`[${race.name}] 항목이 강제 접수마감 처리되었습니다. (대회일정은 유지되며 신청만 불가)`);
+            alert(`[${race.name}] 항목이 강제 접수마감 처리되었습니다. (대회일정 유지, 신청 불가)`);
         }
 
         refreshUI();
