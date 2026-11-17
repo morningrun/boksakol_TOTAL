@@ -43,7 +43,17 @@
         .main-title-box { text-align: center; margin: 6px 0 18px 0; }
         .main-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        .tab-group { display: flex; gap: 6px; margin-bottom: 16px; background: #cbd5e1; padding: 4px; border-radius: 12px; }
+        /* 💡 탭 메뉴만 상단 고정 (Sticky) */
+        .sticky-tab-group {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--card-bg);
+            padding-top: 4px;
+            padding-bottom: 8px;
+        }
+
+        .tab-group { display: flex; gap: 6px; background: #cbd5e1; padding: 4px; border-radius: 12px; backdrop-filter: blur(8px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .tab-btn { flex: 1; padding: 11px 4px; font-size: 0.85rem; border: none; background: transparent; color: var(--text-sub); font-weight: 700; border-radius: 9px; cursor: pointer; transition: all 0.2s; text-align: center; white-space: nowrap; }
         .tab-btn.active { background: var(--card-bg); color: var(--accent); box-shadow: 0 3px 10px rgba(0,0,0,0.08); font-weight: 800; }
 
@@ -175,16 +185,18 @@
         <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
     </div>
     
-    <!-- 1. 안내 카드 영역 -->
+    <!-- 1. 안내 카드 영역 (일반 스크롤) -->
     <div class="race-content-card-box" id="race-selector-wrapper">
         <div id="race-card-container"></div>
     </div>
 
-    <!-- 2. 탭 버튼 영역 -->
-    <div class="tab-group">
-        <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
-        <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
-        <button class="tab-btn" id="tab-members-btn">전체 회원현황</button>
+    <!-- 2. 탭 버튼 영역 (💡 상단 고정 Sticky 적용) -->
+    <div class="sticky-tab-group">
+        <div class="tab-group">
+            <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
+            <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
+            <button class="tab-btn" id="tab-members-btn">전체 회원현황</button>
+        </div>
     </div>
 
     <!-- 3. 패널 영역 -->
