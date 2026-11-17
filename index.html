@@ -115,12 +115,11 @@
         .ended-section-container.expanded .ended-section-body { display: flex; }
         .ended-section-container.expanded .ended-toggle-icon { transform: rotate(180deg); }
 
-        /* 회원 카드 컴팩트 스타일 (글씨 크기 및 엉킴 방지 최적화) */
+        /* 회원 카드 컴팩트 스타일 */
         .member-card { display: flex; flex-direction: column; padding: 8px 10px; margin-bottom: 6px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.15s; }
         .member-info { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
         .member-name-area { font-weight: 800; font-size: 0.92rem; color: var(--primary); display: flex; align-items: center; gap: 6px; overflow: hidden; }
         
-        /* 💡 신청완료 뱃지 영역 컴팩트 조정 (과도한 크기 수정) */
         .applied-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
         .applied-badge.style-full { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
         .applied-badge.style-half { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
@@ -133,7 +132,6 @@
         .btn-group { display: flex; gap: 5px; width: 100%; flex-wrap: wrap; }
         .btn-group button { flex: 1; min-width: 80px; padding: 6px 4px; font-size: 0.76rem; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 800; text-align: center; transition: all 0.15s; }
         
-        /* 항목별 색상 지정 */
         .style-full { color: #6b21a8 !important; }
         .style-half { color: #b45309 !important; }
         .style-10k { color: #0369a1 !important; }
@@ -204,14 +202,14 @@
                 <div class="swipe-pane active-pane" id="pane-status">
                     <div id="status-summary-box" style="margin-bottom: 12px;"></div>
                     <div class="search-box">
-                        <input type="text" id="status-search-input" class="search-input" placeholder="🔍 신청자 이름 검색 (예: 이실권)" oninput="renderStatusTab()">
+                        <input type="text" id="status-search-input" class="search-input" placeholder="🔍 신청자 이름 검색 (예: 홍길동)" oninput="renderStatusTab()">
                     </div>
                     <div id="status-detail-list" style="margin-top: 10px;"></div>
                 </div>
                 <!-- 2번 패널: 참가 신청 -->
                 <div class="swipe-pane" id="pane-apply">
                     <div class="search-box">
-                        <input type="text" id="apply-search-input" class="search-input" placeholder="🔍 회원 이름 검색 (예: 이실권)" oninput="renderMemberList()">
+                        <input type="text" id="apply-search-input" class="search-input" placeholder="🔍 회원 이름 검색 (예: 홍길동)" oninput="renderMemberList()">
                     </div>
                     <div id="member-list-wrapper"></div>
                 </div>
@@ -219,7 +217,7 @@
                 <div class="swipe-pane" id="pane-members">
                     <div id="member-stats-summary"></div>
                     <div class="search-box" style="margin-top: 12px;">
-                        <input type="text" id="members-search-input" class="search-input" placeholder="🔍 전체 회원 이름 검색 (예: 이실권)" oninput="renderAllMembersTab()">
+                        <input type="text" id="members-search-input" class="search-input" placeholder="🔍 전체 회원 이름 검색 (예: 홍길동)" oninput="renderAllMembersTab()">
                     </div>
                     <div id="all-member-list-wrapper" style="margin-top: 12px;"></div>
                 </div>
@@ -297,27 +295,27 @@
 
             <!-- 일반 행사 항목 설정 영역 -->
             <div id="event-option-setting-wrapper" class="hidden">
-                <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 및 참가비 설정</div>
+                <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 설정 (참석 유무만 표시)</div>
                 <div class="course-setting-grid">
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="참석" checked> 기본1</label>
-                        <input type="text" id="event-opt-1" value="참석" placeholder="항목명" style="width:80px; text-align:left;">
-                        <input type="text" id="price-ev-1" value="0" placeholder="참가비">
+                        <input type="text" id="event-opt-1" value="참석" placeholder="항목명" style="width:180px; text-align:left;">
+                        <input type="hidden" id="price-ev-1" value="0">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="참석(가족동반)" checked> 기본2</label>
-                        <input type="text" id="event-opt-2" value="참석(가족동반)" placeholder="항목명" style="width:80px; text-align:left;">
-                        <input type="text" id="price-ev-2" value="0" placeholder="참가비">
+                        <input type="text" id="event-opt-2" value="참석(가족동반)" placeholder="항목명" style="width:180px; text-align:left;">
+                        <input type="hidden" id="price-ev-2" value="0">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분1" id="chk-ev-custom-1"> 기타1:</label>
-                        <input type="text" id="ev-custom-1-name" placeholder="명칭" style="width:80px; text-align:left;" disabled>
-                        <input type="text" id="price-ev-custom-1" placeholder="참가비" value="0" disabled>
+                        <input type="text" id="ev-custom-1-name" placeholder="명칭" style="width:180px; text-align:left;" disabled>
+                        <input type="hidden" id="price-ev-custom-1" value="0">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분2" id="chk-ev-custom-2"> 기타2:</label>
-                        <input type="text" id="ev-custom-2-name" placeholder="명칭" style="width:80px; text-align:left;" disabled>
-                        <input type="text" id="price-ev-custom-2" placeholder="참가비" value="0" disabled>
+                        <input type="text" id="ev-custom-2-name" placeholder="명칭" style="width:180px; text-align:left;" disabled>
+                        <input type="hidden" id="price-ev-custom-2" value="0">
                     </div>
                 </div>
             </div>
@@ -576,7 +574,6 @@
         updateSwipeWrapperHeight();
     }
 
-    // FLIP 애니메이션 기법을 적용한 부드러운 박스 위치 이동 함수
     function renderRaceCards() {
         const container = document.getElementById('race-card-container');
         if (!container) return;
@@ -691,7 +688,12 @@
             const courseList = parseCourses(race.courses);
             courseList.forEach(c => {
                 if(c.trim()) {
-                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">• ${c}</div>`;
+                    let displayC = c;
+                    // 행사일 경우 금액 표시 제거
+                    if (race.itemType === 'event') {
+                        displayC = c.replace(/\s*\(.*?원\)/g, "").trim();
+                    }
+                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">• ${displayC}</div>`;
                 }
             });
         }
@@ -805,8 +807,12 @@
 
             if (isApplied) {
                 cardStyleClass = getCourseStyleClass(appliedCourse);
-                card.className = `member-card`; // 카드 전체 배경은 흰색 유지, 뱃지만 깔끔하게 표시
-                badgeHtml = `<span class="applied-badge ${cardStyleClass}">✅ ${appliedCourse} 신청완료</span>`;
+                card.className = `member-card`;
+                let displayApplied = appliedCourse;
+                if (currentRace.itemType === 'event') {
+                    displayApplied = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
+                }
+                badgeHtml = `<span class="applied-badge ${cardStyleClass}">✅ ${displayApplied} 신청완료</span>`;
             } else {
                 card.className = `member-card`;
                 badgeHtml = `<span style="font-size:0.72rem; background:#f1f5f9; color:#64748b; padding:2px 6px; border-radius:5px; font-weight:700; white-space:nowrap;">미신청</span>`;
@@ -830,11 +836,16 @@
                     availableCoursesWithPrice.forEach(courseWithPrice => {
                         if(!courseWithPrice.trim()) return;
                         const btn = document.createElement('button');
-                        btn.textContent = courseWithPrice;
+                        
+                        let displayBtnText = courseWithPrice;
+                        if (currentRace.itemType === 'event') {
+                            displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
+                        }
+                        btn.textContent = displayBtnText;
                         btn.className = "course-btn-style";
                         
                         const pureCourseName = currentRace.itemType === 'event' 
-                            ? courseWithPrice.trim() 
+                            ? courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim() 
                             : courseWithPrice.replace(/\s*\(.*?\)/g, "").trim();
                         
                         btn.onclick = function() {
@@ -845,8 +856,12 @@
                         btnGroup.appendChild(btn);
                     });
                 } else {
+                    let displaySelected = appliedCourse;
+                    if (currentRace.itemType === 'event') {
+                        displaySelected = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
+                    }
                     const selectedBtn = document.createElement('button');
-                    selectedBtn.textContent = `신청: ${appliedCourse}`;
+                    selectedBtn.textContent = `신청: ${displaySelected}`;
                     selectedBtn.className = `selected-course ${cardStyleClass}`;
                     selectedBtn.disabled = true;
 
@@ -865,8 +880,12 @@
                 }
             } else {
                 if (isApplied) {
+                    let displayFinished = appliedCourse;
+                    if (currentRace.itemType === 'event') {
+                        displayFinished = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
+                    }
                     const selectedBtn = document.createElement('button');
-                    selectedBtn.textContent = `신청완료: ${appliedCourse}`;
+                    selectedBtn.textContent = `신청완료: ${displayFinished}`;
                     selectedBtn.className = `selected-course ${cardStyleClass}`;
                     selectedBtn.disabled = true;
                     btnGroup.appendChild(selectedBtn);
@@ -930,9 +949,10 @@
         const raceApps = globalApplications[selectedRaceId] || {};
         const totalCount = Object.keys(raceApps).length;
 
-        const availableCourses = parseCourses(currentRace.courses).map(c => 
-            currentRace.itemType === 'event' ? c.trim() : c.replace(/\s*\(.*?\)/g, "").trim()
-        ).filter(c => c.length > 0);
+        const availableCourses = parseCourses(currentRace.courses).map(c => {
+            let cleanC = currentRace.itemType === 'event' ? c.replace(/\s*\(.*?원\)/g, "").trim() : c.replace(/\s*\(.*?\)/g, "").trim();
+            return cleanC;
+        }).filter(c => c.length > 0);
 
         const searchInput = document.getElementById('status-search-input');
         const keyword = searchInput ? searchInput.value.trim().toLowerCase() : "";
@@ -944,7 +964,10 @@
             if (keyword && !memberName.toLowerCase().includes(keyword)) {
                 return;
             }
-            const course = raceApps[memberName];
+            let course = raceApps[memberName];
+            if (currentRace.itemType === 'event') {
+                course = course.replace(/\s*\(.*?원\)/g, "").trim();
+            }
             if (!courseGroups[course]) {
                 courseGroups[course] = [];
             }
@@ -1456,24 +1479,20 @@
             chks.forEach((chk, idx) => {
                 if (chk.checked) {
                     let optName = "";
-                    let optPrice = "0";
 
                     if (idx === 0) {
                         optName = document.getElementById('event-opt-1').value.trim() || "참석";
-                        optPrice = document.getElementById('price-ev-1').value.trim() || "0";
                     } else if (idx === 1) {
                         optName = document.getElementById('event-opt-2').value.trim() || "참석(가족동반)";
-                        optPrice = document.getElementById('price-ev-2').value.trim() || "0";
                     } else if (idx === 2) {
                         optName = document.getElementById('ev-custom-1-name').value.trim();
-                        optPrice = document.getElementById('price-ev-custom-1').value.trim() || "0";
                     } else if (idx === 3) {
                         optName = document.getElementById('ev-custom-2-name').value.trim();
-                        optPrice = document.getElementById('price-ev-custom-2').value.trim() || "0";
                     }
 
                     if (optName) {
-                        selectedCourses.push(`${optName}(${optPrice}원)`);
+                        // 행사는 금액 없이 참석 유무 명칭만 저장 (내부적으로 0원 처리)
+                        selectedCourses.push(`${optName}(0원)`);
                     }
                 }
             });
@@ -1758,10 +1777,8 @@
         } else if (type === 'event') {
             const chk = document.getElementById(`chk-ev-custom-${num}`);
             const nameInput = document.getElementById(`ev-custom-${num}-name`);
-            const priceInput = document.getElementById(`price-ev-custom-${num}`);
-            if (chk && nameInput && priceInput) {
+            if (chk && nameInput) {
                 nameInput.disabled = !chk.checked;
-                priceInput.disabled = !chk.checked;
                 if (chk.checked) nameInput.focus();
             }
         }
