@@ -40,10 +40,10 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 10px; color: var(--text-main); -webkit-tap-highlight-color: transparent; }
         .container { max-width: 650px; margin: 0 auto; background: var(--card-bg); padding: 18px; border-radius: 16px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06); border: 1px solid #e2e8f0; }
         
-        .main-title-box { text-align: center; margin: 6px 0 18px 0; }
+        .main-title-box { text-align: center; margin: 6px 0 14px 0; }
         .main-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        /* 💡 탭 메뉴만 상단 고정 (Sticky) */
+        /* 💡 탭 메뉴 상단 고정 (Sticky) */
         .sticky-tab-group {
             position: sticky;
             top: 0;
@@ -57,17 +57,17 @@
         .tab-btn { flex: 1; padding: 11px 4px; font-size: 0.85rem; border: none; background: transparent; color: var(--text-sub); font-weight: 700; border-radius: 9px; cursor: pointer; transition: all 0.2s; text-align: center; white-space: nowrap; }
         .tab-btn.active { background: var(--card-bg); color: var(--accent); box-shadow: 0 3px 10px rgba(0,0,0,0.08); font-weight: 800; }
 
-        .search-box { margin-bottom: 10px; }
-        .search-input { width: 100%; padding: 8px 12px; font-size: 0.88rem; border: 1.5px solid var(--border); border-radius: 8px; background: #ffffff; outline: none; box-sizing: border-box; transition: border-color 0.2s; font-weight: 600; }
+        .search-box { margin-bottom: 8px; }
+        .search-input { width: 100%; padding: 7px 10px; font-size: 0.85rem; border: 1.5px solid var(--border); border-radius: 8px; background: #ffffff; outline: none; box-sizing: border-box; transition: border-color 0.2s; font-weight: 600; }
         .search-input:focus { border-color: var(--accent); }
 
         .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); }
 
-        .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
-        .swipe-container { display: flex; width: 300%; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; align-items: flex-start; }
+        .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.2s ease-out; }
+        .swipe-container { display: flex; width: 300%; transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; align-items: flex-start; }
         
-        .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
+        .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.15s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
         #race-card-container { display: flex; flex-direction: column; gap: 8px; }
@@ -124,11 +124,12 @@
         .ended-section-container.expanded .ended-section-body { display: flex; }
         .ended-section-container.expanded .ended-toggle-icon { transform: rotate(180deg); }
 
-        .member-card { display: flex; flex-direction: column; padding: 8px 10px; margin-bottom: 6px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.15s; }
-        .member-info { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-        .member-name-area { font-weight: 800; font-size: 0.92rem; color: var(--primary); display: flex; align-items: center; gap: 6px; overflow: hidden; }
+        /* 💡 참가신청 박스 높이를 더 컴팩트하게 슬림화 (패딩 및 간격 축소) */
+        .member-card { display: flex; flex-direction: column; padding: 4px 8px; margin-bottom: 3px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 6px; gap: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .member-info { display: flex; justify-content: space-between; align-items: center; gap: 4px; min-height: 22px; }
+        .member-name-area { font-weight: 800; font-size: 0.85rem; color: var(--primary); display: flex; align-items: center; gap: 4px; overflow: hidden; }
         
-        .applied-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+        .applied-badge { font-size: 0.68rem; padding: 1px 5px; border-radius: 4px; font-weight: 800; display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
         .applied-badge.style-full { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
         .applied-badge.style-half { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
         .applied-badge.style-10k { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
@@ -137,8 +138,9 @@
         .applied-badge.style-family { background: #f3e8ff; color: #9333ea; border: 1px solid #e9d5ff; }
         .applied-badge.style-etc { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
 
-        .btn-group { display: flex; gap: 5px; width: 100%; flex-wrap: wrap; }
-        .btn-group button { flex: 1; min-width: 80px; padding: 6px 4px; font-size: 0.76rem; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 800; text-align: center; transition: all 0.15s; }
+        /* 💡 버튼 높이 및 패딩을 슬림하게 축소 */
+        .btn-group { display: flex; gap: 3px; width: 100%; flex-wrap: wrap; margin-bottom: 2px; }
+        .btn-group button { flex: 1; min-width: 60px; padding: 3px 2px; font-size: 0.72rem; border: 1.5px solid var(--border); border-radius: 4px; cursor: pointer; font-weight: 800; text-align: center; }
         
         .style-full { color: #6b21a8 !important; }
         .style-half { color: #b45309 !important; }
@@ -151,8 +153,8 @@
         .course-btn-style { background: #ffffff; color: var(--text-main); border-color: #cbd5e1; }
         .course-btn-style:hover { background: #f8fafc; border-color: var(--accent); color: var(--accent); }
 
-        button.selected-course { font-weight: 800; flex: 1.5 !important; cursor: default; font-size: 0.78rem !important; background: rgba(255,255,255,0.95); padding: 6px 4px !important; }
-        button.btn-cancel { background: #fef2f2 !important; color: var(--danger) !important; border-color: #fecaca !important; font-weight: 800; flex: 0.6 !important; padding: 6px 4px !important; }
+        button.selected-course { font-weight: 800; flex: 1.5 !important; cursor: default; font-size: 0.72rem !important; background: rgba(255,255,255,0.95); padding: 3px 2px !important; }
+        button.btn-cancel { background: #fef2f2 !important; color: var(--danger) !important; border-color: #fecaca !important; font-weight: 800; flex: 0.5 !important; padding: 3px 2px !important; }
 
         .admin-panel { background: var(--primary); color: white; padding: 16px; border-radius: 14px; margin-top: 24px; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); }
         .admin-panel h3 { margin: 12px 0 8px 0; font-size: 0.95rem; color: #38bdf8; }
@@ -182,7 +184,8 @@
 <div class="container">
     <div class="main-title-box">
         <div class="main-title">복사골마라톤클럽 접수 시스템</div>
-        <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
+        <!-- 💡 로딩 상태 문구를 숨기거나 간소화하여 즉시 렌더링 체감 제공 -->
+        <div id="sync-status" class="sync-loading" style="display:none;"></div>
     </div>
     
     <!-- 1. 안내 카드 영역 (일반 스크롤) -->
@@ -190,7 +193,7 @@
         <div id="race-card-container"></div>
     </div>
 
-    <!-- 2. 탭 버튼 영역 (💡 상단 고정 Sticky 적용) -->
+    <!-- 2. 탭 버튼 영역 (상단 고정 Sticky) -->
     <div class="sticky-tab-group">
         <div class="tab-group">
             <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
@@ -201,15 +204,15 @@
 
     <!-- 3. 패널 영역 -->
     <div class="content-card-box">
-        <div class="swipe-wrapper" id="swipe-wrapper">
+        <div class="swipe-wrapper" id="swipe-wrapper" style="height: auto;">
             <div id="swipe-container" class="swipe-container">
                 <!-- 1번 패널: 접수 현황 -->
                 <div class="swipe-pane active-pane" id="pane-status">
-                    <div id="status-summary-box" style="margin-bottom: 12px;"></div>
+                    <div id="status-summary-box" style="margin-bottom: 8px;"></div>
                     <div class="search-box">
                         <input type="text" id="status-search-input" class="search-input" placeholder="🔍 신청자 이름 검색 (예: 홍길동)" oninput="renderStatusTab()">
                     </div>
-                    <div id="status-detail-list" style="margin-top: 10px;"></div>
+                    <div id="status-detail-list" style="margin-top: 6px;"></div>
                 </div>
                 <!-- 2번 패널: 참가 신청 -->
                 <div class="swipe-pane" id="pane-apply">
@@ -221,10 +224,10 @@
                 <!-- 3번 패널: 전체 회원현황 -->
                 <div class="swipe-pane" id="pane-members">
                     <div id="member-stats-summary"></div>
-                    <div class="search-box" style="margin-top: 12px;">
+                    <div class="search-box" style="margin-top: 10px;">
                         <input type="text" id="members-search-input" class="search-input" placeholder="🔍 전체 회원 이름 검색 (예: 홍길동)" oninput="renderAllMembersTab()">
                     </div>
-                    <div id="all-member-list-wrapper" style="margin-top: 12px;"></div>
+                    <div id="all-member-list-wrapper" style="margin-top: 10px;"></div>
                 </div>
             </div>
         </div>
@@ -762,7 +765,7 @@
 
         const ended = isRaceEnded(currentRace);
         if (ended) {
-            wrapper.innerHTML = "<div style='text-align:center; padding:15px; color:#dc2626; font-weight:700; background:#fef2f2; border-radius:8px; margin-bottom:10px;'>🔒 기한이 종료된 항목이므로 신청 및 변경이 불가합니다.</div>";
+            wrapper.innerHTML = "<div style='text-align:center; padding:12px; color:#dc2626; font-weight:700; background:#fef2f2; border-radius:6px; margin-bottom:8px; font-size:0.82rem;'>🔒 기한이 종료된 항목이므로 신청 및 변경이 불가합니다.</div>";
         }
 
         const raceApps = globalApplications[selectedRaceId] || {};
@@ -790,7 +793,7 @@
         });
 
         if (sortedMembers.length === 0) {
-            wrapper.innerHTML = "<div style='text-align:center; padding:25px; color:#94a3b8;'>검색된 회원이 없습니다.</div>";
+            wrapper.innerHTML = "<div style='text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;'>검색된 회원이 없습니다.</div>";
             updateSwipeWrapperHeight();
             return;
         }
@@ -812,14 +815,14 @@
                 badgeHtml = `<span class="applied-badge ${cardStyleClass}">✅ ${displayApplied} 신청완료</span>`;
             } else {
                 card.className = `member-card`;
-                badgeHtml = `<span style="font-size:0.72rem; background:#f1f5f9; color:#64748b; padding:2px 6px; border-radius:5px; font-weight:700; white-space:nowrap;">미신청</span>`;
+                badgeHtml = `<span style="font-size:0.68rem; background:#f1f5f9; color:#64748b; padding:1px 4px; border-radius:4px; font-weight:700; white-space:nowrap;">미신청</span>`;
             }
 
             card.innerHTML = `
                 <div class="member-info">
                     <div class="member-name-area">
-                        <span style="color:#64748b; font-weight:700; min-width:20px;">${index + 1}.</span> 
-                        <strong style="font-size:0.92rem; white-space:nowrap;">${member.name}</strong>
+                        <span style="color:#64748b; font-weight:700; min-width:18px;">${index + 1}.</span> 
+                        <strong style="font-size:0.85rem; white-space:nowrap;">${member.name}</strong>
                     </div>
                     <div>${badgeHtml}</div>
                 </div>
@@ -973,19 +976,19 @@
         let courseSummaryStr = `(${courseSummaryTextArr.join(' / ')})`;
 
         let summaryHtml = `
-            <div style="background: transparent; border: none; padding: 4px 10px; text-align: center; margin-bottom: 2px;">
-                <div style="font-weight: 800; font-size: 1.02rem; color: var(--primary); margin-bottom: 2px;">[${currentRace.name}]</div>
-                <div style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
-                    총신청인원 <strong style="color: var(--accent); font-size: 1.15rem;">${totalCount}</strong>명
+            <div style="background: transparent; border: none; padding: 2px 8px; text-align: center; margin-bottom: 2px;">
+                <div style="font-weight: 800; font-size: 1.0rem; color: var(--primary); margin-bottom: 2px;">[${currentRace.name}]</div>
+                <div style="font-size: 0.92rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
+                    총신청인원 <strong style="color: var(--accent); font-size: 1.1rem;">${totalCount}</strong>명
                 </div>
-                <div style="font-size: 0.82rem; font-weight: 700; color: #334155;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: #334155;">
                     ${courseSummaryStr}
                 </div>
             </div>
         `;
         summaryBox.innerHTML = summaryHtml;
 
-        let detailHtml = `<div style="font-weight:800; font-size:0.92rem; margin-top:6px; margin-bottom:6px; color:var(--primary);">항목별 신청 현황</div>`;
+        let detailHtml = `<div style="font-weight:800; font-size:0.9rem; margin-top:4px; margin-bottom:4px; color:var(--primary);">항목별 신청 현황</div>`;
         detailHtml += `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap:6px;">`;
 
         activeCourses.forEach(courseName => {
@@ -997,8 +1000,8 @@
             let membersTagsHtml = "";
             membersInCourse.sort((a, b) => a.localeCompare(b, 'ko')).forEach((mName, idx) => {
                 membersTagsHtml += `
-                    <div style="display:flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1; padding:4px 6px; border-radius:5px; font-size:0.79rem; font-weight:800; color:var(--text-main); margin-bottom:3px;">
-                        <span style="color:#64748b; font-weight:700; min-width:18px;">${idx + 1}.</span> 
+                    <div style="display:flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1; padding:3px 5px; border-radius:4px; font-size:0.77rem; font-weight:800; color:var(--text-main); margin-bottom:2px;">
+                        <span style="color:#64748b; font-weight:700; min-width:16px;">${idx + 1}.</span> 
                         <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${mName}</span>
                     </div>
                 `;
@@ -1006,9 +1009,9 @@
 
             detailHtml += `
                 <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:8px; padding:6px; display:flex; flex-direction:column; gap:4px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e2e8f0; padding-bottom:4px;">
-                        <span style="font-weight:800; font-size:0.82rem;" class="${badgeStyle}">• ${courseName}</span>
-                        <span style="font-size:0.7rem; font-weight:800; background:#e2e8f0; color:#334155; padding:2px 4px; border-radius:4px;">${membersInCourse.length}명</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e2e8f0; padding-bottom:3px;">
+                        <span style="font-weight:800; font-size:0.8rem;" class="${badgeStyle}">• ${courseName}</span>
+                        <span style="font-size:0.68rem; font-weight:800; background:#e2e8f0; color:#334155; padding:1px 4px; border-radius:3px;">${membersInCourse.length}명</span>
                     </div>
                     <div style="display:flex; flex-direction:column; gap:2px;">
                         ${membersTagsHtml}
@@ -1064,9 +1067,9 @@
             let count = ageGroupCounts[ag] || 0;
             let isDanger = (ag === "기타/미지정" && count > 0);
             ageGridHtml += `
-                <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:7px; padding:6px 4px; text-align:center; display:flex; flex-direction:column; gap:2px;">
-                    <div style="font-size:0.73rem; font-weight:700; color:var(--text-sub);">${ag}</div>
-                    <div style="font-size:0.92rem; font-weight:800; color:${isDanger ? 'var(--danger)' : 'var(--primary)'};">${count}명</div>
+                <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:5px 4px; text-align:center; display:flex; flex-direction:column; gap:1px;">
+                    <div style="font-size:0.71rem; font-weight:700; color:var(--text-sub);">${ag}</div>
+                    <div style="font-size:0.9rem; font-weight:800; color:${isDanger ? 'var(--danger)' : 'var(--primary)'};">${count}명</div>
                 </div>
             `;
         });
@@ -1074,37 +1077,33 @@
         let unassignedAlertHtml = "";
         if (unassignedMembers.length > 0) {
             unassignedAlertHtml = `
-                <div style="background:#fee2e2; border:1.5px solid #fca5a5; border-radius:8px; padding:8px 10px; margin-top:6px; font-size:0.8rem; color:#991b1b; font-weight:700; line-height:1.4; text-align:left;">
-                    ⚠️ 생년월일 미지정 또는 형식 오류 회원 (${unassignedMembers.length}명): <br>
-                    <span style="font-weight:800; color:#b91c1c;">${unassignedMembers.join(', ')}</span>
+                <div style="background:#fee2e2; border:1.5px solid #fca5a5; border-radius:6px; padding:6px 8px; margin-top:4px; font-size:0.78rem; color:#991b1b; font-weight:700; line-height:1.3; text-align:left;">
+                    ⚠️ 생년월일 미지정 회원 (${unassignedMembers.length}명): <span style="font-weight:800; color:#b91c1c;">${unassignedMembers.join(', ')}</span>
                 </div>
             `;
         }
 
         summaryBox.innerHTML = `
-            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:4px;">
-                <div class="stat-card-grid" style="grid-template-columns: 1fr; margin-bottom:0;">
-                    <div class="stat-box" style="background:#ffffff; border:1.5px solid var(--border); padding:10px; text-align:center;">
-                        <div class="stat-box-title" style="font-size:0.82rem; color:var(--text-sub); font-weight:800;">총 회원수</div>
-                        <div class="stat-box-val" style="font-size:1.3rem; color:var(--accent); font-weight:800;">${totalCount}명</div>
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:2px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                    <div class="stat-box" style="background:#ffffff; border:1.5px solid var(--border); padding:8px; text-align:center; border-radius:8px;">
+                        <div class="stat-box-title" style="font-size:0.78rem; color:var(--text-sub); font-weight:800;">총 회원수</div>
+                        <div class="stat-box-val" style="font-size:1.15rem; color:var(--accent); font-weight:800;">${totalCount}명</div>
+                    </div>
+                    <div class="stat-box" style="background:#ffffff; border:1.5px solid var(--border); padding:8px; text-align:center; border-radius:8px;">
+                        <div class="stat-box-title" style="font-size:0.78rem; color:var(--text-sub); font-weight:800;">성별 분포</div>
+                        <div class="stat-box-val" style="font-size:0.98rem; color:var(--primary); font-weight:800;">남 ${maleCount} / 여 ${femaleCount}</div>
                     </div>
                 </div>
 
-                <div class="stat-card-grid" style="grid-template-columns: 1fr; margin-bottom:0;">
-                    <div class="stat-box" style="background:#ffffff; border:1.5px solid var(--border); padding:10px; text-align:center;">
-                        <div class="stat-box-title" style="font-size:0.82rem; color:var(--text-sub); font-weight:800;">성별 분포</div>
-                        <div class="stat-box-val" style="font-size:1.1rem; color:var(--primary); font-weight:800;">남 ${maleCount}명 / 여 ${femaleCount}명</div>
-                    </div>
-                </div>
-
-                <div style="background:#ffffff; border:1.5px solid var(--border); border-radius:10px; padding:10px; text-align:center;">
-                    <div style="font-size:0.82rem; font-weight:800; color:var(--primary); margin-bottom:2px;">연대별 인원 분포</div>
-                    <div style="font-size:0.72rem; font-weight:700; color:var(--accent); margin-bottom:6px;">(${baseDateString} 만 나이 기준)</div>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; margin-bottom:6px;">
+                <div style="background:#ffffff; border:1.5px solid var(--border); border-radius:8px; padding:8px; text-align:center;">
+                    <div style="font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:1px;">연대별 인원 분포</div>
+                    <div style="font-size:0.7rem; font-weight:700; color:var(--accent); margin-bottom:4px;">(${baseDateString} 만 나이 기준)</div>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:4px; margin-bottom:4px;">
                         ${ageGridHtml}
                     </div>
-                    <div style="border-top:1.5px solid #e2e8f0; padding-top:6px; margin-top:4px; font-size:0.85rem; font-weight:800; color:var(--text-main);">
-                        전체 회원 평균 나이: <span style="color:var(--accent); font-size:1.0rem;">만 ${averageAge}세</span>
+                    <div style="border-top:1.5px solid #e2e8f0; padding-top:4px; margin-top:3px; font-size:0.82rem; font-weight:800; color:var(--text-main);">
+                        전체 회원 평균 나이: <span style="color:var(--accent); font-size:0.95rem;">만 ${averageAge}세</span>
                     </div>
                     ${unassignedAlertHtml}
                 </div>
@@ -1119,28 +1118,28 @@
             return name.toLowerCase().includes(keyword);
         });
 
-        let listHtml = `<div style="font-weight:800; font-size:0.92rem; margin-bottom:6px; color:var(--primary);">회원 명부 검색 결과 (${filteredMembers.length}명)</div>`;
+        let listHtml = `<div style="font-weight:800; font-size:0.9rem; margin-bottom:4px; color:var(--primary);">회원 명부 검색 결과 (${filteredMembers.length}명)</div>`;
 
         if (filteredMembers.length === 0) {
-            listHtml += `<div style='text-align:center; padding:20px; color:#64748b; font-weight:700;'>검색된 회원이 없습니다.</div>`;
+            listHtml += `<div style='text-align:center; padding:15px; color:#64748b; font-weight:700; font-size:0.85rem;'>검색된 회원이 없습니다.</div>`;
         } else {
             filteredMembers.forEach((m, index) => {
                 let age = calculateAge(m);
-                let ageDisplay = age !== null ? `<span style="font-size:0.72rem; font-weight:700; color:#1d4ed8; background:#eff6ff; border:1px solid #bfdbfe; padding:1px 4px; border-radius:4px; margin-left:4px;">만 ${age}세</span>` : '';
+                let ageDisplay = age !== null ? `<span style="font-size:0.7rem; font-weight:700; color:#1d4ed8; background:#eff6ff; border:1px solid #bfdbfe; padding:1px 3px; border-radius:3px; margin-left:3px;">만 ${age}세</span>` : '';
 
                 listHtml += `
-                    <div style="display:flex; flex-direction:column; background:#ffffff; padding:8px 10px; border-radius:8px; margin-bottom:5px; border:1.5px solid #cbd5e1; gap:2px;">
+                    <div style="display:flex; flex-direction:column; background:#ffffff; padding:6px 8px; border-radius:6px; margin-bottom:4px; border:1.5px solid #cbd5e1; gap:1px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-                                <span style="color:#64748b; font-weight:700; min-width:20px;">${index + 1}.</span>
-                                <strong style="font-size:0.92rem; color:var(--primary);">${m.name}</strong>
+                                <span style="color:#64748b; font-weight:700; min-width:18px;">${index + 1}.</span>
+                                <strong style="font-size:0.88rem; color:var(--primary);">${m.name}</strong>
                                 ${ageDisplay}
                             </div>
-                            <div style="font-weight:800; color:var(--accent); background:#eff6ff; padding:2px 6px; border-radius:4px; font-size:0.72rem; white-space:nowrap;">
+                            <div style="font-weight:800; color:var(--accent); background:#eff6ff; padding:1px 5px; border-radius:3px; font-size:0.7rem; white-space:nowrap;">
                                 👕 ${m.size}호
                             </div>
                         </div>
-                        <div style="font-size:0.74rem; color:#475569; font-weight:700; padding-left:24px; display:flex; gap:8px; flex-wrap:wrap; line-height:1.2;">
+                        <div style="font-size:0.72rem; color:#475569; font-weight:700; padding-left:22px; display:flex; gap:6px; flex-wrap:wrap; line-height:1.2;">
                             <span>생일: ${m.birth}</span>
                             <span>성별: ${m.gender}</span>
                             <span>연락처: ${m.phone}</span>
