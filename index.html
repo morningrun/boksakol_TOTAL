@@ -25,7 +25,7 @@
 
     <style>
         :root {
-            --primary: int #0f172a;        
+            --primary: #0f172a;        
             --accent: #2563eb;          
             --accent-hover: #1d4ed8;
             --success: #059669;        
@@ -143,7 +143,7 @@
         <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
     </div>
     
-    <!-- 1. 안내 카드 영역 (마라톤/행사 공용) -->
+    <!-- 1. 안내 카드 영역 -->
     <div class="race-content-card-box" id="race-selector-wrapper">
         <div id="race-card-container"></div>
     </div>
@@ -268,7 +268,7 @@
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분1" id="chk-ev-custom-1"> 여분1:</label>
-                        <input type="text" id="ev-custom-1-name" placeholder="명칭 (예: 불참(사유))" style="width:140px; text-align:left;" disabled>
+                        <input type="text" id="ev-custom-1-name" placeholder="명칭 (예: 참석(가족동반))" style="width:140px; text-align:left;" disabled>
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분2" id="chk-ev-custom-2"> 여분2:</label>
@@ -334,7 +334,7 @@
     let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
     let activePaneIndex = 0;
 
-    const courseRank = { "풀코ส": 1, "하프": 2, "10km": 3, "5km": 4, "참석": 1, "불참": 2 };
+    const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
 
     function getCourseRank(course) {
         if (!course) return 99;
@@ -668,7 +668,6 @@
         const currentRace = globalRaces.find(r => r.id === selectedRaceId);
         if (!currentRace) return;
 
-        // 종료된 경우 참가 신청/취소 차단 안내 메시지 추가
         const ended = isRaceEnded(currentRace);
         if (ended) {
             wrapper.innerHTML = "<div style='text-align:center; padding:15px; color:#dc2626; font-weight:700; background:#fef2f2; border-radius:8px; margin-bottom:10px;'>🔒 기한이 종료된 항목이므로 신청 및 변경이 불가합니다.</div>";
@@ -742,7 +741,11 @@
                         const btn = document.createElement('button');
                         btn.textContent = courseWithPrice;
                         btn.className = "course-btn-style";
-                        const pureCourseName = courseWithPrice.replace(/\s*\(.*?\)/g, "").trim();
+                        
+                        // 💡 수정 포인트: 행사(event)일 경우 괄호(가족동반 등)를 지우지 않고 그대로 유지
+                        const pureCourseName = currentRace.itemType === 'event' 
+                            ? courseWithPrice.trim() 
+                            : courseWithPrice.replace(/\s*\(.*?\)/g, "").trim();
                         
                         btn.onclick = function() {
                             if (confirm(`[${member.name}]님을 [${currentRace.name}] '${pureCourseName}'(으)로 신청하시겠습니까?`)) {
@@ -837,7 +840,10 @@
         const raceApps = globalApplications[selectedRaceId] || {};
         const totalCount = Object.keys(raceApps).length;
 
-        const availableCourses = parseCourses(currentRace.courses).map(c => c.replace(/\s*\(.*?\)/g, "").trim());
+        // 💡 수정 포인트: status 탭에서도 행사일 경우 괄호를 지우지 않도록 처리
+        const availableCourses = parseCourses(currentRace.courses).map(c => 
+            currentRace.itemType === 'event' ? c.trim() : c.replace(/\s*\(.*?\)/g, "").trim()
+        );
 
         const searchInput = document.getElementById('status-search-input');
         const keyword = searchInput ? searchInput.value.trim().toLowerCase() : "";
@@ -1188,7 +1194,7 @@
             document.getElementById('ev-custom-2-name').disabled = true;
 
             parts.forEach(part => {
-                let pName = part.replace(/\s*\(.*?\)/g, "").trim();
+                let pName = part.trim();
                 chks.forEach(chk => {
                     if (chk.value === pName) chk.checked = true;
                 });
