@@ -135,7 +135,7 @@
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
         .race-card-item.ended-race.expanded .race-card-body { background: #f1f5f9; }
 
-        /* [추가] 나머지 하단 대회 박스들이 부드럽게 애니메이션되며 숨겨지고 나타나도록 처리하는 스타일 */
+        /* 하단 대회 박스들 애니메이션 숨김/표시 처리 */
         #other-races-wrapper {
             display: flex;
             flex-direction: column;
@@ -417,6 +417,7 @@
     let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
     let activePaneIndex = 0;
     
+    // 하단 대회 박스들의 숨김 여부 상태 관리 변수
     let isOtherRacesHidden = false;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
@@ -679,6 +680,7 @@
 
         container.innerHTML = '';
 
+        // 선택된(클릭한) 항목이 맨 위로 오도록 정렬
         let sortedRaces = [...globalRaces].sort((a, b) => {
             if (a.id === selectedRaceId) return -1;
             if (b.id === selectedRaceId) return 1;
@@ -703,7 +705,7 @@
             container.appendChild(card);
         }
 
-        // 2. 나머지 활성 대회 카드들 렌더링 (애니메이션 토글 적용)
+        // 2. 나머지 하단 활성 대회 카드들 렌더링 (애니메이션 토글 적용)
         const othersWrapper = document.createElement('div');
         othersWrapper.id = 'other-races-wrapper';
         if (isOtherRacesHidden) {
@@ -850,11 +852,13 @@
             </div>
         `;
         
-        // [수정] 최상단 박스 하단창 또는 박스 전체를 클릭했을 때의 애니메이션 토글 동작
+        // [핵심 수정] 
+        // 1. 하단에 있던 박스를 클릭하면 -> 그 박스가 최상단으로 올라오고(selectedRaceId 변경), 하단 목록은 보이게 초기화됨.
+        // 2. 이미 맨 위에 올라와 있는(최상단) 박스를 클릭하면 -> 하단 대회창들이 애니메이션과 함께 숨겨지거나 다시 나타남(토글).
         card.onclick = function(e) {
             e.stopPropagation();
             if (isTopMost) {
-                // 맨 상단 박스를 클릭했을 때 하단 대회창들을 애니메이션과 함께 숨기거나 나타나게 함
+                // 이미 최상단인 박스를 누른 경우 -> 하단 목록 숨김/표시 토글
                 isOtherRacesHidden = !isOtherRacesHidden;
                 const wrapper = document.getElementById('other-races-wrapper');
                 if (wrapper) {
@@ -863,9 +867,10 @@
                     } else {
                         wrapper.classList.remove('hidden-animated');
                     }
-                    setTimeout(updateSwipeWrapperHeight, 400); // 애니메이션 완료 후 높이 재조정
+                    setTimeout(updateSwipeWrapperHeight, 400);
                 }
             } else {
+                // 하단에 있던 다른 박스를 누른 경우 -> 그 박스가 즉시 맨 위로 올라오고 하단 목록이 펼쳐진 상태가 됨
                 selectedRaceId = race.id;
                 isOtherRacesHidden = false;
                 localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
