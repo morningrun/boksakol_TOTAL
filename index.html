@@ -40,20 +40,10 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 10px; color: var(--text-main); -webkit-tap-highlight-color: transparent; }
         .container { max-width: 650px; margin: 0 auto; background: var(--card-bg); padding: 18px; border-radius: 16px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06); border: 1px solid #e2e8f0; }
         
-        .main-title-box { text-align: center; margin: 6px 0 12px 0; }
+        .main-title-box { text-align: center; margin: 6px 0 18px 0; }
         .main-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        /* 상단 고정 영역 래퍼 (대회 카드 + 탭 메뉴) */
-        .sticky-header-group {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--card-bg);
-            padding-top: 4px;
-            padding-bottom: 6px;
-        }
-
-        .tab-group { display: flex; gap: 6px; margin-bottom: 12px; background: #cbd5e1; padding: 4px; border-radius: 12px; backdrop-filter: blur(8px); }
+        .tab-group { display: flex; gap: 6px; margin-bottom: 16px; background: #cbd5e1; padding: 4px; border-radius: 12px; }
         .tab-btn { flex: 1; padding: 11px 4px; font-size: 0.85rem; border: none; background: transparent; color: var(--text-sub); font-weight: 700; border-radius: 9px; cursor: pointer; transition: all 0.2s; text-align: center; white-space: nowrap; }
         .tab-btn.active { background: var(--card-bg); color: var(--accent); box-shadow: 0 3px 10px rgba(0,0,0,0.08); font-weight: 800; }
 
@@ -62,7 +52,7 @@
         .search-input:focus { border-color: var(--accent); }
 
         .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); }
+        .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); }
 
         .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
         .swipe-container { display: flex; width: 300%; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; align-items: flex-start; }
@@ -185,23 +175,20 @@
         <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
     </div>
     
-    <!-- 스크롤 시 상단 고정되는 영역 (대회 카드 + 탭 메뉴) -->
-    <div class="sticky-header-group">
-        <!-- 1. 안내 카드 영역 -->
-        <div class="race-content-card-box" id="race-selector-wrapper" style="margin-bottom: 6px;">
-            <div id="race-card-container"></div>
-        </div>
+    <!-- 1. 안내 카드 영역 -->
+    <div class="race-content-card-box" id="race-selector-wrapper">
+        <div id="race-card-container"></div>
+    </div>
 
-        <!-- 2. 탭 버튼 영역 -->
-        <div class="tab-group" style="margin-bottom: 0;">
-            <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
-            <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
-            <button class="tab-btn" id="tab-members-btn">전체 회원현황</button>
-        </div>
+    <!-- 2. 탭 버튼 영역 -->
+    <div class="tab-group">
+        <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
+        <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
+        <button class="tab-btn" id="tab-members-btn">전체 회원현황</button>
     </div>
 
     <!-- 3. 패널 영역 -->
-    <div class="content-card-box" style="margin-top: 10px;">
+    <div class="content-card-box">
         <div class="swipe-wrapper" id="swipe-wrapper">
             <div id="swipe-container" class="swipe-container">
                 <!-- 1번 패널: 접수 현황 -->
@@ -958,12 +945,10 @@
             }
         });
 
-        // 신청자 0명인 코스 제외한 목록 생성
         let activeCourses = availableCourses.filter(cName => {
             return (courseGroups[cName] || []).length > 0;
         });
 
-        // 만약 전체 신청자가 0명이라 활성 코스가 없다면, 기본 코스들을 모두 보여주거나 안내 표시
         if (activeCourses.length === 0) {
             activeCourses = availableCourses;
         }
@@ -991,10 +976,9 @@
         let detailHtml = `<div style="font-weight:800; font-size:0.92rem; margin-top:6px; margin-bottom:6px; color:var(--primary);">항목별 신청 현황</div>`;
         detailHtml += `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap:6px;">`;
 
-        // 💡 신청자 0명인 코스는 아예 화면에 표출하지 않음
         activeCourses.forEach(courseName => {
             const membersInCourse = courseGroups[courseName] || [];
-            if (membersInCourse.length === 0) return; // 0명이면 건너뜀
+            if (membersInCourse.length === 0) return;
 
             const badgeStyle = getCourseStyleClass(courseName);
 
@@ -1085,7 +1069,6 @@
             `;
         }
 
-        // 💡 총 회원수 및 성별분포 텍스트 중앙 정렬(text-align: center) 및 굵게(font-weight: 800) 처리
         summaryBox.innerHTML = `
             <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:4px;">
                 <div class="stat-card-grid" style="grid-template-columns: 1fr; margin-bottom:0;">
