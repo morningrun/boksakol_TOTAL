@@ -9,14 +9,14 @@
     <meta property="og:title" content="복사골마라톤클럽 접수 시스템">
     <meta property="og:description" content="복사골마라톤클럽 대회 및 행사 참가 현황을 확인하세요!">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://morningrun.github.io/RACE/">
-    <meta property="og:image" content="https://raw.githubusercontent.com/morningrun/RACE/main/boksagol_event_registration_og.jpg">
+    <meta property="og:url" content="https://morningrun.github.io/boksakol_TOTAL/">
+    <meta property="og:image" content="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <!-- 스마트폰 홈 화면 추가 아이콘 및 앱 설정 -->
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/morningrun/RACE/main/boksagol_event_registration_og.jpg">
-    <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/morningrun/RACE/main/boksagol_event_registration_og.jpg">
+    <link rel="apple-touch-icon" href="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
+    <link rel="icon" type="image/png" href="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
     <link rel="manifest" href="./manifest.json">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,31 +37,47 @@
             --border: #cbd5e1;
         }
 
+        /* 부드러운 스크롤 애니메이션 활성화 */
+        html {
+            scroll-behavior: smooth;
+        }
+
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 10px; color: var(--text-main); -webkit-tap-highlight-color: transparent; }
         .container { max-width: 650px; margin: 0 auto; background: var(--card-bg); padding: 18px; border-radius: 16px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06); border: 1px solid #e2e8f0; }
         
-        .main-title-box { text-align: center; margin: 6px 0 18px 0; }
+        .main-title-box { text-align: center; margin: 6px 0 14px 0; }
         .main-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        .tab-group { display: flex; gap: 6px; margin-bottom: 16px; background: #cbd5e1; padding: 4px; border-radius: 12px; position: sticky; top: 8px; z-index: 10; backdrop-filter: blur(8px); }
+        /* 탭 메뉴 상단 고정 (Sticky) */
+        .sticky-tab-group {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--card-bg);
+            padding-top: 4px;
+            padding-bottom: 8px;
+        }
+
+        .tab-group { display: flex; gap: 6px; background: #cbd5e1; padding: 4px; border-radius: 12px; backdrop-filter: blur(8px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .tab-btn { flex: 1; padding: 11px 4px; font-size: 0.85rem; border: none; background: transparent; color: var(--text-sub); font-weight: 700; border-radius: 9px; cursor: pointer; transition: all 0.2s; text-align: center; white-space: nowrap; }
         .tab-btn.active { background: var(--card-bg); color: var(--accent); box-shadow: 0 3px 10px rgba(0,0,0,0.08); font-weight: 800; }
 
-        .search-box { margin-bottom: 10px; }
-        .search-input { width: 100%; padding: 8px 12px; font-size: 0.88rem; border: 1.5px solid var(--border); border-radius: 8px; background: #ffffff; outline: none; box-sizing: border-box; transition: border-color 0.2s; font-weight: 600; }
+        .search-box { margin-bottom: 8px; }
+        .search-input { width: 100%; padding: 7px 10px; font-size: 0.85rem; border: 1.5px solid var(--border); border-radius: 8px; background: #ffffff; outline: none; box-sizing: border-box; transition: border-color 0.2s; font-weight: 600; }
         .search-input:focus { border-color: var(--accent); }
 
         .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); }
 
-        .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
-        .swipe-container { display: flex; width: 300%; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; align-items: flex-start; }
+        .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.2s ease-out; }
+        .swipe-container { display: flex; width: 300%; transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; align-items: flex-start; }
         
-        .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
+        .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.15s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
-        /* 아코디언 카드 스타일 및 부드러운 위치 이동 전환 */
         #race-card-container { display: flex; flex-direction: column; gap: 8px; }
+
+        /* FLIP 애니메이션이 원활하게 적용되도록 설정된 카드 스타일 */
         .race-card-item { 
             background: #ffffff; 
             border: 2px solid #cbd5e1; 
@@ -81,14 +97,22 @@
         .race-card-item:not(.selected-target) {
             border-color: #d1d5db !important;
             background: #fcfcfc;
-            opacity: 0.8;
+            opacity: 0.9;
         }
         .race-card-item:not(.selected-target):hover {
-            opacity: 0.95;
+            opacity: 1;
             border-color: #9ca3af !important;
         }
 
-        .race-card-item.ended-race { opacity: 0.55; }
+        /* 종료된 대회 박스 회색 처리 */
+        .race-card-item.ended-race { 
+            background: #f1f5f9 !important; 
+            border-color: #cbd5e1 !important; 
+            opacity: 0.75; 
+        }
+        .race-card-item.ended-race .race-card-header {
+            background: #e2e8f0 !important;
+        }
         
         .race-card-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; background: #ffffff; }
         .race-card-item.selected-target .race-card-header { background: #eff6ff; }
@@ -101,13 +125,17 @@
 
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-        .status-badge.ended { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+        .status-badge.ended { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
+
+        .dday-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .dday-badge.d-day { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 
         .race-toggle-icon { font-size: 0.8rem; color: #64748b; transition: transform 0.2s ease; flex-shrink: 0; padding-left: 8px; }
         .race-card-item.expanded .race-toggle-icon { transform: rotate(180deg); }
 
         .race-card-body { padding: 0 14px 12px 14px; display: none; border-top: 1px solid #e2e8f0; margin-top: 2px; padding-top: 10px; background: #ffffff; }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
+        .race-card-item.ended-race.expanded .race-card-body { background: #f1f5f9; }
 
         .ended-section-container { margin-top: 10px; border: 2px dashed #94a3b8; border-radius: 12px; background: #ffffff; overflow: hidden; padding: 6px; }
         .ended-section-header { padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 800; font-size: 0.9rem; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; user-select: none; }
@@ -115,12 +143,11 @@
         .ended-section-container.expanded .ended-section-body { display: flex; }
         .ended-section-container.expanded .ended-toggle-icon { transform: rotate(180deg); }
 
-        /* 회원 카드 컴팩트 스타일 */
-        .member-card { display: flex; flex-direction: column; padding: 8px 10px; margin-bottom: 6px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.15s; }
-        .member-info { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-        .member-name-area { font-weight: 800; font-size: 0.92rem; color: var(--primary); display: flex; align-items: center; gap: 6px; overflow: hidden; }
+        .member-card { display: flex; flex-direction: column; padding: 4px 8px; margin-bottom: 3px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 6px; gap: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .member-info { display: flex; justify-content: space-between; align-items: center; gap: 4px; min-height: 22px; }
+        .member-name-area { font-weight: 800; font-size: 0.85rem; color: var(--primary); display: flex; align-items: center; gap: 4px; overflow: hidden; }
         
-        .applied-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+        .applied-badge { font-size: 0.68rem; padding: 1px 5px; border-radius: 4px; font-weight: 800; display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
         .applied-badge.style-full { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
         .applied-badge.style-half { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
         .applied-badge.style-10k { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
@@ -129,8 +156,8 @@
         .applied-badge.style-family { background: #f3e8ff; color: #9333ea; border: 1px solid #e9d5ff; }
         .applied-badge.style-etc { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
 
-        .btn-group { display: flex; gap: 5px; width: 100%; flex-wrap: wrap; }
-        .btn-group button { flex: 1; min-width: 80px; padding: 6px 4px; font-size: 0.76rem; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 800; text-align: center; transition: all 0.15s; }
+        .btn-group { display: flex; gap: 3px; width: 100%; flex-wrap: wrap; margin-bottom: 2px; }
+        .btn-group button { flex: 1; min-width: 60px; padding: 3px 2px; font-size: 0.72rem; border: 1.5px solid var(--border); border-radius: 4px; cursor: pointer; font-weight: 800; text-align: center; }
         
         .style-full { color: #6b21a8 !important; }
         .style-half { color: #b45309 !important; }
@@ -143,13 +170,8 @@
         .course-btn-style { background: #ffffff; color: var(--text-main); border-color: #cbd5e1; }
         .course-btn-style:hover { background: #f8fafc; border-color: var(--accent); color: var(--accent); }
 
-        button.selected-course { font-weight: 800; flex: 1.5 !important; cursor: default; font-size: 0.78rem !important; background: rgba(255,255,255,0.95); padding: 6px 4px !important; }
-        button.btn-cancel { background: #fef2f2 !important; color: var(--danger) !important; border-color: #fecaca !important; font-weight: 800; flex: 0.6 !important; padding: 6px 4px !important; }
-
-        .stat-card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
-        .stat-box { background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
-        .stat-box-title { font-size: 0.82rem; font-weight: 800; color: var(--text-sub); margin-bottom: 6px; }
-        .stat-box-val { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
+        button.selected-course { font-weight: 800; flex: 1.5 !important; cursor: default; font-size: 0.72rem !important; background: rgba(255,255,255,0.95); padding: 3px 2px !important; }
+        button.btn-cancel { background: #fef2f2 !important; color: var(--danger) !important; border-color: #fecaca !important; font-weight: 800; flex: 0.5 !important; padding: 3px 2px !important; }
 
         .admin-panel { background: var(--primary); color: white; padding: 16px; border-radius: 14px; margin-top: 24px; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); }
         .admin-panel h3 { margin: 12px 0 8px 0; font-size: 0.95rem; color: #38bdf8; }
@@ -179,7 +201,7 @@
 <div class="container">
     <div class="main-title-box">
         <div class="main-title">복사골마라톤클럽 접수 시스템</div>
-        <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
+        <div id="sync-status" class="sync-loading" style="display:none;"></div>
     </div>
     
     <!-- 1. 안내 카드 영역 -->
@@ -187,24 +209,26 @@
         <div id="race-card-container"></div>
     </div>
 
-    <!-- 2. 탭 버튼 영역 -->
-    <div class="tab-group">
-        <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
-        <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
-        <button class="tab-btn" id="tab-members-btn">전체 회원현황</button>
+    <!-- 2. 탭 버튼 영역 (상단 고정 Sticky) -->
+    <div class="sticky-tab-group">
+        <div class="tab-group">
+            <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
+            <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
+            <button class="tab-btn" id="tab-members-btn">전체 회원현황</button>
+        </div>
     </div>
 
     <!-- 3. 패널 영역 -->
     <div class="content-card-box">
-        <div class="swipe-wrapper" id="swipe-wrapper">
+        <div class="swipe-wrapper" id="swipe-wrapper" style="height: auto;">
             <div id="swipe-container" class="swipe-container">
                 <!-- 1번 패널: 접수 현황 -->
                 <div class="swipe-pane active-pane" id="pane-status">
-                    <div id="status-summary-box" style="margin-bottom: 12px;"></div>
+                    <div id="status-summary-box" style="margin-bottom: 8px;"></div>
                     <div class="search-box">
                         <input type="text" id="status-search-input" class="search-input" placeholder="🔍 신청자 이름 검색 (예: 홍길동)" oninput="renderStatusTab()">
                     </div>
-                    <div id="status-detail-list" style="margin-top: 10px;"></div>
+                    <div id="status-detail-list" style="margin-top: 6px;"></div>
                 </div>
                 <!-- 2번 패널: 참가 신청 -->
                 <div class="swipe-pane" id="pane-apply">
@@ -216,10 +240,10 @@
                 <!-- 3번 패널: 전체 회원현황 -->
                 <div class="swipe-pane" id="pane-members">
                     <div id="member-stats-summary"></div>
-                    <div class="search-box" style="margin-top: 12px;">
+                    <div class="search-box" style="margin-top: 10px;">
                         <input type="text" id="members-search-input" class="search-input" placeholder="🔍 전체 회원 이름 검색 (예: 홍길동)" oninput="renderAllMembersTab()">
                     </div>
-                    <div id="all-member-list-wrapper" style="margin-top: 12px;"></div>
+                    <div id="all-member-list-wrapper" style="margin-top: 10px;"></div>
                 </div>
             </div>
         </div>
@@ -295,27 +319,27 @@
 
             <!-- 일반 행사 항목 설정 영역 -->
             <div id="event-option-setting-wrapper" class="hidden">
-                <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 설정 (참석 유무만 표시)</div>
+                <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 및 참가비 설정</div>
                 <div class="course-setting-grid">
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="참석" checked> 기본1</label>
-                        <input type="text" id="event-opt-1" value="참석" placeholder="항목명" style="width:180px; text-align:left;">
-                        <input type="hidden" id="price-ev-1" value="0">
+                        <input type="text" id="event-opt-1" value="참석" placeholder="항목명" style="width:110px; text-align:left;">
+                        <input type="text" id="price-ev-1" value="0" placeholder="참가비">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="참석(가족동반)" checked> 기본2</label>
-                        <input type="text" id="event-opt-2" value="참석(가족동반)" placeholder="항목명" style="width:180px; text-align:left;">
-                        <input type="hidden" id="price-ev-2" value="0">
+                        <input type="text" id="event-opt-2" value="참석(가족동반)" placeholder="항목명" style="width:110px; text-align:left;">
+                        <input type="text" id="price-ev-2" value="0" placeholder="참가비">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분1" id="chk-ev-custom-1"> 기타1:</label>
-                        <input type="text" id="ev-custom-1-name" placeholder="명칭" style="width:180px; text-align:left;" disabled>
-                        <input type="hidden" id="price-ev-custom-1" value="0">
+                        <input type="text" id="ev-custom-1-name" placeholder="명칭" style="width:110px; text-align:left;" disabled>
+                        <input type="text" id="price-ev-custom-1" placeholder="참가비" value="0" disabled>
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분2" id="chk-ev-custom-2"> 기타2:</label>
-                        <input type="text" id="ev-custom-2-name" placeholder="명칭" style="width:180px; text-align:left;" disabled>
-                        <input type="hidden" id="price-ev-custom-2" value="0">
+                        <input type="text" id="ev-custom-2-name" placeholder="명칭" style="width:110px; text-align:left;" disabled>
+                        <input type="text" id="price-ev-custom-2" placeholder="참가비" value="0" disabled>
                     </div>
                 </div>
             </div>
@@ -368,7 +392,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyhBFVjpH6kCpkzt6iv3WnyIMkzgwd4JXQKUrxHXuquuFNROdECnSJNlWq0SrxM-16-/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwMCoyEqU8O9cK3XVQWLdg0n4sgwbOm86wTKeUnyTt2w4ONmsF5kaYtkd7s0avIgiD1/exec";
 
     let globalMembers = [];
     let globalRaces = [];
@@ -421,6 +445,29 @@
         });
         if (temp) result.push(temp);
         return result.filter(c => c.trim().length > 0);
+    }
+
+    function calculateDDay(dateStr) {
+        if (!dateStr) return "";
+        const match = dateStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
+        if (!match) return "";
+
+        const year = parseInt(match[1], 10);
+        const month = parseInt(match[2], 10) - 1;
+        const day = parseInt(match[3], 10);
+
+        const targetDate = new Date(year, month, day);
+        targetDate.setHours(0, 0, 0, 0);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const diffTime = targetDate - today;
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return "D-Day";
+        if (diffDays > 0) return `D-${diffDays}`;
+        return `D+${Math.abs(diffDays)}`;
     }
 
     function calculateAge(member) {
@@ -574,7 +621,7 @@
         updateSwipeWrapperHeight();
     }
 
-    // 💡 부드러운 위치 이동(FLIP) 애니메이션이 적용된 대회 카드 렌더링 함수 복구
+    // 💡 FLIP 애니메이션이 적용된 부드러운 대회 카드 렌더링 로직 복구
     function renderRaceCards() {
         const container = document.getElementById('race-card-container');
         if (!container) return;
@@ -669,18 +716,14 @@
     function createRaceCardElement(race, isEnded) {
         const card = document.createElement('div');
         const isSelected = (race.id === selectedRaceId);
-        const isExpanded = isSelected; 
         
         card.setAttribute('data-race-id', race.id);
 
         let cardClasses = ['race-card-item'];
-        if (isEnded) {
-            cardClasses.push('ended-race');
-        } else {
-            cardClasses.push('active-race');
-        }
-        if (isSelected) cardClasses.push('selected-target');
-        if (isExpanded) cardClasses.push('expanded');
+        if (isEnded) cardClasses.push('ended-race');
+        else cardClasses.push('active-race');
+        
+        if (isSelected) cardClasses.push('selected-target expanded');
 
         card.className = cardClasses.join(' ');
         
@@ -689,11 +732,7 @@
             const courseList = parseCourses(race.courses);
             courseList.forEach(c => {
                 if(c.trim()) {
-                    let displayC = c;
-                    if (race.itemType === 'event') {
-                        displayC = c.replace(/\s*\(.*?원\)/g, "").trim();
-                    }
-                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">• ${displayC}</div>`;
+                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">- ${c}</div>`;
                 }
             });
         }
@@ -706,23 +745,31 @@
             ? `<span class="badge-type-event">🎉 행사</span>` 
             : `<span class="badge-type-race">🏃‍♂️ 대회</span>`;
 
+        const ddayText = calculateDDay(race.date);
+        let ddayBadgeHtml = "";
+        if (ddayText) {
+            const isDDay = (ddayText === "D-Day");
+            ddayBadgeHtml = `<span class="dday-badge ${isDDay ? 'd-day' : ''}">${ddayText}</span>`;
+        }
+
         card.innerHTML = `
             <div class="race-card-header">
                 <div class="race-card-title-area">
                     ${badgeHtml}
                     ${typeBadge}
+                    ${ddayBadgeHtml}
                     <span>${race.name}</span>
                 </div>
-                <div class="race-toggle-icon">▼</div>
+                <div class="race-toggle-icon" style="transform: ${isSelected ? 'rotate(180deg)' : 'rotate(0deg)'};">▼</div>
             </div>
             <div class="race-card-body">
                 <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #1e293b; font-weight: 700;">
                     <div>• 일자: ${race.date}</div>
                     <div>• 장소: ${race.location || '장소 미정'}</div>
                     <div style="margin-top: 1px;">
-                        <div>• 항목 및 참가비:</div>
+                        <div>• 항목 및 참가비</div>
                         <div style="padding-left: 12px; margin-top: 1px;">
-                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">• 참석</div>'}
+                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">- 참석</div>'}
                         </div>
                     </div>
                     <div style="margin-top: 1px;">• 마감일: ${race.deadline}</div>
@@ -733,19 +780,28 @@
         const header = card.querySelector('.race-card-header');
         header.onclick = function(e) {
             e.stopPropagation();
-            if (selectedRaceId === race.id) {
-                card.classList.toggle('expanded');
-                updateSwipeWrapperHeight();
-            } else {
-                selectedRaceId = race.id;
-                localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
-                refreshUI();
-            }
+            selectedRaceId = race.id;
+            localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
+            refreshUI();
+
+            setTimeout(() => {
+                const updatedCard = document.querySelector(`[data-race-id="${race.id}"]`);
+                if (updatedCard) {
+                    const rect = updatedCard.getBoundingClientRect();
+                    const absoluteTop = window.pageYOffset + rect.top;
+                    
+                    window.scrollTo({
+                        top: absoluteTop - 10,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 50);
         };
 
         return card;
     }
 
+    // 💡 2번 패널 (참가 신청): 미신청 회원 박스 배경색 제거 적용
     function renderMemberList() {
         const wrapper = document.getElementById('member-list-wrapper');
         if (!wrapper) return;
@@ -762,146 +818,139 @@
 
         const ended = isRaceEnded(currentRace);
         if (ended) {
-            wrapper.innerHTML = "<div style='text-align:center; padding:15px; color:#dc2626; font-weight:700; background:#fef2f2; border-radius:8px; margin-bottom:10px;'>🔒 기한이 종료된 항목이므로 신청 및 변경이 불가합니다.</div>";
+            wrapper.innerHTML = "<div style='text-align:center; padding:12px; color:#dc2626; font-weight:700; background:#fef2f2; border-radius:6px; margin-bottom:8px; font-size:0.82rem;'>🔒 기한이 종료된 항목이므로 신청 및 변경이 불가합니다.</div>";
         }
 
         const raceApps = globalApplications[selectedRaceId] || {};
+        const availableCourses = parseCourses(currentRace.courses).map(c => c.replace(/\s*\(.*?\)/g, "").trim()).filter(c => c.length > 0);
 
         const searchInput = document.getElementById('apply-search-input');
         const keyword = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
-        const filteredMembers = globalMembers.filter(m => {
-            const name = String(m.name || "").trim();
-            return name.toLowerCase().includes(keyword);
-        });
+        const courseGroups = {};
+        availableCourses.forEach(c => courseGroups[c] = []);
+        const unappliedMembers = [];
 
-        const sortedMembers = [...filteredMembers].sort((a, b) => {
-            const appA = raceApps[a.name] ? 0 : 1;
-            const appB = raceApps[b.name] ? 0 : 1;
-            if (appA !== appB) return appA - appB;
+        globalMembers.forEach(member => {
+            const name = String(member.name || "").trim();
+            if (keyword && !name.toLowerCase().includes(keyword)) return;
 
-            if (appA === 0) {
-                const rankA = getCourseRank(raceApps[a.name]);
-                const rankB = getCourseRank(raceApps[b.name]);
-                if (rankA !== rankB) return rankA - rankB;
-            }
-
-            return a.name.localeCompare(b.name, 'ko');
-        });
-
-        if (sortedMembers.length === 0) {
-            wrapper.innerHTML = "<div style='text-align:center; padding:25px; color:#94a3b8;'>검색된 회원이 없습니다.</div>";
-            updateSwipeWrapperHeight();
-            return;
-        }
-
-        const availableCoursesWithPrice = parseCourses(currentRace.courses);
-
-        sortedMembers.forEach((member, index) => {
-            const appliedCourse = raceApps[member.name] || null;
-            const isApplied = (appliedCourse !== null);
-
-            const card = document.createElement('div');
-            let badgeHtml = "";
-            let cardStyleClass = "";
-
-            if (isApplied) {
-                cardStyleClass = getCourseStyleClass(appliedCourse);
-                card.className = `member-card`;
-                let displayApplied = appliedCourse;
-                if (currentRace.itemType === 'event') {
-                    displayApplied = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
+            const appliedCourseRaw = raceApps[name];
+            if (appliedCourseRaw) {
+                const cleanCourse = appliedCourseRaw.replace(/\s*\(.*?\)/g, "").trim();
+                if (courseGroups[cleanCourse]) {
+                    courseGroups[cleanCourse].push(member);
+                } else {
+                    if (availableCourses.length > 0) {
+                        courseGroups[availableCourses[0]].push(member);
+                    }
                 }
-                badgeHtml = `<span class="applied-badge ${cardStyleClass}">✅ ${displayApplied} 신청완료</span>`;
             } else {
-                card.className = `member-card`;
-                badgeHtml = `<span style="font-size:0.72rem; background:#f1f5f9; color:#64748b; padding:2px 6px; border-radius:5px; font-weight:700; white-space:nowrap;">미신청</span>`;
+                if (!keyword) {
+                    unappliedMembers.push(member);
+                }
             }
+        });
 
-            card.innerHTML = `
-                <div class="member-info">
-                    <div class="member-name-area">
-                        <span style="color:#64748b; font-weight:700; min-width:20px;">${index + 1}.</span> 
-                        <strong style="font-size:0.92rem; white-space:nowrap;">${member.name}</strong>
+        let htmlContent = "";
+
+        availableCourses.forEach(courseName => {
+            const membersInCourse = courseGroups[courseName] || [];
+            if (membersInCourse.length === 0 && keyword) return;
+
+            const badgeStyle = getCourseStyleClass(courseName);
+
+            htmlContent += `
+                <div style="margin-bottom: 12px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px;">
+                    <div style="font-weight: 800; font-size: 0.9rem; color: var(--primary); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4px;">
+                        <span class="${badgeStyle}">• ${courseName}</span>
+                        <span style="font-size: 0.75rem; background: #e2e8f0; color: #334155; padding: 1px 6px; border-radius: 4px;">${membersInCourse.length}명</span>
                     </div>
-                    <div>${badgeHtml}</div>
-                </div>
             `;
 
-            const btnGroup = document.createElement('div');
-            btnGroup.className = 'btn-group';
-
-            if (!ended) {
-                if (!isApplied) {
-                    availableCoursesWithPrice.forEach(courseWithPrice => {
-                        if(!courseWithPrice.trim()) return;
-                        const btn = document.createElement('button');
-                        
-                        let displayBtnText = courseWithPrice;
-                        if (currentRace.itemType === 'event') {
-                            displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
-                        }
-                        btn.textContent = displayBtnText;
-                        btn.className = "course-btn-style";
-                        
-                        const pureCourseName = currentRace.itemType === 'event' 
-                            ? courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim() 
-                            : courseWithPrice.replace(/\s*\(.*?\)/g, "").trim();
-                        
-                        btn.onclick = function() {
-                            if (confirm(`[${member.name}]님을 [${currentRace.name}] '${pureCourseName}'(으)로 신청하시겠습니까?`)) {
-                                handleApply(member.name, pureCourseName);
-                            }
-                        };
-                        btnGroup.appendChild(btn);
-                    });
-                } else {
-                    let displaySelected = appliedCourse;
-                    if (currentRace.itemType === 'event') {
-                        displaySelected = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
-                    }
-                    const selectedBtn = document.createElement('button');
-                    selectedBtn.textContent = `신청: ${displaySelected}`;
-                    selectedBtn.className = `selected-course ${cardStyleClass}`;
-                    selectedBtn.disabled = true;
-
-                    const cancelBtn = document.createElement('button');
-                    cancelBtn.textContent = '신청취소';
-                    cancelBtn.className = 'btn-cancel';
-                    
-                    cancelBtn.onclick = function() {
-                        if (confirm(`[${member.name}]님의 [${currentRace.name}] '${appliedCourse}' 신청을 취소하시겠습니까?`)) {
-                            handleApply(member.name, null);
-                        }
-                    };
-
-                    btnGroup.appendChild(selectedBtn);
-                    btnGroup.appendChild(cancelBtn);
-                }
+            if (membersInCourse.length === 0) {
+                htmlContent += `<div style="text-align:center; padding:8px; color:#94a3b8; font-size:0.8rem;">신청자가 없습니다.</div>`;
             } else {
-                if (isApplied) {
-                    let displayFinished = appliedCourse;
-                    if (currentRace.itemType === 'event') {
-                        displayFinished = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
+                membersInCourse.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+
+                membersInCourse.forEach((member, index) => {
+                    const appliedCourse = raceApps[member.name];
+                    const cardStyleClass = getCourseStyleClass(appliedCourse);
+                    const displayApplied = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
+                    
+                    let btnGroupHtml = `<div class="btn-group">`;
+
+                    if (!ended) {
+                        btnGroupHtml += `
+                            <button class="selected-course ${cardStyleClass}" disabled>신청: ${displayApplied}</button>
+                            <button class="btn-cancel" onclick="handleApply('${member.name}', null)">신청취소</button>
+                        `;
+                    } else {
+                        btnGroupHtml += `<button class="selected-course ${cardStyleClass}" disabled>신청완료: ${displayApplied}</button>`;
                     }
-                    const selectedBtn = document.createElement('button');
-                    selectedBtn.textContent = `신청완료: ${displayFinished}`;
-                    selectedBtn.className = `selected-course ${cardStyleClass}`;
-                    selectedBtn.disabled = true;
-                    btnGroup.appendChild(selectedBtn);
-                } else {
-                    const noneBtn = document.createElement('button');
-                    noneBtn.textContent = '종료됨';
-                    noneBtn.disabled = true;
-                    noneBtn.style.background = '#f1f5f9';
-                    noneBtn.style.color = '#94a3b8';
-                    btnGroup.appendChild(noneBtn);
-                }
+                    btnGroupHtml += `</div>`;
+
+                    htmlContent += `
+                        <div class="member-card">
+                            <div class="member-info">
+                                <div class="member-name-area">
+                                    <span style="color:#64748b; font-weight:700; min-width:18px;">${index + 1}.</span> 
+                                    <strong style="font-size:0.85rem; white-space:nowrap;">${member.name}</strong>
+                                </div>
+                                <div><span class="applied-badge ${cardStyleClass}">✅ ${displayApplied} 신청완료</span></div>
+                            </div>
+                            ${btnGroupHtml}
+                        </div>
+                    `;
+                });
             }
 
-            card.appendChild(btnGroup);
-            wrapper.appendChild(card);
+            htmlContent += `</div>`;
         });
+
+        if (!keyword && unappliedMembers.length > 0) {
+            unappliedMembers.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+            
+            htmlContent += `
+                <div style="margin-top: 16px; background: transparent; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px;">
+                    <div style="font-weight: 800; font-size: 0.9rem; color: #475569; margin-bottom: 6px; border-bottom: 1.5px solid #cbd5e1; padding-bottom: 4px;">
+                        • 미신청 회원 (${unappliedMembers.length}명)
+                    </div>
+            `;
+
+            const availableCoursesWithPrice = parseCourses(currentRace.courses);
+
+            unappliedMembers.forEach((member, index) => {
+                let btnGroupHtml = `<div class="btn-group">`;
+                if (!ended) {
+                    availableCoursesWithPrice.forEach(courseWithPrice => {
+                        if(!courseWithPrice.trim()) return;
+                        let displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
+                        btnGroupHtml += `<button class="course-btn-style" onclick="handleApply('${member.name}', '${courseWithPrice}')">${displayBtnText}</button>`;
+                    });
+                } else {
+                    btnGroupHtml += `<button style="background:#f1f5f9; color:#94a3b8;" disabled>종료됨</button>`;
+                }
+                btnGroupHtml += `</div>`;
+
+                htmlContent += `
+                    <div class="member-card" style="background:#ffffff;">
+                        <div class="member-info">
+                            <div class="member-name-area">
+                                <span style="color:#94a3b8; font-weight:700; min-width:18px;">${index + 1}.</span> 
+                                <strong style="font-size:0.85rem; white-space:nowrap;">${member.name}</strong>
+                            </div>
+                            <div><span style="font-size:0.68rem; background:#f1f5f9; color:#64748b; padding:1px 4px; border-radius:4px; font-weight:700;">미신청</span></div>
+                        </div>
+                        ${btnGroupHtml}
+                    </div>
+                `;
+            });
+
+            htmlContent += `</div>`;
+        }
+
+        wrapper.innerHTML = htmlContent;
         updateSwipeWrapperHeight();
     }
 
@@ -950,8 +999,7 @@
         const totalCount = Object.keys(raceApps).length;
 
         const availableCourses = parseCourses(currentRace.courses).map(c => {
-            let cleanC = currentRace.itemType === 'event' ? c.replace(/\s*\(.*?원\)/g, "").trim() : c.replace(/\s*\(.*?\)/g, "").trim();
-            return cleanC;
+            return c.replace(/\s*\(.*?\)/g, "").trim();
         }).filter(c => c.length > 0);
 
         const searchInput = document.getElementById('status-search-input');
@@ -965,61 +1013,67 @@
                 return;
             }
             let course = raceApps[memberName];
-            if (currentRace.itemType === 'event') {
-                course = course.replace(/\s*\(.*?원\)/g, "").trim();
+            if (course) {
+                course = course.replace(/\s*\(.*?\)/g, "").trim();
+                if (!courseGroups[course]) {
+                    courseGroups[course] = [];
+                }
+                courseGroups[course].push(memberName);
             }
-            if (!courseGroups[course]) {
-                courseGroups[course] = [];
-            }
-            courseGroups[course].push(memberName);
         });
 
+        let activeCourses = availableCourses.filter(cName => {
+            return (courseGroups[cName] || []).length > 0;
+        });
+
+        if (activeCourses.length === 0) {
+            activeCourses = availableCourses;
+        }
+
         let courseSummaryTextArr = [];
-        availableCourses.forEach(cName => {
+        activeCourses.forEach(cName => {
             let cCount = (courseGroups[cName] || []).length;
             courseSummaryTextArr.push(`${cName} ${cCount}명`);
         });
         let courseSummaryStr = `(${courseSummaryTextArr.join(' / ')})`;
 
         let summaryHtml = `
-            <div style="background: transparent; border: none; padding: 4px 10px; text-align: center; margin-bottom: 2px;">
-                <div style="font-weight: 800; font-size: 1.02rem; color: var(--primary); margin-bottom: 2px;">[${currentRace.name}]</div>
-                <div style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
-                    총신청인원 <strong style="color: var(--accent); font-size: 1.15rem;">${totalCount}</strong>명
+            <div style="background: transparent; border: none; padding: 2px 8px; text-align: center; margin-bottom: 2px;">
+                <div style="font-weight: 800; font-size: 1.0rem; color: var(--primary); margin-bottom: 2px;">[${currentRace.name}]</div>
+                <div style="font-size: 0.92rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
+                    총신청인원 <strong style="color: var(--accent); font-size: 1.1rem;">${totalCount}</strong>명
                 </div>
-                <div style="font-size: 0.82rem; font-weight: 700; color: #334155;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: #334155;">
                     ${courseSummaryStr}
                 </div>
             </div>
         `;
         summaryBox.innerHTML = summaryHtml;
 
-        let detailHtml = `<div style="font-weight:800; font-size:0.92rem; margin-top:6px; margin-bottom:6px; color:var(--primary);">항목별 신청 현황</div>`;
+        let detailHtml = `<div style="font-weight:800; font-size:0.9rem; margin-top:4px; margin-bottom:4px; color:var(--primary);">항목별 신청 현황</div>`;
         detailHtml += `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap:6px;">`;
 
-        availableCourses.forEach(courseName => {
+        activeCourses.forEach(courseName => {
             const membersInCourse = courseGroups[courseName] || [];
+            if (membersInCourse.length === 0) return;
+
             const badgeStyle = getCourseStyleClass(courseName);
 
             let membersTagsHtml = "";
-            if (membersInCourse.length === 0) {
-                membersTagsHtml = `<div style="font-size:0.78rem; color:#64748b; font-weight:700; text-align:center; padding:10px 0;">신청자 없음</div>`;
-            } else {
-                membersInCourse.sort((a, b) => a.localeCompare(b, 'ko')).forEach((mName, idx) => {
-                    membersTagsHtml += `
-                        <div style="display:flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1; padding:4px 6px; border-radius:5px; font-size:0.79rem; font-weight:800; color:var(--text-main); margin-bottom:3px;">
-                            <span style="color:#64748b; font-weight:700; min-width:18px;">${idx + 1}.</span> 
-                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${mName}</span>
-                        </div>
-                    `;
-                });
-            }
+            membersInCourse.sort((a, b) => a.localeCompare(b, 'ko')).forEach((mName, idx) => {
+                membersTagsHtml += `
+                    <div style="display:flex; align-items:center; background:#ffffff; border:1px solid #cbd5e1; padding:3px 5px; border-radius:4px; font-size:0.77rem; font-weight:800; color:var(--text-main); margin-bottom:2px;">
+                        <span style="color:#64748b; font-weight:700; min-width:16px;">${idx + 1}.</span> 
+                        <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${mName}</span>
+                    </div>
+                `;
+            });
 
             detailHtml += `
                 <div style="background:#ffffff; border:1.5px solid #cbd5e1; border-radius:8px; padding:6px; display:flex; flex-direction:column; gap:4px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e2e8f0; padding-bottom:4px;">
-                        <span style="font-weight:800; font-size:0.82rem;" class="${badgeStyle}">• ${courseName}</span>
-                        <span style="font-size:0.7rem; font-weight:800; background:#e2e8f0; color:#334155; padding:2px 4px; border-radius:4px;">${membersInCourse.length}명</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e2e8f0; padding-bottom:3px;">
+                        <span style="font-weight:800; font-size:0.8rem;" class="${badgeStyle}">• ${courseName}</span>
+                        <span style="font-size:0.68rem; font-weight:800; background:#e2e8f0; color:#334155; padding:1px 4px; border-radius:3px;">${membersInCourse.length}명</span>
                     </div>
                     <div style="display:flex; flex-direction:column; gap:2px;">
                         ${membersTagsHtml}
@@ -1075,9 +1129,9 @@
             let count = ageGroupCounts[ag] || 0;
             let isDanger = (ag === "기타/미지정" && count > 0);
             ageGridHtml += `
-                <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:7px; padding:6px 4px; text-align:center; display:flex; flex-direction:column; gap:2px;">
-                    <div style="font-size:0.73rem; font-weight:700; color:var(--text-sub);">${ag}</div>
-                    <div style="font-size:0.92rem; font-weight:800; color:${isDanger ? 'var(--danger)' : 'var(--primary)'};">${count}명</div>
+                <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:5px 4px; text-align:center; display:flex; flex-direction:column; gap:1px;">
+                    <div style="font-size:0.71rem; font-weight:700; color:var(--text-sub);">${ag}</div>
+                    <div style="font-size:0.9rem; font-weight:800; color:${isDanger ? 'var(--danger)' : 'var(--primary)'};">${count}명</div>
                 </div>
             `;
         });
@@ -1085,37 +1139,33 @@
         let unassignedAlertHtml = "";
         if (unassignedMembers.length > 0) {
             unassignedAlertHtml = `
-                <div style="background:#fee2e2; border:1.5px solid #fca5a5; border-radius:8px; padding:8px 10px; margin-top:6px; font-size:0.8rem; color:#991b1b; font-weight:700; line-height:1.4; text-align:left;">
-                    ⚠️ 생년월일 미지정 또는 형식 오류 회원 (${unassignedMembers.length}명): <br>
-                    <span style="font-weight:800; color:#b91c1c;">${unassignedMembers.join(', ')}</span>
+                <div style="background:#fee2e2; border:1.5px solid #fca5a5; border-radius:6px; padding:6px 8px; margin-top:4px; font-size:0.78rem; color:#991b1b; font-weight:700; line-height:1.3; text-align:left;">
+                    ⚠️ 생년월일 미지정 회원 (${unassignedMembers.length}명): <span style="font-weight:800; color:#b91c1c;">${unassignedMembers.join(', ')}</span>
                 </div>
             `;
         }
 
         summaryBox.innerHTML = `
-            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:4px;">
-                <div class="stat-card-grid" style="grid-template-columns: 1fr; margin-bottom:0;">
-                    <div class="stat-box" style="background:#ffffff; border:1.5px solid var(--border); padding:10px;">
-                        <div class="stat-box-title" style="font-size:0.82rem; color:var(--text-sub);">총 회원수</div>
-                        <div class="stat-box-val" style="font-size:1.3rem; color:var(--accent);">${totalCount}명</div>
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:2px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                    <div class="stat-box" style="background:#ffffff; border:1.5px solid var(--border); padding:8px; text-align:center; border-radius:8px;">
+                        <div class="stat-box-title" style="font-size:0.78rem; color:var(--text-sub); font-weight:800;">총 회원수</div>
+                        <div class="stat-box-val" style="font-size:1.15rem; color:var(--accent); font-weight:800;">${totalCount}명</div>
+                    </div>
+                    <div class="stat-box" style="background:#ffffff; border:1.5px solid var(--border); padding:8px; text-align:center; border-radius:8px;">
+                        <div class="stat-box-title" style="font-size:0.78rem; color:var(--text-sub); font-weight:800;">성별 분포</div>
+                        <div class="stat-box-val" style="font-size:0.98rem; color:var(--primary); font-weight:800;">남 ${maleCount} / 여 ${femaleCount}</div>
                     </div>
                 </div>
 
-                <div class="stat-card-grid" style="grid-template-columns: 1fr; margin-bottom:0;">
-                    <div class="stat-box" style="background:#ffffff; border:1.5px solid var(--border); padding:10px;">
-                        <div class="stat-box-title" style="font-size:0.82rem; color:var(--text-sub);">성별 분포</div>
-                        <div class="stat-box-val" style="font-size:1.1rem; color:var(--primary);">남 ${maleCount}명 / 여 ${femaleCount}명</div>
-                    </div>
-                </div>
-
-                <div style="background:#ffffff; border:1.5px solid var(--border); border-radius:10px; padding:10px; text-align:center;">
-                    <div style="font-size:0.82rem; font-weight:800; color:var(--primary); margin-bottom:2px;">연대별 인원 분포</div>
-                    <div style="font-size:0.72rem; font-weight:700; color:var(--accent); margin-bottom:6px;">(${baseDateString} 만 나이 기준)</div>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px; margin-bottom:6px;">
+                <div style="background:#ffffff; border:1.5px solid var(--border); border-radius:8px; padding:8px; text-align:center;">
+                    <div style="font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:1px;">연대별 인원 분포</div>
+                    <div style="font-size:0.7rem; font-weight:700; color:var(--accent); margin-bottom:4px;">(${baseDateString} 만 나이 기준)</div>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:4px; margin-bottom:4px;">
                         ${ageGridHtml}
                     </div>
-                    <div style="border-top:1.5px solid #e2e8f0; padding-top:6px; margin-top:4px; font-size:0.85rem; font-weight:800; color:var(--text-main);">
-                        전체 회원 평균 나이: <span style="color:var(--accent); font-size:1.0rem;">만 ${averageAge}세</span>
+                    <div style="border-top:1.5px solid #e2e8f0; padding-top:4px; margin-top:3px; font-size:0.82rem; font-weight:800; color:var(--text-main);">
+                        전체 회원 평균 나이: <span style="color:var(--accent); font-size:0.95rem;">만 ${averageAge}세</span>
                     </div>
                     ${unassignedAlertHtml}
                 </div>
@@ -1130,28 +1180,28 @@
             return name.toLowerCase().includes(keyword);
         });
 
-        let listHtml = `<div style="font-weight:800; font-size:0.92rem; margin-bottom:6px; color:var(--primary);">회원 명부 검색 결과 (${filteredMembers.length}명)</div>`;
+        let listHtml = `<div style="font-weight:800; font-size:0.9rem; margin-bottom:4px; color:var(--primary);">회원 명부 검색 결과 (${filteredMembers.length}명)</div>`;
 
         if (filteredMembers.length === 0) {
-            listHtml += `<div style='text-align:center; padding:20px; color:#64748b; font-weight:700;'>검색된 회원이 없습니다.</div>`;
+            listHtml += `<div style='text-align:center; padding:15px; color:#64748b; font-weight:700; font-size:0.85rem;'>검색된 회원이 없습니다.</div>`;
         } else {
             filteredMembers.forEach((m, index) => {
                 let age = calculateAge(m);
-                let ageDisplay = age !== null ? `<span style="font-size:0.72rem; font-weight:700; color:#1d4ed8; background:#eff6ff; border:1px solid #bfdbfe; padding:1px 4px; border-radius:4px; margin-left:4px;">만 ${age}세</span>` : '';
+                let ageDisplay = age !== null ? `<span style="font-size:0.7rem; font-weight:700; color:#1d4ed8; background:#eff6ff; border:1px solid #bfdbfe; padding:1px 3px; border-radius:3px; margin-left:3px;">만 ${age}세</span>` : '';
 
                 listHtml += `
-                    <div style="display:flex; flex-direction:column; background:#ffffff; padding:8px 10px; border-radius:8px; margin-bottom:5px; border:1.5px solid #cbd5e1; gap:2px;">
+                    <div style="display:flex; flex-direction:column; background:#ffffff; padding:6px 8px; border-radius:6px; margin-bottom:4px; border:1.5px solid #cbd5e1; gap:1px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-                                <span style="color:#64748b; font-weight:700; min-width:20px;">${index + 1}.</span>
-                                <strong style="font-size:0.92rem; color:var(--primary);">${m.name}</strong>
+                                <span style="color:#64748b; font-weight:700; min-width:18px;">${index + 1}.</span>
+                                <strong style="font-size:0.88rem; color:var(--primary);">${m.name}</strong>
                                 ${ageDisplay}
                             </div>
-                            <div style="font-weight:800; color:var(--accent); background:#eff6ff; padding:2px 6px; border-radius:4px; font-size:0.72rem; white-space:nowrap;">
+                            <div style="font-weight:800; color:var(--accent); background:#eff6ff; padding:1px 5px; border-radius:3px; font-size:0.7rem; white-space:nowrap;">
                                 👕 ${m.size}호
                             </div>
                         </div>
-                        <div style="font-size:0.74rem; color:#475569; font-weight:700; padding-left:24px; display:flex; gap:8px; flex-wrap:wrap; line-height:1.2;">
+                        <div style="font-size:0.72rem; color:#475569; font-weight:700; padding-left:22px; display:flex; gap:6px; flex-wrap:wrap; line-height:1.2;">
                             <span>생일: ${m.birth}</span>
                             <span>성별: ${m.gender}</span>
                             <span>연락처: ${m.phone}</span>
@@ -1182,20 +1232,34 @@
         }
 
         appliedMembersList.sort((a, b) => {
-            const courseA = raceApps[a.name];
-            const courseB = raceApps[b.name];
+            const courseA = raceApps[a.name] || "";
+            const courseB = raceApps[b.name] || "";
             const rankA = getCourseRank(courseA);
             const rankB = getCourseRank(courseB);
-            if (rankA !== rankB) return rankA - rankB;
+            
+            if (rankA !== rankB) {
+                return rankA - rankB;
+            }
             return a.name.localeCompare(b.name, 'ko');
         });
 
-        let csvContent = "\uFEFF번호,이름,성별,생년월일,핸드폰번호,옷사이즈,신청항목,명칭\n";
-        
+        let csvContent = "\uFEFF번호,신청항목,이름,핸드폰번호,성별,옷사이즈,명칭\n";
+        let courseCounts = {};
+
         appliedMembersList.forEach((m, idx) => {
-            const course = raceApps[m.name];
-            csvContent += `${idx + 1},${m.name},${m.gender},${m.birth},${m.phone},${m.size},${course},${currentRace.name}\n`;
+            const rawCourse = raceApps[m.name] || "";
+            let cleanCourse = rawCourse.replace(/\s*\(.*?원\)/g, "").trim();
+            
+            courseCounts[cleanCourse] = (courseCounts[cleanCourse] || 0) + 1;
+
+            csvContent += `${idx + 1},${cleanCourse},${m.name},${m.phone},${m.gender},${m.size},${currentRace.name}\n`;
         });
+
+        csvContent += `\n[코스별 합계 집계]\n`;
+        for (let courseName in courseCounts) {
+            csvContent += `${courseName},${courseCounts[courseName]}명,,,,,\n`;
+        }
+        csvContent += `전체 총인원,${appliedMembersList.length}명,,,,,\n`;
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
@@ -1311,7 +1375,7 @@
             document.getElementById('ev-custom-2-name').disabled = true;
             document.getElementById('price-ev-custom-2').disabled = true;
 
-            parts.forEach(part => {
+            parts.forEach((part, index) => {
                 const match = part.match(/^(.+?)\s*\(([^)]+)\)$/);
                 let pName = part.trim();
                 let pPrice = "0";
@@ -1321,30 +1385,26 @@
                     pPrice = match[2].trim().replace("원", "");
                 }
 
-                chks.forEach((chk, idx) => {
-                    if (idx === 0 && pName === document.getElementById('event-opt-1').value) {
-                        chk.checked = true;
-                        document.getElementById('price-ev-1').value = pPrice;
-                    } else if (idx === 1 && pName === document.getElementById('event-opt-2').value) {
-                        chk.checked = true;
-                        document.getElementById('price-ev-2').value = pPrice;
-                    }
-                });
-
-                if (pName !== '참석' && pName !== '참석(가족동반)' && pName !== '불참') {
-                    if (!document.getElementById('ev-custom-1-name').value && !document.getElementById('chk-ev-custom-1').checked) {
-                        document.getElementById('chk-ev-custom-1').checked = true;
-                        document.getElementById('ev-custom-1-name').value = pName;
-                        document.getElementById('ev-custom-1-name').disabled = false;
-                        document.getElementById('price-ev-custom-1').value = pPrice;
-                        document.getElementById('price-ev-custom-1').disabled = false;
-                    } else if (!document.getElementById('ev-custom-2-name').value && !document.getElementById('chk-ev-custom-2').checked) {
-                        document.getElementById('chk-ev-custom-2').checked = true;
-                        document.getElementById('ev-custom-2-name').value = pName;
-                        document.getElementById('ev-custom-2-name').disabled = false;
-                        document.getElementById('price-ev-custom-2').value = pPrice;
-                        document.getElementById('price-ev-custom-2').disabled = false;
-                    }
+                if (index === 0) {
+                    chks[0].checked = true;
+                    document.getElementById('event-opt-1').value = pName;
+                    document.getElementById('price-ev-1').value = pPrice;
+                } else if (index === 1) {
+                    chks[1].checked = true;
+                    document.getElementById('event-opt-2').value = pName;
+                    document.getElementById('price-ev-2').value = pPrice;
+                } else if (index === 2) {
+                    chks[2].checked = true;
+                    document.getElementById('ev-custom-1-name').value = pName;
+                    document.getElementById('ev-custom-1-name').disabled = false;
+                    document.getElementById('price-ev-custom-1').value = pPrice;
+                    document.getElementById('price-ev-custom-1').disabled = false;
+                } else if (index === 3) {
+                    chks[3].checked = true;
+                    document.getElementById('ev-custom-2-name').value = pName;
+                    document.getElementById('ev-custom-2-name').disabled = false;
+                    document.getElementById('price-ev-custom-2').value = pPrice;
+                    document.getElementById('price-ev-custom-2').disabled = false;
                 }
             });
         } else {
@@ -1479,19 +1539,24 @@
             chks.forEach((chk, idx) => {
                 if (chk.checked) {
                     let optName = "";
+                    let optPrice = "0";
 
                     if (idx === 0) {
                         optName = document.getElementById('event-opt-1').value.trim() || "참석";
+                        optPrice = document.getElementById('price-ev-1').value.trim() || "0";
                     } else if (idx === 1) {
                         optName = document.getElementById('event-opt-2').value.trim() || "참석(가족동반)";
+                        optPrice = document.getElementById('price-ev-2').value.trim() || "0";
                     } else if (idx === 2) {
                         optName = document.getElementById('ev-custom-1-name').value.trim();
+                        optPrice = document.getElementById('price-ev-custom-1').value.trim() || "0";
                     } else if (idx === 3) {
                         optName = document.getElementById('ev-custom-2-name').value.trim();
+                        optPrice = document.getElementById('price-ev-custom-2').value.trim() || "0";
                     }
 
                     if (optName) {
-                        selectedCourses.push(`${optName}(0원)`);
+                        selectedCourses.push(`${optName}(${optPrice}원)`);
                     }
                 }
             });
@@ -1776,8 +1841,10 @@
         } else if (type === 'event') {
             const chk = document.getElementById(`chk-ev-custom-${num}`);
             const nameInput = document.getElementById(`ev-custom-${num}-name`);
-            if (chk && nameInput) {
+            const priceInput = document.getElementById(`price-ev-custom-${num}`);
+            if (chk && nameInput && priceInput) {
                 nameInput.disabled = !chk.checked;
+                priceInput.disabled = !chk.checked;
                 if (chk.checked) nameInput.focus();
             }
         }
