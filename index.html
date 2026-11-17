@@ -144,11 +144,6 @@
         button.selected-course { font-weight: 800; flex: 1.5 !important; cursor: default; font-size: 0.78rem !important; background: rgba(255,255,255,0.95); padding: 6px 4px !important; }
         button.btn-cancel { background: #fef2f2 !important; color: var(--danger) !important; border-color: #fecaca !important; font-weight: 800; flex: 0.6 !important; padding: 6px 4px !important; }
 
-        .stat-card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
-        .stat-box { background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
-        .stat-box-title { font-size: 0.82rem; font-weight: 800; color: var(--text-sub); margin-bottom: 6px; }
-        .stat-box-val { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
-
         .admin-panel { background: var(--primary); color: white; padding: 16px; border-radius: 14px; margin-top: 24px; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); }
         .admin-panel h3 { margin: 12px 0 8px 0; font-size: 0.95rem; color: #38bdf8; }
         .admin-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
@@ -291,28 +286,28 @@
                 </div>
             </div>
 
-            <!-- 일반 행사 항목 설정 영역 (참가비 입력 가능하도록 수정) -->
+            <!-- 일반 행사 항목 설정 영역 (기본값 참석 / 참석(가족동반)으로 명확히 분리) -->
             <div id="event-option-setting-wrapper" class="hidden">
                 <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 및 참가비 설정</div>
                 <div class="course-setting-grid">
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="참석" checked> 기본1</label>
-                        <input type="text" id="event-opt-1" value="참석" placeholder="항목명" style="width:80px; text-align:left;">
+                        <input type="text" id="event-opt-1" value="참석" placeholder="항목명" style="width:110px; text-align:left;">
                         <input type="text" id="price-ev-1" value="0" placeholder="참가비">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="참석(가족동반)" checked> 기본2</label>
-                        <input type="text" id="event-opt-2" value="참석(가족동반)" placeholder="항목명" style="width:80px; text-align:left;">
+                        <input type="text" id="event-opt-2" value="참석(가족동반)" placeholder="항목명" style="width:110px; text-align:left;">
                         <input type="text" id="price-ev-2" value="0" placeholder="참가비">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분1" id="chk-ev-custom-1"> 기타1:</label>
-                        <input type="text" id="ev-custom-1-name" placeholder="명칭" style="width:80px; text-align:left;" disabled>
+                        <input type="text" id="ev-custom-1-name" placeholder="명칭" style="width:110px; text-align:left;" disabled>
                         <input type="text" id="price-ev-custom-1" placeholder="참가비" value="0" disabled>
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분2" id="chk-ev-custom-2"> 기타2:</label>
-                        <input type="text" id="ev-custom-2-name" placeholder="명칭" style="width:80px; text-align:left;" disabled>
+                        <input type="text" id="ev-custom-2-name" placeholder="명칭" style="width:110px; text-align:left;" disabled>
                         <input type="text" id="price-ev-custom-2" placeholder="참가비" value="0" disabled>
                     </div>
                 </div>
@@ -841,7 +836,6 @@
                         btn.textContent = displayBtnText;
                         btn.className = "course-btn-style";
                         
-                        // 서버에 저장될 때는 전체 문자열 그대로 저장 (관리자용 엑셀 등에서 가격 활용)
                         btn.onclick = function() {
                             if (confirm(`[${member.name}]님을 [${currentRace.name}] '${displayBtnText}'(으)로 신청하시겠습니까?`)) {
                                 handleApply(member.name, courseWithPrice);
@@ -1316,11 +1310,13 @@
                 }
 
                 chks.forEach((chk, idx) => {
-                    if (idx === 0 && pName === document.getElementById('event-opt-1').value) {
+                    if (idx === 0) {
                         chk.checked = true;
+                        document.getElementById('event-opt-1').value = pName;
                         document.getElementById('price-ev-1').value = pPrice;
-                    } else if (idx === 1 && pName === document.getElementById('event-opt-2').value) {
+                    } else if (idx === 1) {
                         chk.checked = true;
+                        document.getElementById('event-opt-2').value = pName;
                         document.getElementById('price-ev-2').value = pPrice;
                     }
                 });
