@@ -763,20 +763,32 @@
         const header = card.querySelector('.race-card-header');
         header.onclick = function(e) {
             e.stopPropagation();
+            
             if (selectedRaceId === race.id) {
+                // 이미 선택된 카드를 다시 누른 경우: 컴팩트 뷰 토글
                 isCompactRaceView = !isCompactRaceView;
                 refreshUI();
             } else {
+                // 새로운 카드를 선택한 경우: 선택 변경 후 화면 재렌더링
                 selectedRaceId = race.id;
                 isCompactRaceView = false;
                 localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
                 refreshUI();
-                
-                // 💡 클릭 시 부드럽게 상단으로 스크롤 이동하는 애니메이션
-                setTimeout(() => {
-                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 50);
             }
+
+            // 💡 렌더링 및 레이아웃 축소 변동이 완전히 끝난 직후에 안전하게 상단 스크롤 실행
+            setTimeout(() => {
+                const updatedCard = document.querySelector(`[data-race-id="${race.id}"]`);
+                if (updatedCard) {
+                    const rect = updatedCard.getBoundingClientRect();
+                    const absoluteTop = window.pageYOffset + rect.top;
+                    
+                    window.scrollTo({
+                        top: absoluteTop - 10, // 상단 여백 10px 두고 부드럽게 이동
+                        behavior: 'smooth'
+                    });
+                }
+            }, 100);
         };
 
         return card;
