@@ -64,7 +64,7 @@
         .search-input { width: 100%; padding: 7px 10px; font-size: 0.85rem; border: 1.5px solid var(--border); border-radius: 8px; background: #ffffff; outline: none; box-sizing: border-box; transition: border-color 0.2s; font-weight: 600; }
         .search-input:focus { border-color: var(--accent); }
 
-        .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.3s ease; }
+        .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); }
 
         .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
@@ -206,7 +206,7 @@
     </div>
 
     <!-- 2. 탭 버튼 영역 (상단 고정 Sticky) -->
-    <div class="sticky-tab-group" id="lower-tabs-container">
+    <div class="sticky-tab-group">
         <div class="tab-group">
             <button class="tab-btn active" id="tab-status-btn">접수 현황</button>
             <button class="tab-btn" id="tab-apply-btn">참가 신청</button>
@@ -215,7 +215,7 @@
     </div>
 
     <!-- 3. 패널 영역 -->
-    <div class="content-card-box" id="lower-content-box">
+    <div class="content-card-box">
         <div class="swipe-wrapper" id="swipe-wrapper" style="height: auto;">
             <div id="swipe-container" class="swipe-container">
                 <!-- 1번 패널: 접수 현황 -->
@@ -398,8 +398,8 @@
     let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
     let activePaneIndex = 0;
     
-    // [추가] 상단 대회박스 클릭 시 하부 접힘 상태 관리 변수 (true: 접힘, false: 보임)
-    let isCardBodyHidden = false;
+    // [추가] 상단 맨 위(선택된) 대회 박스를 제외한 나머지 상단 대회 박스들의 숨김 여부 상태 관리 변수
+    let isOtherRacesHidden = false;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
 
@@ -606,10 +606,8 @@
             if (wrapper && panes[activePaneIndex]) {
                 const targetPane = panes[activePaneIndex];
                 const targetHeight = targetPane.scrollHeight;
-                if (targetHeight > 0 && !isCardBodyHidden) {
+                if (targetHeight > 0) {
                     wrapper.style.height = targetHeight + 'px';
-                } else if (isCardBodyHidden) {
-                    wrapper.style.height = '0px';
                 }
             }
         });
@@ -680,11 +678,30 @@
             }
         });
 
-        activeRaces.forEach((race) => {
-            const card = createRaceCardElement(race, false);
+        // 1. 맨 위에 위치할 최상단(선택된) 대회 카드 렌더링
+        if (activeRaces.length > 0) {
+            const topRace = activeRaces[0];
+            const card = createRaceCardElement(topRace, false, true); // true: 최상단 박스 여부
             container.appendChild(card);
-        });
+        }
 
+        // 2. 나머지 활성 대회 카드들 렌더링 (isOtherRacesHidden 상태에 따라 숨김/표시)
+        const othersWrapper = document.createElement('div');
+        othersWrapper.id = 'other-races-wrapper';
+        othersWrapper.style.display = isOtherRacesHidden ? 'none' : 'flex';
+        othersWrapper.style.flexDirection = 'column';
+        othersWrapper.style.gap = '8px';
+        othersWrapper.style.marginTop = activeRaces.length > 1 ? '8px' : '0px';
+
+        for (let i = 1; i < activeRaces.length; i++) {
+            const card = createRaceCardElement(activeRaces[i], false, false);
+            othersWrapper.appendChild(card);
+        }
+        if (activeRaces.length > 1) {
+            container.appendChild(othersWrapper);
+        }
+
+        // 3. 종료된 목록 섹션
         if (endedRaces.length > 0) {
             const endedSection = document.createElement('div');
             endedSection.className = 'ended-section-container';
@@ -695,7 +712,7 @@
             tempWrapper.style.gap = '6px';
 
             endedRaces.forEach((race) => {
-                const card = createRaceCardElement(race, true);
+                const card = createRaceCardElement(race, true, false);
                 tempWrapper.appendChild(card);
             });
 
@@ -737,7 +754,7 @@
         });
     }
 
-    function createRaceCardElement(race, isEnded) {
+    function createRaceCardElement(race, isEnded, isTopMost) {
         const card = document.createElement('div');
         const isSelected = (race.id === selectedRaceId);
         
@@ -816,66 +833,30 @@
         
         const header = card.querySelector('.race-card-header');
         
-        // [수정] 상단에 올라와 있는 선택된 대회박스 헤더 클릭 시:
-        // 1) 이미 선택된 대회면 하부 영역을 토글(접기/펼치기)
-        // 2) 다른 대회면 해당 대회를 선택하고 펼쳐진 상태로 설정
+        // [수정] 클릭 이벤트 로직:
+        // - 맨 상단에 위치한 박스(isTopMost === true)를 클릭한 경우:
+        //   1) 이미 선택된 상태라면 -> 나머지 다른 상단 대회 박스들을 숨기거나 펼치는 토글 실행
+        //   2) 다른 대회를 클릭해서 최상단으로 올리는 경우 -> 해당 대회를 최상단으로 선택하고 펼침
         header.onclick = function(e) {
             e.stopPropagation();
-            if (selectedRaceId === race.id) {
-                // 이미 최상단에 올라와 있는 박스이므로 하부 접힘 상태 토글
-                isCardBodyHidden = !isCardBodyHidden;
-                applyLowerContentVisibility();
+            if (isTopMost) {
+                // 맨 상단 박스 아무 곳이나 클릭했을 때 나머지 대회 박스들을 숨기거나 나타나게 함
+                isOtherRacesHidden = !isOtherRacesHidden;
+                const wrapper = document.getElementById('other-races-wrapper');
+                if (wrapper) {
+                    wrapper.style.display = isOtherRacesHidden ? 'none' : 'flex';
+                    updateSwipeWrapperHeight();
+                }
             } else {
-                // 다른 대회 선택 시 선택 ID 변경 및 펼침 상태로 초기화
+                // 다른 대회 박스를 클릭한 경우 해당 대회를 선택된 대회로 지정
                 selectedRaceId = race.id;
-                isCardBodyHidden = false;
+                isOtherRacesHidden = false; // 다른 대회를 선택할 때는 전체 목록이 보이도록 초기화
                 localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
                 refreshUI();
             }
         };
 
         return card;
-    }
-
-    // [추가] 하부 탭 및 내용 영역을 부드럽게 접고 펼치는 함수
-    function applyLowerContentVisibility() {
-        const tabsContainer = document.getElementById('lower-tabs-container');
-        const contentBox = document.getElementById('lower-content-box');
-        
-        if (!tabsContainer || !contentBox) return;
-
-        if (isCardBodyHidden) {
-            tabsContainer.style.opacity = '0';
-            tabsContainer.style.maxHeight = '0px';
-            tabsContainer.style.overflow = 'hidden';
-            tabsContainer.style.padding = '0';
-            tabsContainer.style.margin = '0';
-            tabsContainer.style.pointerEvents = 'none';
-
-            contentBox.style.opacity = '0';
-            contentBox.style.maxHeight = '0px';
-            contentBox.style.padding = '0';
-            contentBox.style.margin = '0';
-            contentBox.style.border = 'none';
-            contentBox.style.overflow = 'hidden';
-            contentBox.style.pointerEvents = 'none';
-        } else {
-            tabsContainer.style.opacity = '1';
-            tabsContainer.style.maxHeight = '100px';
-            tabsContainer.style.paddingTop = '4px';
-            tabsContainer.style.paddingBottom = '8px';
-            tabsContainer.style.margin = '0';
-            tabsContainer.style.pointerEvents = 'auto';
-
-            contentBox.style.opacity = '1';
-            contentBox.style.maxHeight = '5000px';
-            contentBox.style.padding = '12px';
-            contentBox.style.margin = '0';
-            contentBox.style.border = '1.5px solid #cbd5e1';
-            contentBox.style.overflow = 'visible';
-            contentBox.style.pointerEvents = 'auto';
-            updateSwipeWrapperHeight();
-        }
     }
 
     function renderMemberList() {
