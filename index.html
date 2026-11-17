@@ -77,7 +77,6 @@
 
         #race-card-container { display: flex; flex-direction: column; gap: 8px; }
 
-        /* FLIP 애니메이션이 원활하게 적용되도록 설정된 카드 스타일 */
         .race-card-item { 
             background: #ffffff; 
             border: 2px solid #cbd5e1; 
@@ -104,7 +103,6 @@
             border-color: #9ca3af !important;
         }
 
-        /* 종료된 대회 박스 회색 처리 */
         .race-card-item.ended-race { 
             background: #f1f5f9 !important; 
             border-color: #cbd5e1 !important; 
@@ -621,7 +619,6 @@
         updateSwipeWrapperHeight();
     }
 
-    // 💡 FLIP 애니메이션이 적용된 부드러운 대회 카드 렌더링 로직 복구
     function renderRaceCards() {
         const container = document.getElementById('race-card-container');
         if (!container) return;
@@ -783,25 +780,11 @@
             selectedRaceId = race.id;
             localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
             refreshUI();
-
-            setTimeout(() => {
-                const updatedCard = document.querySelector(`[data-race-id="${race.id}"]`);
-                if (updatedCard) {
-                    const rect = updatedCard.getBoundingClientRect();
-                    const absoluteTop = window.pageYOffset + rect.top;
-                    
-                    window.scrollTo({
-                        top: absoluteTop - 10,
-                        behavior: 'smooth'
-                    });
-                }
-            }, 50);
         };
 
         return card;
     }
 
-    // 💡 2번 패널 (참가 신청): 미신청 회원 박스 배경색 제거 적용
     function renderMemberList() {
         const wrapper = document.getElementById('member-list-wrapper');
         if (!wrapper) return;
@@ -883,7 +866,7 @@
                     if (!ended) {
                         btnGroupHtml += `
                             <button class="selected-course ${cardStyleClass}" disabled>신청: ${displayApplied}</button>
-                            <button class="btn-cancel" onclick="handleApply('${member.name}', null)">신청취소</button>
+                            <button class="btn-cancel" onclick="confirmAndApply('${member.name}', null)">신청취소</button>
                         `;
                     } else {
                         btnGroupHtml += `<button class="selected-course ${cardStyleClass}" disabled>신청완료: ${displayApplied}</button>`;
@@ -926,7 +909,7 @@
                     availableCoursesWithPrice.forEach(courseWithPrice => {
                         if(!courseWithPrice.trim()) return;
                         let displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
-                        btnGroupHtml += `<button class="course-btn-style" onclick="handleApply('${member.name}', '${courseWithPrice}')">${displayBtnText}</button>`;
+                        btnGroupHtml += `<button class="course-btn-style" onclick="confirmAndApply('${member.name}', '${courseWithPrice}')">${displayBtnText}</button>`;
                     });
                 } else {
                     btnGroupHtml += `<button style="background:#f1f5f9; color:#94a3b8;" disabled>종료됨</button>`;
@@ -952,6 +935,34 @@
 
         wrapper.innerHTML = htmlContent;
         updateSwipeWrapperHeight();
+    }
+
+    // 💡 대회 및 행사 구분 맞춤형 확인 팝업(confirm) 함수 추가
+    function confirmAndApply(memberName, courseWithPrice) {
+        const currentRace = globalRaces.find(r => r.id === selectedRaceId);
+        if (!currentRace || isRaceEnded(currentRace)) return;
+
+        let message = "";
+        const isEvent = (currentRace.itemType === 'event');
+
+        if (courseWithPrice === "null" || !courseWithPrice) {
+            if (isEvent) {
+                message = `[${currentRace.name}]\n\n${memberName님의 참석(신청)을 취소하시겠습니까?`;
+            } else {
+                message = `[${currentRace.name}]\n\n${memberName}님의 참가 신청을 취소하시겠습니까?`;
+            }
+        } else {
+            let cleanCourseName = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
+            if (isEvent) {
+                message = `[${currentRace.name}]\n\n${memberName}님을 [${cleanCourseName}] 항목으로 참석(신청)하시겠습니까?`;
+            } else {
+                message = `[${currentRace.name}]\n\n${memberName}님을 [${cleanCourseName}] 코스로 참가 신청하시겠습니까?`;
+            }
+        }
+
+        if (confirm(message)) {
+            handleApply(memberName, courseWithPrice);
+        }
     }
 
     async function handleApply(memberName, course) {
