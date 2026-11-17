@@ -689,7 +689,6 @@
             courseList.forEach(c => {
                 if(c.trim()) {
                     let displayC = c;
-                    // 행사일 경우 금액 표시 제거
                     if (race.itemType === 'event') {
                         displayC = c.replace(/\s*\(.*?원\)/g, "").trim();
                     }
@@ -1304,12 +1303,10 @@
             document.getElementById('ev-custom-1-name').value = "";
             document.getElementById('price-ev-custom-1').value = "0";
             document.getElementById('ev-custom-1-name').disabled = true;
-            document.getElementById('price-ev-custom-1').disabled = true;
             document.getElementById('chk-ev-custom-2').checked = false;
             document.getElementById('ev-custom-2-name').value = "";
             document.getElementById('price-ev-custom-2').value = "0";
             document.getElementById('ev-custom-2-name').disabled = true;
-            document.getElementById('price-ev-custom-2').disabled = true;
 
             parts.forEach(part => {
                 const match = part.match(/^(.+?)\s*\(([^)]+)\)$/);
@@ -1337,13 +1334,11 @@
                         document.getElementById('ev-custom-1-name').value = pName;
                         document.getElementById('ev-custom-1-name').disabled = false;
                         document.getElementById('price-ev-custom-1').value = pPrice;
-                        document.getElementById('price-ev-custom-1').disabled = false;
                     } else if (!document.getElementById('ev-custom-2-name').value && !document.getElementById('chk-ev-custom-2').checked) {
                         document.getElementById('chk-ev-custom-2').checked = true;
                         document.getElementById('ev-custom-2-name').value = pName;
                         document.getElementById('ev-custom-2-name').disabled = false;
                         document.getElementById('price-ev-custom-2').value = pPrice;
-                        document.getElementById('price-ev-custom-2').disabled = false;
                     }
                 }
             });
@@ -1446,12 +1441,10 @@
         document.getElementById('ev-custom-1-name').value = "";
         document.getElementById('price-ev-custom-1').value = "0";
         document.getElementById('ev-custom-1-name').disabled = true;
-        document.getElementById('price-ev-custom-1').disabled = true;
         document.getElementById('chk-ev-custom-2').checked = false;
         document.getElementById('ev-custom-2-name').value = "";
         document.getElementById('price-ev-custom-2').value = "0";
         document.getElementById('ev-custom-2-name').disabled = true;
-        document.getElementById('price-ev-custom-2').disabled = true;
 
         document.getElementById('race-form-title').textContent = "새 항목 등록 (마라톤 대회 / 행사)";
         document.getElementById('race-save-btn').textContent = "항목 추가하기";
@@ -1491,7 +1484,6 @@
                     }
 
                     if (optName) {
-                        // 행사는 금액 없이 참석 유무 명칭만 저장 (내부적으로 0원 처리)
                         selectedCourses.push(`${optName}(0원)`);
                     }
                 }
