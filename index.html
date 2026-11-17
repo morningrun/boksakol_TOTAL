@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>복사골마라톤클럽 대회 및 행사 접수</title>
+    <title>복사골마라톤클럽 접수 시스템</title>
     
     <!-- 카카오톡 대회/행사 접수 미리보기 -->
-    <meta property="og:title" content="복사골마라톤클럽 대회 및 행사 접수">
+    <meta property="og:title" content="복사골마라톤클럽 접수 시스템">
     <meta property="og:description" content="복사골마라톤클럽 대회 및 행사 참가 현황을 확인하세요!">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://morningrun.github.io/RACE/">
@@ -52,7 +52,7 @@
         .search-input:focus { border-color: var(--accent); }
 
         .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); max-height: 420px; overflow-y: auto; }
+        .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); }
 
         .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
         .swipe-container { display: flex; width: 300%; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; align-items: flex-start; }
@@ -61,16 +61,22 @@
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
         /* 아코디언 카드 스타일 */
-        .race-card-item { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .race-card-item { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; margin-bottom: 8px; overflow: hidden; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .race-card-item:last-child { margin-bottom: 0; }
         
-        .race-card-item.active-race { border-color: #86efac !important; box-shadow: 0 4px 12px rgba(5,150,105,0.08); }
-        .race-card-item.selected-target { border-color: var(--accent) !important; box-shadow: 0 6px 16px rgba(37,99,235,0.12); }
+        .race-card-item.active-race { border-color: #86efac !important; }
+        .race-card-item.selected-target { border-color: var(--accent) !important; box-shadow: 0 6px 16px rgba(37,99,235,0.12); background: #f8fafc; }
         .race-card-item.ended-race { border-color: #cbd5e1 !important; opacity: 0.85; }
         
         .race-card-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; background: #ffffff; }
+        .race-card-item.selected-target .race-card-header { background: #eff6ff; }
+
         .race-card-title-area { font-size: 1.02rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #1e293b; flex-wrap: wrap; }
         
+        /* 뱃지 스타일 분기 */
+        .badge-type-race { font-size: 0.76rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .badge-type-event { font-size: 0.76rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; background: #fae8ff; color: #86198f; border: 1px solid #f5d0fe; }
+
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
         .status-badge.ended { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
@@ -95,10 +101,13 @@
         .btn-group { display: flex; gap: 5px; width: 100%; flex-wrap: wrap; }
         .btn-group button { flex: 1; min-width: 80px; padding: 6px 4px; font-size: 0.76rem; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 800; text-align: center; transition: all 0.15s; }
         
+        /* 항목별 색상 지정 */
         .style-full { color: #6b21a8 !important; }
         .style-half { color: #b45309 !important; }
         .style-10k { color: #0369a1 !important; }
         .style-5k { color: #15803d !important; }
+        .style-attend { color: #0284c7 !important; }          /* 참석: 파란 계열 */
+        .style-family { color: #9333ea !important; }          /* 참석(가족동반): 보라 계열 */
         .style-etc { color: #be185d !important; }
 
         .course-btn-style { background: #ffffff; color: var(--text-main); border-color: #cbd5e1; }
@@ -139,11 +148,11 @@
 
 <div class="container">
     <div class="main-title-box">
-        <div class="main-title">복사골마라톤클럽 대회 및 행사 접수</div>
+        <div class="main-title">복사골마라톤클럽 접수 시스템</div>
         <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
     </div>
     
-    <!-- 1. 안내 카드 영역 -->
+    <!-- 1. 안내 카드 영역 (선택된 항목 최상단 자동 정렬 및 펼치기/접기 적용) -->
     <div class="race-content-card-box" id="race-selector-wrapper">
         <div id="race-card-container"></div>
     </div>
@@ -254,7 +263,7 @@
                 </div>
             </div>
 
-            <!-- 일반 행사 항목 설정 영역 (참가비 입력란 추가) -->
+            <!-- 일반 행사 항목 설정 영역 -->
             <div id="event-option-setting-wrapper" class="hidden">
                 <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 및 참가비 설정</div>
                 <div class="course-setting-grid">
@@ -329,7 +338,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbz2c1tlncxGKVnHwhreGCcNGUSONyAfOcjevTK4V82dps7admc2UlPIkFXT7yvYz1I/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwMCoyEqU8O9cK3XVQWLdg0n4sgwbOm86wTKeUnyTt2w4ONmsF5kaYtkd7s0avIgiD1/exec";
 
     let globalMembers = [];
     let globalRaces = [];
@@ -350,10 +359,12 @@
 
     function getCourseStyleClass(course) {
         if (!course) return '';
-        if (course.includes('풀코스') || course.includes('참석')) return 'style-full';
+        if (course.includes('풀코스')) return 'style-full';
         if (course.includes('하프')) return 'style-half';
         if (course.includes('10k')) return 'style-10k';
         if (course.includes('5k')) return 'style-5k';
+        if (course.includes('참석(가족동반)')) return 'style-family';  // 가족동반 보라색
+        if (course.includes('참석')) return 'style-attend';             // 참석 파란색
         return 'style-etc';
     }
 
@@ -365,6 +376,7 @@
         
         rawList.forEach(item => {
             item = item.trim();
+            if (!item) return; // 빈 항목 필터링 (노출 방지)
             if (temp) {
                 temp += ", " + item;
             } else {
@@ -378,7 +390,7 @@
             }
         });
         if (temp) result.push(temp);
-        return result;
+        return result.filter(c => c.trim().length > 0);
     }
 
     function calculateAge(member) {
@@ -542,19 +554,26 @@
             return;
         }
 
+        // 선택된 항목이 맨 위로 오도록 정렬
+        let sortedRaces = [...globalRaces].sort((a, b) => {
+            if (a.id === selectedRaceId) return -1;
+            if (b.id === selectedRaceId) return 1;
+            return 0;
+        });
+
         const activeRaces = [];
         const endedRaces = [];
 
-        globalRaces.forEach((race, originalIdx) => {
+        sortedRaces.forEach((race) => {
             if (isRaceEnded(race)) {
-                endedRaces.push({ race, originalIdx });
+                endedRaces.push(race);
             } else {
-                activeRaces.push({ race, originalIdx });
+                activeRaces.push(race);
             }
         });
 
-        activeRaces.forEach(({ race, originalIdx }) => {
-            const card = createRaceCardElement(race, originalIdx, false);
+        activeRaces.forEach((race) => {
+            const card = createRaceCardElement(race, false);
             container.appendChild(card);
         });
 
@@ -567,8 +586,8 @@
             tempWrapper.style.flexDirection = 'column';
             tempWrapper.style.gap = '6px';
 
-            endedRaces.forEach(({ race, originalIdx }) => {
-                const card = createRaceCardElement(race, originalIdx, true);
+            endedRaces.forEach((race) => {
+                const card = createRaceCardElement(race, true);
                 tempWrapper.appendChild(card);
             });
 
@@ -590,10 +609,12 @@
         }
     }
 
-    function createRaceCardElement(race, originalIdx, isEnded) {
+    function createRaceCardElement(race, isEnded) {
         const card = document.createElement('div');
         const isSelected = (race.id === selectedRaceId);
-        const isExpanded = isSelected;
+        
+        // 💡 핵심: 선택된 카드만 열리고, 나머지는 접혀있게 하여 화면 복잡함 해소 (다른 것을 클릭하면 즉시 위로 올라오며 펼쳐짐)
+        const isExpanded = isSelected; 
         
         let cardClasses = ['race-card-item'];
         if (isEnded) {
@@ -610,7 +631,9 @@
         if (race.courses) {
             const courseList = parseCourses(race.courses);
             courseList.forEach(c => {
-                coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">• ${c}</div>`;
+                if(c.trim()) {
+                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">• ${c}</div>`;
+                }
             });
         }
 
@@ -618,13 +641,17 @@
             ? `<span class="status-badge ended">종료</span>`
             : `<span class="status-badge active-badge">진행중</span>`;
 
-        const typePrefix = race.itemType === 'event' ? '[행사]' : '[대회]';
+        // 💡 요청사항 반영: 대회와 행사 타이틀 앞에 뚜렷한 색상의 뱃지 적용
+        const typeBadge = race.itemType === 'event' 
+            ? `<span class="badge-type-event">🎉 행사</span>` 
+            : `<span class="badge-type-race">🏃‍♂️ 대회</span>`;
 
         card.innerHTML = `
             <div class="race-card-header">
                 <div class="race-card-title-area">
                     ${badgeHtml}
-                    <span>${typePrefix} ${race.name}</span>
+                    ${typeBadge}
+                    <span>${race.name}</span>
                 </div>
                 <div class="race-toggle-icon">▼</div>
             </div>
@@ -742,11 +769,11 @@
             if (!ended) {
                 if (!isApplied) {
                     availableCoursesWithPrice.forEach(courseWithPrice => {
+                        if(!courseWithPrice.trim()) return;
                         const btn = document.createElement('button');
                         btn.textContent = courseWithPrice;
                         btn.className = "course-btn-style";
                         
-                        // 행사일 경우 괄호 항목명을 그대로 유지
                         const pureCourseName = currentRace.itemType === 'event' 
                             ? courseWithPrice.trim() 
                             : courseWithPrice.replace(/\s*\(.*?\)/g, "").trim();
@@ -846,7 +873,7 @@
 
         const availableCourses = parseCourses(currentRace.courses).map(c => 
             currentRace.itemType === 'event' ? c.trim() : c.replace(/\s*\(.*?\)/g, "").trim()
-        );
+        ).filter(c => c.length > 0);
 
         const searchInput = document.getElementById('status-search-input');
         const keyword = searchInput ? searchInput.value.trim().toLowerCase() : "";
