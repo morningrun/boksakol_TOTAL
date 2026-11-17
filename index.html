@@ -781,10 +781,10 @@
             ddayBadgeHtml = `<span class="dday-badge ${isDDay ? 'd-day' : ''}">${ddayText}</span>`;
         }
 
-        // [변경 포인트] 강제마감 되었거나 접수가 끝난(ended) 경우 마감일 칸에 적색으로 '접수마감' 표시
+        // [수정 완료] 마감일 칸에 중복 없이 '접수마감' 문구만 깔끔하게 하나로 표시
         const ended = isRaceEnded(race);
         const deadlineDisplay = ended 
-            ? `<span style="color: var(--danger); font-weight: 800;">${race.deadline} <span style="background: #fef2f2; padding: 1px 4px; border-radius: 4px; border: 1px solid #fecaca; font-size: 0.75rem;">🔴 접수마감</span></span>` 
+            ? `<span style="color: var(--danger); font-weight: 800;">접수마감</span>` 
             : race.deadline;
 
         card.innerHTML = `
