@@ -60,7 +60,6 @@
         .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
-        /* 아코디언 카드 스타일 및 부드러운 위치 이동 전환 */
         #race-card-container { display: flex; flex-direction: column; gap: 8px; }
         .race-card-item { 
             background: #ffffff; 
@@ -115,7 +114,6 @@
         .ended-section-container.expanded .ended-section-body { display: flex; }
         .ended-section-container.expanded .ended-toggle-icon { transform: rotate(180deg); }
 
-        /* 회원 카드 컴팩트 스타일 */
         .member-card { display: flex; flex-direction: column; padding: 8px 10px; margin-bottom: 6px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.15s; }
         .member-info { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
         .member-name-area { font-weight: 800; font-size: 0.92rem; color: var(--primary); display: flex; align-items: center; gap: 6px; overflow: hidden; }
@@ -293,29 +291,29 @@
                 </div>
             </div>
 
-            <!-- 일반 행사 항목 설정 영역 -->
+            <!-- 일반 행사 항목 설정 영역 (참가비 입력 가능하도록 수정) -->
             <div id="event-option-setting-wrapper" class="hidden">
-                <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 설정 (참석 유무만 표시)</div>
+                <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 및 참가비 설정</div>
                 <div class="course-setting-grid">
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="참석" checked> 기본1</label>
-                        <input type="text" id="event-opt-1" value="참석" placeholder="항목명" style="width:180px; text-align:left;">
-                        <input type="hidden" id="price-ev-1" value="0">
+                        <input type="text" id="event-opt-1" value="참석" placeholder="항목명" style="width:80px; text-align:left;">
+                        <input type="text" id="price-ev-1" value="0" placeholder="참가비">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="참석(가족동반)" checked> 기본2</label>
-                        <input type="text" id="event-opt-2" value="참석(가족동반)" placeholder="항목명" style="width:180px; text-align:left;">
-                        <input type="hidden" id="price-ev-2" value="0">
+                        <input type="text" id="event-opt-2" value="참석(가족동반)" placeholder="항목명" style="width:80px; text-align:left;">
+                        <input type="text" id="price-ev-2" value="0" placeholder="참가비">
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분1" id="chk-ev-custom-1"> 기타1:</label>
-                        <input type="text" id="ev-custom-1-name" placeholder="명칭" style="width:180px; text-align:left;" disabled>
-                        <input type="hidden" id="price-ev-custom-1" value="0">
+                        <input type="text" id="ev-custom-1-name" placeholder="명칭" style="width:80px; text-align:left;" disabled>
+                        <input type="text" id="price-ev-custom-1" placeholder="참가비" value="0" disabled>
                     </div>
                     <div class="course-row">
                         <label><input type="checkbox" class="event-opt-chk" value="여분2" id="chk-ev-custom-2"> 기타2:</label>
-                        <input type="text" id="ev-custom-2-name" placeholder="명칭" style="width:180px; text-align:left;" disabled>
-                        <input type="hidden" id="price-ev-custom-2" value="0">
+                        <input type="text" id="ev-custom-2-name" placeholder="명칭" style="width:80px; text-align:left;" disabled>
+                        <input type="text" id="price-ev-custom-2" placeholder="참가비" value="0" disabled>
                     </div>
                 </div>
             </div>
@@ -843,13 +841,10 @@
                         btn.textContent = displayBtnText;
                         btn.className = "course-btn-style";
                         
-                        const pureCourseName = currentRace.itemType === 'event' 
-                            ? courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim() 
-                            : courseWithPrice.replace(/\s*\(.*?\)/g, "").trim();
-                        
+                        // 서버에 저장될 때는 전체 문자열 그대로 저장 (관리자용 엑셀 등에서 가격 활용)
                         btn.onclick = function() {
-                            if (confirm(`[${member.name}]님을 [${currentRace.name}] '${pureCourseName}'(으)로 신청하시겠습니까?`)) {
-                                handleApply(member.name, pureCourseName);
+                            if (confirm(`[${member.name}]님을 [${currentRace.name}] '${displayBtnText}'(으)로 신청하시겠습니까?`)) {
+                                handleApply(member.name, courseWithPrice);
                             }
                         };
                         btnGroup.appendChild(btn);
@@ -869,7 +864,7 @@
                     cancelBtn.className = 'btn-cancel';
                     
                     cancelBtn.onclick = function() {
-                        if (confirm(`[${member.name}]님의 [${currentRace.name}] '${appliedCourse}' 신청을 취소하시겠습니까?`)) {
+                        if (confirm(`[${member.name}]님의 [${currentRace.name}] '${displaySelected}' 신청을 취소하시겠습니까?`)) {
                             handleApply(member.name, null);
                         }
                     };
@@ -1303,10 +1298,12 @@
             document.getElementById('ev-custom-1-name').value = "";
             document.getElementById('price-ev-custom-1').value = "0";
             document.getElementById('ev-custom-1-name').disabled = true;
+            document.getElementById('price-ev-custom-1').disabled = true;
             document.getElementById('chk-ev-custom-2').checked = false;
             document.getElementById('ev-custom-2-name').value = "";
             document.getElementById('price-ev-custom-2').value = "0";
             document.getElementById('ev-custom-2-name').disabled = true;
+            document.getElementById('price-ev-custom-2').disabled = true;
 
             parts.forEach(part => {
                 const match = part.match(/^(.+?)\s*\(([^)]+)\)$/);
@@ -1334,11 +1331,13 @@
                         document.getElementById('ev-custom-1-name').value = pName;
                         document.getElementById('ev-custom-1-name').disabled = false;
                         document.getElementById('price-ev-custom-1').value = pPrice;
+                        document.getElementById('price-ev-custom-1').disabled = false;
                     } else if (!document.getElementById('ev-custom-2-name').value && !document.getElementById('chk-ev-custom-2').checked) {
                         document.getElementById('chk-ev-custom-2').checked = true;
                         document.getElementById('ev-custom-2-name').value = pName;
                         document.getElementById('ev-custom-2-name').disabled = false;
                         document.getElementById('price-ev-custom-2').value = pPrice;
+                        document.getElementById('price-ev-custom-2').disabled = false;
                     }
                 }
             });
@@ -1441,10 +1440,12 @@
         document.getElementById('ev-custom-1-name').value = "";
         document.getElementById('price-ev-custom-1').value = "0";
         document.getElementById('ev-custom-1-name').disabled = true;
+        document.getElementById('price-ev-custom-1').disabled = true;
         document.getElementById('chk-ev-custom-2').checked = false;
         document.getElementById('ev-custom-2-name').value = "";
         document.getElementById('price-ev-custom-2').value = "0";
         document.getElementById('ev-custom-2-name').disabled = true;
+        document.getElementById('price-ev-custom-2').disabled = true;
 
         document.getElementById('race-form-title').textContent = "새 항목 등록 (마라톤 대회 / 행사)";
         document.getElementById('race-save-btn').textContent = "항목 추가하기";
@@ -1472,19 +1473,24 @@
             chks.forEach((chk, idx) => {
                 if (chk.checked) {
                     let optName = "";
+                    let optPrice = "0";
 
                     if (idx === 0) {
                         optName = document.getElementById('event-opt-1').value.trim() || "참석";
+                        optPrice = document.getElementById('price-ev-1').value.trim() || "0";
                     } else if (idx === 1) {
                         optName = document.getElementById('event-opt-2').value.trim() || "참석(가족동반)";
+                        optPrice = document.getElementById('price-ev-2').value.trim() || "0";
                     } else if (idx === 2) {
                         optName = document.getElementById('ev-custom-1-name').value.trim();
+                        optPrice = document.getElementById('price-ev-custom-1').value.trim() || "0";
                     } else if (idx === 3) {
                         optName = document.getElementById('ev-custom-2-name').value.trim();
+                        optPrice = document.getElementById('price-ev-custom-2').value.trim() || "0";
                     }
 
                     if (optName) {
-                        selectedCourses.push(`${optName}(0원)`);
+                        selectedCourses.push(`${optName}(${optPrice}원)`);
                     }
                 }
             });
@@ -1769,8 +1775,10 @@
         } else if (type === 'event') {
             const chk = document.getElementById(`chk-ev-custom-${num}`);
             const nameInput = document.getElementById(`ev-custom-${num}-name`);
-            if (chk && nameInput) {
+            const priceInput = document.getElementById(`price-ev-custom-${num}`);
+            if (chk && nameInput && priceInput) {
                 nameInput.disabled = !chk.checked;
+                priceInput.disabled = !chk.checked;
                 if (chk.checked) nameInput.focus();
             }
         }
