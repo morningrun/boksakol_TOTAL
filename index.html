@@ -715,6 +715,9 @@
             ? `<span class="badge-type-event">🎉 행사</span>` 
             : `<span class="badge-type-race">🏃‍♂️ 대회</span>`;
 
+        // 💡 대회인지 행사인지에 따라 '코스 및 참가비' 또는 '참가 항목 및 참가비' 문구 동적 변경
+        const itemLabelText = (race.itemType === 'event') ? '행사 항목 및 참가비' : '마라톤 코스 및 참가비';
+
         const ddayText = calculateDDay(race.date);
         let ddayBadgeHtml = "";
         if (ddayText) {
@@ -737,7 +740,7 @@
                     <div>• 일자: ${race.date}</div>
                     <div>• 장소: ${race.location || '장소 미정'}</div>
                     <div style="margin-top: 1px;">
-                        <div>• 항목 및 참가비</div>
+                        <div>• ${itemLabelText}</div>
                         <div style="padding-left: 12px; margin-top: 1px;">
                             ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">- 참석</div>'}
                         </div>
@@ -754,7 +757,7 @@
             localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
             refreshUI();
 
-            // 💡 클릭 시 화면 최상단으로 부드럽게 스크롤 이동 애니메이션 확실히 실행
+            // 💡 클릭 시 화면 최상단으로 부드럽게 스크롤 이동 애니메이션 실행 (렌더링 직후 타이밍 보정 적용)
             setTimeout(() => {
                 const updatedCard = document.querySelector(`[data-race-id="${race.id}"]`);
                 if (updatedCard) {
@@ -766,7 +769,7 @@
                         behavior: 'smooth'
                     });
                 }
-            }, 80);
+            }, 50);
         };
 
         return card;
@@ -899,7 +902,6 @@
                     availableCoursesWithPrice.forEach(courseWithPrice => {
                         if(!courseWithPrice.trim()) return;
                         let displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
-                        // 💡 신청 버튼 클릭 시 확인 팝업(`handleApply` 내부 처리) 연동
                         btnGroupHtml += `<button class="course-btn-style" onclick="handleApply('${member.name}', '${courseWithPrice}', '${displayBtnText}')">${displayBtnText}</button>`;
                     });
                 } else {
@@ -928,19 +930,19 @@
         updateSwipeWrapperHeight();
     }
 
-    // 💡 참가 및 취소 시 확인 메시지(confirm)가 뜨도록 복구된 함수
     async function handleApply(memberName, course, displayCourseName) {
         const currentRace = globalRaces.find(r => r.id === selectedRaceId);
         if (!currentRace || isRaceEnded(currentRace)) return;
 
+        // 💡 행사인지 대회인지에 따라 확인 팝업 문구 분기 처리 ("참석 코스"라는 어색한 표현 방지)
+        const itemTypeName = (currentRace.itemType === 'event') ? '행사 항목' : '마라톤 코스';
+
         if (course === "null" || !course) {
-            // 신청 취소 확인 창
             if (!confirm(`[${memberName}]님의 신청을 취소하시겠습니까?`)) {
                 return;
             }
         } else {
-            // 참가 신청 확인 창
-            if (!confirm(`[${memberName}]님을 [${currentRace.name}] - [${displayCourseName}] 코스로 신청하시겠습니까?`)) {
+            if (!confirm(`[${memberName}]님을 [${currentRace.name}] - [${displayCourseName}] (${itemTypeName})로 신청하시겠습니까?`)) {
                 return;
             }
         }
@@ -1242,7 +1244,7 @@
             csvContent += `${idx + 1},${cleanCourse},${m.name},${m.phone},${m.gender},${m.size},${currentRace.name}\n`;
         });
 
-        csvContent += `\n[코스별 합계 집계]\n`;
+        csvContent += `\n[항목별 합계 집계]\n`;
         for (let courseName in courseCounts) {
             csvContent += `${courseName},${courseCounts[courseName]}명,,,,,\n`;
         }
