@@ -442,10 +442,9 @@
     let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
     let activePaneIndex = 0;
     
-    // 하단 대회 박스들의 숨김 여부 상태 관리 변수
     let isOtherRacesHidden = false;
 
-    const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
+    const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "3.5km": 5, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
 
     function getCourseRank(course) {
         if (!course) return 99;
@@ -461,7 +460,8 @@
         if (course.includes('하프')) return 'style-half';
         if (course.includes('10k')) return 'style-10k';
         if (course.includes('5k')) return 'style-5k';
-        if (course.includes('참석(가족동반)')) return 'style-family';  
+        if (course.includes('3.5k')) return 'style-5k';
+        if (course.includes('참석(가족동반)') || course.includes('가족동반')) return 'style-family';  
         if (course.includes('참석')) return 'style-attend';             
         return 'style-etc';
     }
@@ -705,7 +705,6 @@
 
         container.innerHTML = '';
 
-        // 선택된(클릭한) 항목이 맨 위로 오도록 정렬
         let sortedRaces = [...globalRaces].sort((a, b) => {
             if (a.id === selectedRaceId) return -1;
             if (b.id === selectedRaceId) return 1;
@@ -723,14 +722,12 @@
             }
         });
 
-        // 1. 맨 위에 위치할 최상단(선택된) 대회 카드 렌더링
         if (activeRaces.length > 0) {
             const topRace = activeRaces[0];
             const card = createRaceCardElement(topRace, false, true);
             container.appendChild(card);
         }
 
-        // 2. 나머지 하단 활성 대회 카드들 렌더링 (애니메이션 토글 적용)
         const othersWrapper = document.createElement('div');
         othersWrapper.id = 'other-races-wrapper';
         if (isOtherRacesHidden) {
@@ -747,7 +744,6 @@
             container.appendChild(othersWrapper);
         }
 
-        // 3. 종료된 목록 섹션
         if (endedRaces.length > 0) {
             const endedSection = document.createElement('div');
             endedSection.className = 'ended-section-container';
@@ -880,7 +876,6 @@
         card.onclick = function(e) {
             e.stopPropagation();
             if (isTopMost) {
-                // 이미 최상단인 박스를 다시 클릭한 경우 -> 하단 박스들 토글 (숨김 <-> 표시)
                 isOtherRacesHidden = !isOtherRacesHidden;
                 const wrapper = document.getElementById('other-races-wrapper');
                 if (wrapper) {
@@ -892,7 +887,6 @@
                     setTimeout(updateSwipeWrapperHeight, 400);
                 }
             } else {
-                // 하단에 있던 다른 박스를 클릭한 경우 -> 맨 위로 올라감과 동시에 하단 박스 숨김 처리
                 selectedRaceId = race.id;
                 isOtherRacesHidden = true; 
                 localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
@@ -924,7 +918,8 @@
         }
 
         const raceApps = globalApplications[selectedRaceId] || {};
-        const availableCourses = parseCourses(currentRace.courses).map(c => c.replace(/\s*\(.*?\)/g, "").trim()).filter(c => c.length > 0);
+        const availableCoursesWithPrice = parseCourses(currentRace.courses);
+        const availableCourses = availableCoursesWithPrice.map(c => c.replace(/\s*\(.*?\)/g, "").trim()).filter(c => c.length > 0);
 
         const searchInput = document.getElementById('apply-search-input');
         const keyword = searchInput ? searchInput.value.trim().toLowerCase() : "";
@@ -983,8 +978,10 @@
                     let btnGroupHtml = `<div class="btn-group">`;
 
                     if (!ended) {
+                        // 신청 완료된 회원에게도 취소 및 변경이 가능하도록 버튼 복구!
                         btnGroupHtml += `
-                            <button class="selected-course ${cardStyleClass}" style="flex: 2 !important; background: #f0fdf4; border-color: #86efac; color: #15803d;" disabled>✅ 최종 신청완료 (확정)</button>
+                            <button class="selected-course ${cardStyleClass}" style="flex: 1.4 !important; background: #f0fdf4; border-color: #86efac; color: #15803d;" disabled>✅ ${displayApplied}</button>
+                            <button class="btn-cancel" onclick="confirmAndCancel('${member.name}')">취소</button>
                         `;
                     } else {
                         btnGroupHtml += `<button class="selected-course ${cardStyleClass}" style="flex: 2 !important;" disabled>신청완료 (접수 마감됨)</button>`;
@@ -1018,8 +1015,6 @@
                         • 미신청 회원 (${unappliedMembers.length}명)
                     </div>
             `;
-
-            const availableCoursesWithPrice = parseCourses(currentRace.courses);
 
             unappliedMembers.forEach((member, index) => {
                 let btnGroupHtml = `<div class="btn-group">`;
@@ -1061,8 +1056,8 @@
 
         let message = "";
         const isEvent = (currentRace.itemType === 'event');
-
         let cleanCourseName = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
+        
         if (isEvent) {
             message = `[${currentRace.name}]\n\n${memberName}님을 [${cleanCourseName}] 항목으로 참석(신청)하시겠습니까?`;
         } else {
@@ -1071,6 +1066,15 @@
 
         if (confirm(message)) {
             handleApply(memberName, courseWithPrice);
+        }
+    }
+
+    function confirmAndCancel(memberName) {
+        const currentRace = globalRaces.find(r => r.id === selectedRaceId);
+        if (!currentRace || isRaceEnded(currentRace)) return;
+
+        if (confirm(`[${currentRace.name}]\n\n${memberName}님의 신청을 취소하시겠습니까?`)) {
+            handleCancel(memberName);
         }
     }
 
@@ -1086,7 +1090,6 @@
         }
 
         globalApplications[selectedRaceId][memberName] = course;
-
         refreshUI();
 
         try {
@@ -1094,6 +1097,27 @@
             fetch(url);
         } catch(e) {
             console.error("서버 반영 오류:", e);
+        }
+    }
+
+    async function handleCancel(memberName) {
+        const currentRace = globalRaces.find(r => r.id === selectedRaceId);
+        if (!currentRace || isRaceEnded(currentRace)) {
+            alert("접수가 마감되어 취소할 수 없습니다.");
+            return;
+        }
+
+        if (globalApplications[selectedRaceId]) {
+            delete globalApplications[selectedRaceId][memberName];
+        }
+
+        refreshUI();
+
+        try {
+            const url = `${API_URL}?action=applyRace&raceId=${encodeURIComponent(selectedRaceId)}&memberName=${encodeURIComponent(memberName)}&course=${encodeURIComponent("")}`;
+            fetch(url);
+        } catch(e) {
+            console.error("서버 취소 반영 오류:", e);
         }
     }
 
