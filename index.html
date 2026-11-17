@@ -199,8 +199,8 @@
         .course-btn-style { background: #ffffff; color: var(--text-main); border-color: #cbd5e1; }
         .course-btn-style:hover { background: #f8fafc; border-color: var(--accent); color: var(--accent); }
 
-        button.selected-course { font-weight: 800; flex: 1.5 !important; cursor: default; font-size: 0.72rem !important; background: rgba(255,255,255,0.95); padding: 3px 2px !important; }
-        button.btn-cancel { background: #fef2f2 !important; color: var(--danger) !important; border-color: #fecaca !important; font-weight: 800; flex: 0.5 !important; padding: 3px 2px !important; }
+        button.selected-course { font-weight: 800; flex: 1.4 !important; cursor: default; font-size: 0.72rem !important; background: #f0fdf4 !important; border-color: #86efac !important; color: #15803d !important; padding: 3px 2px !important; text-align: left; padding-left: 6px !important; }
+        button.btn-cancel { background: #fef2f2 !important; color: var(--danger) !important; border-color: #fecaca !important; font-weight: 800; flex: 0.6 !important; padding: 3px 2px !important; }
 
         .admin-panel { background: var(--primary); color: white; padding: 16px; border-radius: 14px; margin-top: 24px; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2); }
         .admin-panel h3 { margin: 12px 0 8px 0; font-size: 0.95rem; color: #38bdf8; }
@@ -950,6 +950,7 @@
         });
 
         let htmlContent = "";
+        const isEventItem = (currentRace.itemType === 'event');
 
         availableCourses.forEach(courseName => {
             const membersInCourse = courseGroups[courseName] || [];
@@ -975,16 +976,18 @@
                     const cardStyleClass = getCourseStyleClass(appliedCourse);
                     const displayApplied = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
                     
+                    // 마라톤은 "0km 신청", 행사는 "[항목명] 신청" 형태로 표현
+                    const statusText = isEventItem ? `${displayApplied} 신청` : `${displayApplied} 신청`;
+
                     let btnGroupHtml = `<div class="btn-group">`;
 
                     if (!ended) {
-                        // 신청 완료된 회원에게도 취소 및 변경이 가능하도록 버튼 복구!
                         btnGroupHtml += `
-                            <button class="selected-course ${cardStyleClass}" style="flex: 1.4 !important; background: #f0fdf4; border-color: #86efac; color: #15803d;" disabled>✅ ${displayApplied}</button>
+                            <button class="selected-course ${cardStyleClass}" disabled>${statusText}</button>
                             <button class="btn-cancel" onclick="confirmAndCancel('${member.name}')">취소</button>
                         `;
                     } else {
-                        btnGroupHtml += `<button class="selected-course ${cardStyleClass}" style="flex: 2 !important;" disabled>신청완료 (접수 마감됨)</button>`;
+                        btnGroupHtml += `<button class="selected-course ${cardStyleClass}" style="flex: 2 !important; text-align:center;" disabled>${statusText} (마감됨)</button>`;
                     }
                     btnGroupHtml += `</div>`;
 
@@ -995,7 +998,7 @@
                                     <span style="color:#64748b; font-weight:700; min-width:18px;">${index + 1}.</span> 
                                     <strong style="font-size:0.85rem; white-space:nowrap;">${member.name}</strong>
                                 </div>
-                                <div><span class="applied-badge ${cardStyleClass}">✅ ${displayApplied}</span></div>
+                                <div><span class="applied-badge ${cardStyleClass}">${statusText}</span></div>
                             </div>
                             ${btnGroupHtml}
                         </div>
@@ -1022,7 +1025,9 @@
                     availableCoursesWithPrice.forEach(courseWithPrice => {
                         if(!courseWithPrice.trim()) return;
                         let displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
-                        btnGroupHtml += `<button class="course-btn-style" onclick="confirmAndApply('${member.name}', '${courseWithPrice}')">${displayBtnText}</button>`;
+                        // 버튼에도 직관적인 명칭 부여 (마라톤은 0km, 행사는 참석 등)
+                        let btnLabel = isEventItem ? displayBtnText : `${displayBtnText}`;
+                        btnGroupHtml += `<button class="course-btn-style" onclick="confirmAndApply('${member.name}', '${courseWithPrice}')">${btnLabel}</button>`;
                     });
                 } else {
                     btnGroupHtml += `<button style="background:#f1f5f9; color:#dc2626; font-weight:800;" disabled>접수 마감됨</button>`;
