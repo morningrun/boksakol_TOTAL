@@ -37,13 +37,13 @@
             --border: #cbd5e1;
         }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 10px; color: var(--text-main); -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-color); margin: 0; padding: 10px; color: var(--text-main); -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
         .container { max-width: 650px; margin: 0 auto; background: var(--card-bg); padding: 18px; border-radius: 16px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06); border: 1px solid #e2e8f0; }
         
         .main-title-box { text-align: center; margin: 6px 0 14px 0; }
         .main-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        /* 💡 탭 메뉴 상단 고정 (Sticky) */
+        /* 탭 메뉴 상단 고정 (Sticky) */
         .sticky-tab-group {
             position: sticky;
             top: 0;
@@ -72,7 +72,6 @@
 
         #race-card-container { display: flex; flex-direction: column; gap: 8px; }
         
-        /* 💡 대회 박스 접기 모드 스타일 (선택되지 않은 박스 숨김) */
         #race-card-container.compact-view .race-card-item:not(.selected-target) {
             display: none !important;
         }
@@ -85,9 +84,9 @@
             border: 2px solid #cbd5e1; 
             border-radius: 12px; 
             overflow: hidden; 
-            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; 
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1); 
             box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
-            will-change: transform;
+            will-change: transform, order;
         }
         
         .race-card-item.selected-target { 
@@ -121,6 +120,10 @@
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
         .status-badge.ended { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
 
+        /* D-Day 배지 스타일 */
+        .dday-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .dday-badge.d-day { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
         .race-toggle-icon { font-size: 0.8rem; color: #64748b; transition: transform 0.2s ease; flex-shrink: 0; padding-left: 8px; }
         .race-card-item.expanded .race-toggle-icon { transform: rotate(180deg); }
 
@@ -133,7 +136,6 @@
         .ended-section-container.expanded .ended-section-body { display: flex; }
         .ended-section-container.expanded .ended-toggle-icon { transform: rotate(180deg); }
 
-        /* 💡 참가신청 박스 높이를 컴팩트하게 슬림화 */
         .member-card { display: flex; flex-direction: column; padding: 4px 8px; margin-bottom: 3px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 6px; gap: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .member-info { display: flex; justify-content: space-between; align-items: center; gap: 4px; min-height: 22px; }
         .member-name-area { font-weight: 800; font-size: 0.85rem; color: var(--primary); display: flex; align-items: center; gap: 4px; overflow: hidden; }
@@ -195,7 +197,7 @@
         <div id="sync-status" class="sync-loading" style="display:none;"></div>
     </div>
     
-    <!-- 1. 안내 카드 영역 (클릭 시 다른 박스 숨김/표시 토글) -->
+    <!-- 1. 안내 카드 영역 -->
     <div class="race-content-card-box" id="race-selector-wrapper">
         <div id="race-card-container"></div>
     </div>
@@ -391,7 +393,7 @@
     let adminPassword = "1234";
     let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
     let activePaneIndex = 0;
-    let isCompactRaceView = false; // 💡 대회 박스 숨김/표시 상태 관리 변수
+    let isCompactRaceView = false;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
 
@@ -437,6 +439,30 @@
         });
         if (temp) result.push(temp);
         return result.filter(c => c.trim().length > 0);
+    }
+
+    // 💡 날짜 문자열에서 D-Day 계산 함수
+    function calculateDDay(dateStr) {
+        if (!dateStr) return "";
+        const match = dateStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
+        if (!match) return "";
+
+        const year = parseInt(match[1], 10);
+        const month = parseInt(match[2], 10) - 1;
+        const day = parseInt(match[3], 10);
+
+        const targetDate = new Date(year, month, day);
+        targetDate.setHours(0, 0, 0, 0);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const diffTime = targetDate - today;
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return "D-Day";
+        if (diffDays > 0) return `D-${diffDays}`;
+        return `D+${Math.abs(diffDays)}`;
     }
 
     function calculateAge(member) {
@@ -599,7 +625,6 @@
             return;
         }
 
-        // 💡 컴팩트 뷰(숨김 모드) 클래스 반영
         if (isCompactRaceView) {
             container.classList.add('compact-view');
         } else {
@@ -665,7 +690,6 @@
     function createRaceCardElement(race, isEnded) {
         const card = document.createElement('div');
         const isSelected = (race.id === selectedRaceId);
-        // 이미 선택된 상태이고 컴팩트 모드라면 본문 접기, 아니면 펼치기
         const isExpanded = isSelected && !isCompactRaceView; 
         
         card.setAttribute('data-race-id', race.id);
@@ -699,11 +723,20 @@
             ? `<span class="badge-type-event">🎉 행사</span>` 
             : `<span class="badge-type-race">🏃‍♂️ 대회</span>`;
 
+        // 💡 D-Day 배지 생성
+        const ddayText = calculateDDay(race.date);
+        let ddayBadgeHtml = "";
+        if (ddayText) {
+            const isDDay = (ddayText === "D-Day");
+            ddayBadgeHtml = `<span class="dday-badge ${isDDay ? 'd-day' : ''}">${ddayText}</span>`;
+        }
+
         card.innerHTML = `
             <div class="race-card-header">
                 <div class="race-card-title-area">
                     ${badgeHtml}
                     ${typeBadge}
+                    ${ddayBadgeHtml}
                     <span>${race.name}</span>
                 </div>
                 <div class="race-toggle-icon">▼</div>
@@ -727,15 +760,18 @@
         header.onclick = function(e) {
             e.stopPropagation();
             if (selectedRaceId === race.id) {
-                // 💡 이미 선택된 상태에서 클릭한 경우: 숨김/표시 상태(isCompactRaceView)를 토글
                 isCompactRaceView = !isCompactRaceView;
                 refreshUI();
             } else {
-                // 💡 다른 항목을 클릭한 경우: 해당 항목을 선택하고 상단으로 올리며, 숨김 모드 해제(전체 목록 보이기)
                 selectedRaceId = race.id;
                 isCompactRaceView = false;
                 localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
                 refreshUI();
+                
+                // 💡 클릭 시 부드럽게 상단으로 이동하는 애니메이션 적용
+                setTimeout(() => {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 50);
             }
         };
 
@@ -1163,20 +1199,35 @@
         }
 
         appliedMembersList.sort((a, b) => {
-            const courseA = raceApps[a.name];
-            const courseB = raceApps[b.name];
+            const courseA = raceApps[a.name] || "";
+            const courseB = raceApps[b.name] || "";
             const rankA = getCourseRank(courseA);
             const rankB = getCourseRank(courseB);
-            if (rankA !== rankB) return rankA - rankB;
+            
+            if (rankA !== rankB) {
+                return rankA - rankB;
+            }
             return a.name.localeCompare(b.name, 'ko');
         });
 
-        let csvContent = "\uFEFF번호,이름,성별,생년월일,핸드폰번호,옷사이즈,신청항목,명칭\n";
+        let csvContent = "\uFEFF번호,신청항목,이름,핸드폰번호,성별,옷사이즈,명칭\n";
         
+        let courseCounts = {};
+
         appliedMembersList.forEach((m, idx) => {
-            const course = raceApps[m.name];
-            csvContent += `${idx + 1},${m.name},${m.gender},${m.birth},${m.phone},${m.size},${course},${currentRace.name}\n`;
+            const rawCourse = raceApps[m.name] || "";
+            let cleanCourse = rawCourse.replace(/\s*\(.*?원\)/g, "").trim();
+            
+            courseCounts[cleanCourse] = (courseCounts[cleanCourse] || 0) + 1;
+
+            csvContent += `${idx + 1},${cleanCourse},${m.name},${m.phone},${m.gender},${m.size},${currentRace.name}\n`;
         });
+
+        csvContent += `\n[코스별 합계 집계]\n`;
+        for (let courseName in courseCounts) {
+            csvContent += `${courseName},${courseCounts[courseName]}명,,,,,\n`;
+        }
+        csvContent += `전체 총인원,${appliedMembersList.length}명,,,,,\n`;
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
