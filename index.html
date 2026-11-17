@@ -80,9 +80,11 @@
             border: 2px solid #cbd5e1; 
             border-radius: 12px; 
             overflow: hidden; 
+            cursor: pointer; /* [수정] 박스 전체가 클릭 가능하도록 마우스 커서 변경 */
             transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
             will-change: transform;
+            user-select: none;
         }
         
         .race-card-item.selected-target { 
@@ -110,7 +112,7 @@
             background: #e2e8f0 !important;
         }
         
-        .race-card-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; background: #ffffff; }
+        .race-card-header { padding: 14px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; width: 100%; box-sizing: border-box; }
         .race-card-item.selected-target .race-card-header { background: #eff6ff; }
         .race-card-item:not(.selected-target) .race-card-header { background: #fafafa; }
 
@@ -129,7 +131,7 @@
         .race-toggle-icon { font-size: 0.8rem; color: #64748b; transition: transform 0.2s ease; flex-shrink: 0; padding-left: 8px; }
         .race-card-item.expanded .race-toggle-icon { transform: rotate(180deg); }
 
-        .race-card-body { padding: 0 14px 12px 14px; display: none; border-top: 1px solid #e2e8f0; margin-top: 2px; padding-top: 10px; background: #ffffff; }
+        .race-card-body { padding: 0 14px 14px 14px; display: none; border-top: 1px solid #e2e8f0; margin-top: 2px; padding-top: 10px; background: #ffffff; width: 100%; box-sizing: border-box; }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
         .race-card-item.ended-race.expanded .race-card-body { background: #f1f5f9; }
 
@@ -398,7 +400,6 @@
     let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
     let activePaneIndex = 0;
     
-    // [추가] 상단 맨 위(선택된) 대회 박스를 제외한 나머지 상단 대회 박스들의 숨김 여부 상태 관리 변수
     let isOtherRacesHidden = false;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
@@ -681,11 +682,11 @@
         // 1. 맨 위에 위치할 최상단(선택된) 대회 카드 렌더링
         if (activeRaces.length > 0) {
             const topRace = activeRaces[0];
-            const card = createRaceCardElement(topRace, false, true); // true: 최상단 박스 여부
+            const card = createRaceCardElement(topRace, false, true);
             container.appendChild(card);
         }
 
-        // 2. 나머지 활성 대회 카드들 렌더링 (isOtherRacesHidden 상태에 따라 숨김/표시)
+        // 2. 나머지 활성 대회 카드들 렌더링
         const othersWrapper = document.createElement('div');
         othersWrapper.id = 'other-races-wrapper';
         othersWrapper.style.display = isOtherRacesHidden ? 'none' : 'flex';
@@ -831,16 +832,10 @@
             </div>
         `;
         
-        const header = card.querySelector('.race-card-header');
-        
-        // [수정] 클릭 이벤트 로직:
-        // - 맨 상단에 위치한 박스(isTopMost === true)를 클릭한 경우:
-        //   1) 이미 선택된 상태라면 -> 나머지 다른 상단 대회 박스들을 숨기거나 펼치는 토글 실행
-        //   2) 다른 대회를 클릭해서 최상단으로 올리는 경우 -> 해당 대회를 최상단으로 선택하고 펼침
-        header.onclick = function(e) {
+        // [수정] 박스 전체(.race-card-item)에 클릭 이벤트를 연결하여 어디를 누르든 작동하도록 수정
+        card.onclick = function(e) {
             e.stopPropagation();
             if (isTopMost) {
-                // 맨 상단 박스 아무 곳이나 클릭했을 때 나머지 대회 박스들을 숨기거나 나타나게 함
                 isOtherRacesHidden = !isOtherRacesHidden;
                 const wrapper = document.getElementById('other-races-wrapper');
                 if (wrapper) {
@@ -848,9 +843,8 @@
                     updateSwipeWrapperHeight();
                 }
             } else {
-                // 다른 대회 박스를 클릭한 경우 해당 대회를 선택된 대회로 지정
                 selectedRaceId = race.id;
-                isOtherRacesHidden = false; // 다른 대회를 선택할 때는 전체 목록이 보이도록 초기화
+                isOtherRacesHidden = false;
                 localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
                 refreshUI();
             }
