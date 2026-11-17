@@ -60,41 +60,41 @@
         .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
-        /* 아코디언 카드 스타일 및 부드러운 위치 이동 애니메이션 */
+        /* 아코디언 카드 스타일 및 부드러운 위치 이동 전환 (트랜지션) */
         #race-card-container { display: flex; flex-direction: column; gap: 8px; }
         .race-card-item { 
             background: #ffffff; 
             border: 2px solid #cbd5e1; 
             border-radius: 12px; 
             overflow: hidden; 
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+            will-change: transform;
         }
         
-        /* 선택된 메인 카드 강조 및 위로 올라오는 효과 */
+        /* 선택된 메인 카드 강조 및 위로 슥 올라가는 상태 */
         .race-card-item.selected-target { 
             border-color: var(--accent) !important; 
             box-shadow: 0 6px 16px rgba(37,99,235,0.12); 
             background: #f8fafc; 
-            order: -1; /* 항상 맨 위로 재배치 */
         }
 
-        /* 선택되지 않은 나머지 항목은 테두리를 차분한 회색으로 변하게 처리 */
+        /* 선택되지 않은 나머지 항목들은 테두리선이 차분한 회색조로 변함 */
         .race-card-item:not(.selected-target) {
-            border-color: #e2e8f0 !important;
-            opacity: 0.75;
-            background: #fafafa;
+            border-color: #d1d5db !important;
+            background: #fcfcfc;
+            opacity: 0.8;
         }
         .race-card-item:not(.selected-target):hover {
-            opacity: 0.9;
-            border-color: #cbd5e1 !important;
+            opacity: 0.95;
+            border-color: #9ca3af !important;
         }
 
-        .race-card-item.ended-race { opacity: 0.6; }
+        .race-card-item.ended-race { opacity: 0.55; }
         
         .race-card-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; background: #ffffff; }
         .race-card-item.selected-target .race-card-header { background: #eff6ff; }
-        .race-card-item:not(.selected-target) .race-card-header { background: #f8fafc; }
+        .race-card-item:not(.selected-target) .race-card-header { background: #fafafa; }
 
         .race-card-title-area { font-size: 1.02rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #1e293b; flex-wrap: wrap; }
         
@@ -130,8 +130,8 @@
         .style-half { color: #b45309 !important; }
         .style-10k { color: #0369a1 !important; }
         .style-5k { color: #15803d !important; }
-        .style-attend { color: #0284c7 !important; }          /* 참석: 파란 계열 */
-        .style-family { color: #9333ea !important; }          /* 참석(가족동반): 보라 계열 */
+        .style-attend { color: #0284c7 !important; }          
+        .style-family { color: #9333ea !important; }          
         .style-etc { color: #be185d !important; }
 
         .course-btn-style { background: #ffffff; color: var(--text-main); border-color: #cbd5e1; }
@@ -568,17 +568,25 @@
         updateSwipeWrapperHeight();
     }
 
+    // 💡 FLIP 애니메이션 기법을 적용한 부드러운 박스 위치 이동 함수
     function renderRaceCards() {
         const container = document.getElementById('race-card-container');
         if (!container) return;
-        container.innerHTML = '';
         
         if (globalRaces.length === 0) {
             container.innerHTML = "<div style='font-size:0.85rem; color:#dc2626; font-weight:700; padding:6px;'>⚠️ 등록된 대회 및 행사가 없습니다. 관리자 설정(⚙️)에서 등록해주세요!</div>";
             return;
         }
 
-        // 선택된 항목이 맨 위로 오도록 정렬 (CSS order: -1과 연동)
+        // 1. 렌더링 전 각 카드의 현재 화면상 위치(getBoundingClientRect) 기억 (First)
+        const prevRects = {};
+        container.querySelectorAll('.race-card-item').forEach(el => {
+            const id = el.getAttribute('data-race-id');
+            if (id) prevRects[id] = el.getBoundingClientRect();
+        });
+
+        container.innerHTML = '';
+
         let sortedRaces = [...globalRaces].sort((a, b) => {
             if (a.id === selectedRaceId) return -1;
             if (b.id === selectedRaceId) return 1;
@@ -631,6 +639,27 @@
 
             container.appendChild(endedSection);
         }
+
+        // 2. 렌더링 후 새로운 위치를 파악하고, 이전 위치에서부터 부드럽게 미끄러지도록 애니메이션 실행 (Last & Invert & Play)
+        requestAnimationFrame(() => {
+            container.querySelectorAll('.race-card-item').forEach(el => {
+                const id = el.getAttribute('data-race-id');
+                if (prevRects[id]) {
+                    const newRect = el.getBoundingClientRect();
+                    const deltaY = prevRects[id].top - newRect.top;
+
+                    if (deltaY !== 0) {
+                        el.style.transform = `translateY(${deltaY}px)`;
+                        el.style.transition = 'none';
+
+                        requestAnimationFrame(() => {
+                            el.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease';
+                            el.style.transform = 'translateY(0)';
+                        });
+                    }
+                }
+            });
+        });
     }
 
     function createRaceCardElement(race, isEnded) {
@@ -638,6 +667,8 @@
         const isSelected = (race.id === selectedRaceId);
         const isExpanded = isSelected; 
         
+        card.setAttribute('data-race-id', race.id);
+
         let cardClasses = ['race-card-item'];
         if (isEnded) {
             cardClasses.push('ended-race');
@@ -696,6 +727,7 @@
             e.stopPropagation();
             if (selectedRaceId === race.id) {
                 card.classList.toggle('expanded');
+                updateSwipeWrapperHeight();
             } else {
                 selectedRaceId = race.id;
                 localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
