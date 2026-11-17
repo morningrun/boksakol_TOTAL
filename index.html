@@ -80,7 +80,7 @@
             border: 2px solid #cbd5e1; 
             border-radius: 12px; 
             overflow: hidden; 
-            cursor: pointer; /* [수정] 박스 전체가 클릭 가능하도록 마우스 커서 변경 */
+            cursor: pointer; 
             transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
             will-change: transform;
@@ -134,6 +134,23 @@
         .race-card-body { padding: 0 14px 14px 14px; display: none; border-top: 1px solid #e2e8f0; margin-top: 2px; padding-top: 10px; background: #ffffff; width: 100%; box-sizing: border-box; }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
         .race-card-item.ended-race.expanded .race-card-body { background: #f1f5f9; }
+
+        /* [추가] 나머지 하단 대회 박스들이 부드럽게 애니메이션되며 숨겨지고 나타나도록 처리하는 스타일 */
+        #other-races-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, margin-top 0.3s ease;
+            opacity: 1;
+        }
+        #other-races-wrapper.hidden-animated {
+            max-height: 0 !important;
+            opacity: 0 !important;
+            margin-top: 0 !important;
+            pointer-events: none;
+        }
 
         .ended-section-container { margin-top: 10px; border: 2px dashed #94a3b8; border-radius: 12px; background: #ffffff; overflow: hidden; padding: 6px; }
         .ended-section-header { padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 800; font-size: 0.9rem; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; user-select: none; }
@@ -686,13 +703,14 @@
             container.appendChild(card);
         }
 
-        // 2. 나머지 활성 대회 카드들 렌더링
+        // 2. 나머지 활성 대회 카드들 렌더링 (애니메이션 토글 적용)
         const othersWrapper = document.createElement('div');
         othersWrapper.id = 'other-races-wrapper';
-        othersWrapper.style.display = isOtherRacesHidden ? 'none' : 'flex';
-        othersWrapper.style.flexDirection = 'column';
-        othersWrapper.style.gap = '8px';
-        othersWrapper.style.marginTop = activeRaces.length > 1 ? '8px' : '0px';
+        if (isOtherRacesHidden) {
+            othersWrapper.classList.add('hidden-animated');
+        } else {
+            othersWrapper.classList.remove('hidden-animated');
+        }
 
         for (let i = 1; i < activeRaces.length; i++) {
             const card = createRaceCardElement(activeRaces[i], false, false);
@@ -832,15 +850,20 @@
             </div>
         `;
         
-        // [수정] 박스 전체(.race-card-item)에 클릭 이벤트를 연결하여 어디를 누르든 작동하도록 수정
+        // [수정] 최상단 박스 하단창 또는 박스 전체를 클릭했을 때의 애니메이션 토글 동작
         card.onclick = function(e) {
             e.stopPropagation();
             if (isTopMost) {
+                // 맨 상단 박스를 클릭했을 때 하단 대회창들을 애니메이션과 함께 숨기거나 나타나게 함
                 isOtherRacesHidden = !isOtherRacesHidden;
                 const wrapper = document.getElementById('other-races-wrapper');
                 if (wrapper) {
-                    wrapper.style.display = isOtherRacesHidden ? 'none' : 'flex';
-                    updateSwipeWrapperHeight();
+                    if (isOtherRacesHidden) {
+                        wrapper.classList.add('hidden-animated');
+                    } else {
+                        wrapper.classList.remove('hidden-animated');
+                    }
+                    setTimeout(updateSwipeWrapperHeight, 400); // 애니메이션 완료 후 높이 재조정
                 }
             } else {
                 selectedRaceId = race.id;
