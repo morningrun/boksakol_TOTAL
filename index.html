@@ -286,7 +286,7 @@
                 </div>
             </div>
 
-            <!-- 일반 행사 항목 설정 영역 (기본값 참석 / 참석(가족동반)으로 명확히 분리) -->
+            <!-- 일반 행사 항목 설정 영역 -->
             <div id="event-option-setting-wrapper" class="hidden">
                 <div style="font-size:0.82rem; font-weight:700; color:#38bdf8; margin-top:6px;">행사 선택 항목 및 참가비 설정</div>
                 <div class="course-setting-grid">
@@ -681,11 +681,8 @@
             const courseList = parseCourses(race.courses);
             courseList.forEach(c => {
                 if(c.trim()) {
-                    let displayC = c;
-                    if (race.itemType === 'event') {
-                        displayC = c.replace(/\s*\(.*?원\)/g, "").trim();
-                    }
-                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">• ${displayC}</div>`;
+                    // 안내 카드에서는 참가비가 포함된 전체 내용(- 항목명(참가비)) 표출
+                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">- ${c}</div>`;
                 }
             });
         }
@@ -712,9 +709,9 @@
                     <div>• 일자: ${race.date}</div>
                     <div>• 장소: ${race.location || '장소 미정'}</div>
                     <div style="margin-top: 1px;">
-                        <div>• 항목 및 참가비:</div>
+                        <div>• 항목 및 참가비</div>
                         <div style="padding-left: 12px; margin-top: 1px;">
-                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">• 참석</div>'}
+                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">- 참석</div>'}
                         </div>
                     </div>
                     <div style="margin-top: 1px;">• 마감일: ${race.deadline}</div>
@@ -801,9 +798,8 @@
                 cardStyleClass = getCourseStyleClass(appliedCourse);
                 card.className = `member-card`;
                 let displayApplied = appliedCourse;
-                if (currentRace.itemType === 'event') {
-                    displayApplied = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
-                }
+                // 신청 완료 뱃지에서는 참가비 제거하고 참석여부만 표시
+                displayApplied = displayApplied.replace(/\s*\(.*?원\)/g, "").trim();
                 badgeHtml = `<span class="applied-badge ${cardStyleClass}">✅ ${displayApplied} 신청완료</span>`;
             } else {
                 card.className = `member-card`;
@@ -829,10 +825,8 @@
                         if(!courseWithPrice.trim()) return;
                         const btn = document.createElement('button');
                         
-                        let displayBtnText = courseWithPrice;
-                        if (currentRace.itemType === 'event') {
-                            displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
-                        }
+                        // 버튼 텍스트에는 참가비 제외하고 참석 여부만 깔끔하게 표시
+                        let displayBtnText = courseWithPrice.replace(/\s*\(.*?원\)/g, "").trim();
                         btn.textContent = displayBtnText;
                         btn.className = "course-btn-style";
                         
@@ -844,10 +838,7 @@
                         btnGroup.appendChild(btn);
                     });
                 } else {
-                    let displaySelected = appliedCourse;
-                    if (currentRace.itemType === 'event') {
-                        displaySelected = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
-                    }
+                    let displaySelected = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
                     const selectedBtn = document.createElement('button');
                     selectedBtn.textContent = `신청: ${displaySelected}`;
                     selectedBtn.className = `selected-course ${cardStyleClass}`;
@@ -868,10 +859,7 @@
                 }
             } else {
                 if (isApplied) {
-                    let displayFinished = appliedCourse;
-                    if (currentRace.itemType === 'event') {
-                        displayFinished = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
-                    }
+                    let displayFinished = appliedCourse.replace(/\s*\(.*?원\)/g, "").trim();
                     const selectedBtn = document.createElement('button');
                     selectedBtn.textContent = `신청완료: ${displayFinished}`;
                     selectedBtn.className = `selected-course ${cardStyleClass}`;
@@ -938,8 +926,7 @@
         const totalCount = Object.keys(raceApps).length;
 
         const availableCourses = parseCourses(currentRace.courses).map(c => {
-            let cleanC = currentRace.itemType === 'event' ? c.replace(/\s*\(.*?원\)/g, "").trim() : c.replace(/\s*\(.*?\)/g, "").trim();
-            return cleanC;
+            return c.replace(/\s*\(.*?\)/g, "").trim();
         }).filter(c => c.length > 0);
 
         const searchInput = document.getElementById('status-search-input');
@@ -953,9 +940,7 @@
                 return;
             }
             let course = raceApps[memberName];
-            if (currentRace.itemType === 'event') {
-                course = course.replace(/\s*\(.*?원\)/g, "").trim();
-            }
+            course = course.replace(/\s*\(.*?\)/g, "").trim();
             if (!courseGroups[course]) {
                 courseGroups[course] = [];
             }
@@ -1299,7 +1284,7 @@
             document.getElementById('ev-custom-2-name').disabled = true;
             document.getElementById('price-ev-custom-2').disabled = true;
 
-            parts.forEach(part => {
+            parts.forEach((part, index) => {
                 const match = part.match(/^(.+?)\s*\(([^)]+)\)$/);
                 let pName = part.trim();
                 let pPrice = "0";
@@ -1309,32 +1294,26 @@
                     pPrice = match[2].trim().replace("원", "");
                 }
 
-                chks.forEach((chk, idx) => {
-                    if (idx === 0) {
-                        chk.checked = true;
-                        document.getElementById('event-opt-1').value = pName;
-                        document.getElementById('price-ev-1').value = pPrice;
-                    } else if (idx === 1) {
-                        chk.checked = true;
-                        document.getElementById('event-opt-2').value = pName;
-                        document.getElementById('price-ev-2').value = pPrice;
-                    }
-                });
-
-                if (pName !== '참석' && pName !== '참석(가족동반)' && pName !== '불참') {
-                    if (!document.getElementById('ev-custom-1-name').value && !document.getElementById('chk-ev-custom-1').checked) {
-                        document.getElementById('chk-ev-custom-1').checked = true;
-                        document.getElementById('ev-custom-1-name').value = pName;
-                        document.getElementById('ev-custom-1-name').disabled = false;
-                        document.getElementById('price-ev-custom-1').value = pPrice;
-                        document.getElementById('price-ev-custom-1').disabled = false;
-                    } else if (!document.getElementById('ev-custom-2-name').value && !document.getElementById('chk-ev-custom-2').checked) {
-                        document.getElementById('chk-ev-custom-2').checked = true;
-                        document.getElementById('ev-custom-2-name').value = pName;
-                        document.getElementById('ev-custom-2-name').disabled = false;
-                        document.getElementById('price-ev-custom-2').value = pPrice;
-                        document.getElementById('price-ev-custom-2').disabled = false;
-                    }
+                if (index === 0) {
+                    chks[0].checked = true;
+                    document.getElementById('event-opt-1').value = pName;
+                    document.getElementById('price-ev-1').value = pPrice;
+                } else if (index === 1) {
+                    chks[1].checked = true;
+                    document.getElementById('event-opt-2').value = pName;
+                    document.getElementById('price-ev-2').value = pPrice;
+                } else if (index === 2) {
+                    chks[2].checked = true;
+                    document.getElementById('ev-custom-1-name').value = pName;
+                    document.getElementById('ev-custom-1-name').disabled = false;
+                    document.getElementById('price-ev-custom-1').value = pPrice;
+                    document.getElementById('price-ev-custom-1').disabled = false;
+                } else if (index === 3) {
+                    chks[3].checked = true;
+                    document.getElementById('ev-custom-2-name').value = pName;
+                    document.getElementById('ev-custom-2-name').disabled = false;
+                    document.getElementById('price-ev-custom-2').value = pPrice;
+                    document.getElementById('price-ev-custom-2').disabled = false;
                 }
             });
         } else {
