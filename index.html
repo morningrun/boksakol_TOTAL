@@ -60,20 +60,44 @@
         .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
-        /* 아코디언 카드 스타일 */
-        .race-card-item { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; margin-bottom: 8px; overflow: hidden; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .race-card-item:last-child { margin-bottom: 0; }
+        /* 아코디언 카드 스타일 및 부드러운 위치 이동 애니메이션 */
+        #race-card-container { display: flex; flex-direction: column; gap: 8px; }
+        .race-card-item { 
+            background: #ffffff; 
+            border: 2px solid #cbd5e1; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+        }
         
-        .race-card-item.active-race { border-color: #86efac !important; }
-        .race-card-item.selected-target { border-color: var(--accent) !important; box-shadow: 0 6px 16px rgba(37,99,235,0.12); background: #f8fafc; }
-        .race-card-item.ended-race { border-color: #cbd5e1 !important; opacity: 0.85; }
+        /* 선택된 메인 카드 강조 및 위로 올라오는 효과 */
+        .race-card-item.selected-target { 
+            border-color: var(--accent) !important; 
+            box-shadow: 0 6px 16px rgba(37,99,235,0.12); 
+            background: #f8fafc; 
+            order: -1; /* 항상 맨 위로 재배치 */
+        }
+
+        /* 선택되지 않은 나머지 항목은 테두리를 차분한 회색으로 변하게 처리 */
+        .race-card-item:not(.selected-target) {
+            border-color: #e2e8f0 !important;
+            opacity: 0.75;
+            background: #fafafa;
+        }
+        .race-card-item:not(.selected-target):hover {
+            opacity: 0.9;
+            border-color: #cbd5e1 !important;
+        }
+
+        .race-card-item.ended-race { opacity: 0.6; }
         
         .race-card-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; background: #ffffff; }
         .race-card-item.selected-target .race-card-header { background: #eff6ff; }
+        .race-card-item:not(.selected-target) .race-card-header { background: #f8fafc; }
 
         .race-card-title-area { font-size: 1.02rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #1e293b; flex-wrap: wrap; }
         
-        /* 뱃지 스타일 분기 */
         .badge-type-race { font-size: 0.76rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
         .badge-type-event { font-size: 0.76rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; background: #fae8ff; color: #86198f; border: 1px solid #f5d0fe; }
 
@@ -152,7 +176,7 @@
         <div id="sync-status" class="sync-loading" style="display:none;">동기화 중...</div>
     </div>
     
-    <!-- 1. 안내 카드 영역 (선택된 항목 최상단 자동 정렬 및 펼치기/접기 적용) -->
+    <!-- 1. 안내 카드 영역 -->
     <div class="race-content-card-box" id="race-selector-wrapper">
         <div id="race-card-container"></div>
     </div>
@@ -363,8 +387,8 @@
         if (course.includes('하프')) return 'style-half';
         if (course.includes('10k')) return 'style-10k';
         if (course.includes('5k')) return 'style-5k';
-        if (course.includes('참석(가족동반)')) return 'style-family';  // 가족동반 보라색
-        if (course.includes('참석')) return 'style-attend';             // 참석 파란색
+        if (course.includes('참석(가족동반)')) return 'style-family';  
+        if (course.includes('참석')) return 'style-attend';             
         return 'style-etc';
     }
 
@@ -376,7 +400,7 @@
         
         rawList.forEach(item => {
             item = item.trim();
-            if (!item) return; // 빈 항목 필터링 (노출 방지)
+            if (!item) return; 
             if (temp) {
                 temp += ", " + item;
             } else {
@@ -554,7 +578,7 @@
             return;
         }
 
-        // 선택된 항목이 맨 위로 오도록 정렬
+        // 선택된 항목이 맨 위로 오도록 정렬 (CSS order: -1과 연동)
         let sortedRaces = [...globalRaces].sort((a, b) => {
             if (a.id === selectedRaceId) return -1;
             if (b.id === selectedRaceId) return 1;
@@ -612,8 +636,6 @@
     function createRaceCardElement(race, isEnded) {
         const card = document.createElement('div');
         const isSelected = (race.id === selectedRaceId);
-        
-        // 💡 핵심: 선택된 카드만 열리고, 나머지는 접혀있게 하여 화면 복잡함 해소 (다른 것을 클릭하면 즉시 위로 올라오며 펼쳐짐)
         const isExpanded = isSelected; 
         
         let cardClasses = ['race-card-item'];
@@ -641,7 +663,6 @@
             ? `<span class="status-badge ended">종료</span>`
             : `<span class="status-badge active-badge">진행중</span>`;
 
-        // 💡 요청사항 반영: 대회와 행사 타이틀 앞에 뚜렷한 색상의 뱃지 적용
         const typeBadge = race.itemType === 'event' 
             ? `<span class="badge-type-event">🎉 행사</span>` 
             : `<span class="badge-type-race">🏃‍♂️ 대회</span>`;
