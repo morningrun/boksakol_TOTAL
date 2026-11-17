@@ -37,7 +37,6 @@
             --border: #cbd5e1;
         }
 
-        /* 부드러운 스크롤 애니메이션 활성화 */
         html {
             scroll-behavior: smooth;
         }
@@ -48,7 +47,6 @@
         .main-title-box { text-align: center; margin: 6px 0 14px 0; }
         .main-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
 
-        /* 탭 메뉴 상단 고정 (Sticky) */
         .sticky-tab-group {
             position: sticky;
             top: 0;
@@ -390,7 +388,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzOYjOEnWNydwXatVHIFYQZO-yydpvkcpT2DfmbvRVoMzdM6YuYjy7Ql_ta8Q_Vas64/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxk2ZwIvgIc6FtzgrmF63V_YicWzLawgWL5gBshtfHT4yopmdsFHo_t0HsAIY8tKvJN/exec";
 
     let globalMembers = [];
     let globalRaces = [];
@@ -937,7 +935,6 @@
         updateSwipeWrapperHeight();
     }
 
-    // 💡 대회 및 행사 구분 맞춤형 확인 팝업(confirm) 함수 추가
     function confirmAndApply(memberName, courseWithPrice) {
         const currentRace = globalRaces.find(r => r.id === selectedRaceId);
         if (!currentRace || isRaceEnded(currentRace)) return;
@@ -947,7 +944,7 @@
 
         if (courseWithPrice === "null" || !courseWithPrice) {
             if (isEvent) {
-                message = `[${currentRace.name}]\n\n${memberName님의 참석(신청)을 취소하시겠습니까?`;
+                message = `[${currentRace.name}]\n\n${memberName}님의 참석(신청)을 취소하시겠습니까?`;
             } else {
                 message = `[${currentRace.name}]\n\n${memberName}님의 참가 신청을 취소하시겠습니까?`;
             }
