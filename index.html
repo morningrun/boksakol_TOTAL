@@ -60,7 +60,7 @@
         .swipe-pane { width: 33.3333%; flex-shrink: 0; box-sizing: border-box; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; height: 0; overflow: hidden; padding: 0; background: transparent; border: none; }
         .swipe-pane.active-pane { opacity: 1; pointer-events: auto; height: auto; overflow: visible; }
 
-        /* 아코디언 카드 스타일 및 부드러운 위치 이동 전환 (트랜지션) */
+        /* 아코디언 카드 스타일 및 부드러운 위치 이동 전환 */
         #race-card-container { display: flex; flex-direction: column; gap: 8px; }
         .race-card-item { 
             background: #ffffff; 
@@ -72,14 +72,12 @@
             will-change: transform;
         }
         
-        /* 선택된 메인 카드 강조 및 위로 슥 올라가는 상태 */
         .race-card-item.selected-target { 
             border-color: var(--accent) !important; 
             box-shadow: 0 6px 16px rgba(37,99,235,0.12); 
             background: #f8fafc; 
         }
 
-        /* 선택되지 않은 나머지 항목들은 테두리선이 차분한 회색조로 변함 */
         .race-card-item:not(.selected-target) {
             border-color: #d1d5db !important;
             background: #fcfcfc;
@@ -117,11 +115,21 @@
         .ended-section-container.expanded .ended-section-body { display: flex; }
         .ended-section-container.expanded .ended-toggle-icon { transform: rotate(180deg); }
 
-        /* 회원 카드 컴팩트 스타일 */
+        /* 회원 카드 컴팩트 스타일 (글씨 크기 및 엉킴 방지 최적화) */
         .member-card { display: flex; flex-direction: column; padding: 8px 10px; margin-bottom: 6px; background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.15s; }
         .member-info { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
         .member-name-area { font-weight: 800; font-size: 0.92rem; color: var(--primary); display: flex; align-items: center; gap: 6px; overflow: hidden; }
         
+        /* 💡 신청완료 뱃지 영역 컴팩트 조정 (과도한 크기 수정) */
+        .applied-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+        .applied-badge.style-full { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+        .applied-badge.style-half { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .applied-badge.style-10k { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .applied-badge.style-5k { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .applied-badge.style-attend { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+        .applied-badge.style-family { background: #f3e8ff; color: #9333ea; border: 1px solid #e9d5ff; }
+        .applied-badge.style-etc { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
+
         .btn-group { display: flex; gap: 5px; width: 100%; flex-wrap: wrap; }
         .btn-group button { flex: 1; min-width: 80px; padding: 6px 4px; font-size: 0.76rem; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 800; text-align: center; transition: all 0.15s; }
         
@@ -196,14 +204,14 @@
                 <div class="swipe-pane active-pane" id="pane-status">
                     <div id="status-summary-box" style="margin-bottom: 12px;"></div>
                     <div class="search-box">
-                        <input type="text" id="status-search-input" class="search-input" placeholder="🔍 신청자 이름 검색 (예: 홍길동)" oninput="renderStatusTab()">
+                        <input type="text" id="status-search-input" class="search-input" placeholder="🔍 신청자 이름 검색 (예: 이실권)" oninput="renderStatusTab()">
                     </div>
                     <div id="status-detail-list" style="margin-top: 10px;"></div>
                 </div>
                 <!-- 2번 패널: 참가 신청 -->
                 <div class="swipe-pane" id="pane-apply">
                     <div class="search-box">
-                        <input type="text" id="apply-search-input" class="search-input" placeholder="🔍 회원 이름 검색 (예: 홍길동)" oninput="renderMemberList()">
+                        <input type="text" id="apply-search-input" class="search-input" placeholder="🔍 회원 이름 검색 (예: 이실권)" oninput="renderMemberList()">
                     </div>
                     <div id="member-list-wrapper"></div>
                 </div>
@@ -211,7 +219,7 @@
                 <div class="swipe-pane" id="pane-members">
                     <div id="member-stats-summary"></div>
                     <div class="search-box" style="margin-top: 12px;">
-                        <input type="text" id="members-search-input" class="search-input" placeholder="🔍 전체 회원 이름 검색 (예: 홍길동)" oninput="renderAllMembersTab()">
+                        <input type="text" id="members-search-input" class="search-input" placeholder="🔍 전체 회원 이름 검색 (예: 이실권)" oninput="renderAllMembersTab()">
                     </div>
                     <div id="all-member-list-wrapper" style="margin-top: 12px;"></div>
                 </div>
@@ -568,7 +576,7 @@
         updateSwipeWrapperHeight();
     }
 
-    // 💡 FLIP 애니메이션 기법을 적용한 부드러운 박스 위치 이동 함수
+    // FLIP 애니메이션 기법을 적용한 부드러운 박스 위치 이동 함수
     function renderRaceCards() {
         const container = document.getElementById('race-card-container');
         if (!container) return;
@@ -578,7 +586,6 @@
             return;
         }
 
-        // 1. 렌더링 전 각 카드의 현재 화면상 위치(getBoundingClientRect) 기억 (First)
         const prevRects = {};
         container.querySelectorAll('.race-card-item').forEach(el => {
             const id = el.getAttribute('data-race-id');
@@ -640,7 +647,6 @@
             container.appendChild(endedSection);
         }
 
-        // 2. 렌더링 후 새로운 위치를 파악하고, 이전 위치에서부터 부드럽게 미끄러지도록 애니메이션 실행 (Last & Invert & Play)
         requestAnimationFrame(() => {
             container.querySelectorAll('.race-card-item').forEach(el => {
                 const id = el.getAttribute('data-race-id');
@@ -799,7 +805,7 @@
 
             if (isApplied) {
                 cardStyleClass = getCourseStyleClass(appliedCourse);
-                card.className = `member-card ${cardStyleClass}`;
+                card.className = `member-card`; // 카드 전체 배경은 흰색 유지, 뱃지만 깔끔하게 표시
                 badgeHtml = `<span class="applied-badge ${cardStyleClass}">✅ ${appliedCourse} 신청완료</span>`;
             } else {
                 card.className = `member-card`;
