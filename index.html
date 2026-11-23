@@ -644,17 +644,25 @@
         return result.filter(c => c.trim().length > 0);
     }
 
-    function calculateDDay(dateStr) {
-        if (!dateStr) return "";
-        const match = dateStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
-        if (!match) return "";
+    // 2026.12.05 / 2026-12-05 / 2026/12/05 및 2026년 12월 5일 형식 모두 인식
+    function extractParsedDate(str) {
+        if (!str) return null;
+        const text = String(str);
+        const match = text.match(/(\d{4})\s*(?:년|[./-])\s*(\d{1,2})\s*(?:월|[./-])\s*(\d{1,2})/);
+        if (!match) return null;
 
         const year = parseInt(match[1], 10);
         const month = parseInt(match[2], 10) - 1;
         const day = parseInt(match[3], 10);
 
-        const targetDate = new Date(year, month, day);
-        targetDate.setHours(0, 0, 0, 0);
+        const parsed = new Date(year, month, day);
+        parsed.setHours(0, 0, 0, 0);
+        return parsed;
+    }
+
+    function calculateDDay(dateStr) {
+        const targetDate = extractParsedDate(dateStr);
+        if (!targetDate) return "";
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -722,13 +730,8 @@
             return true;
         }
 
-        const match = deadlineStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
-        if (match) {
-            const year = parseInt(match[1], 10);
-            const month = parseInt(match[2], 10) - 1;
-            const day = parseInt(match[3], 10);
-            const deadlineDate = new Date(year, month, day);
-
+        const deadlineDate = extractParsedDate(deadlineStr);
+        if (deadlineDate) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -754,14 +757,8 @@
         const name = race.name || "";
         if (name.includes("[종료]") || name.includes("종료")) return true;
 
-        const dateStr = race.date || "";
-        const match = dateStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
-        if (match) {
-            const year = parseInt(match[1], 10);
-            const month = parseInt(match[2], 10) - 1;
-            const day = parseInt(match[3], 10);
-            const raceDate = new Date(year, month, day);
-
+        const raceDate = extractParsedDate(race.date);
+        if (raceDate) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
