@@ -171,6 +171,25 @@
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
         .race-card-item.ended-race.expanded .race-card-body { background: #f8fafc; border-top-color: #e2e8f0; border-left-color: #64748b; }
 
+        .homepage-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .homepage-link-btn:hover {
+            background: #dbeafe;
+            border-color: #2563eb;
+        }
+
         /* 하단 대회 박스들 및 종료된 목록 애니메이션 숨김/표시 처리 */
         .collapsible-section {
             display: flex;
@@ -355,6 +374,8 @@
             <input type="text" id="new-race-location" placeholder="장소 (예: 삼척시민운동장 / 대회의실)">
             <input type="text" id="new-race-date" placeholder="일자 및 요일 (예: 2026.04.13(일))">
             <input type="text" id="new-race-deadline" placeholder="마감일 (예: 2026.03.15까지 / 선착순 / 미지정)">
+            <input type="url" id="new-race-homepage" placeholder="홈페이지 주소 (예: https://... / 선택입력)">
+            <input type="text" id="new-race-memo" placeholder="기타 안내 (예: 집결시간, 준비물, 계좌안내 등 / 선택입력)">
             
             <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
                 <label style="font-size:0.85rem; font-weight:700; color:#38bdf8;">진행 상태:</label>
@@ -490,6 +511,58 @@
     let isOtherRacesHidden = false;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "3.5km": 5, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function normalizeUrl(rawUrl) {
+        if (!rawUrl) return "";
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return "";
+        if (/^https?:\/\//i.test(trimmed)) return trimmed;
+        return "https://" + trimmed;
+    }
+
+    // 백엔드 컬럼 유무와 무관하게 홈페이지/기타 정보를 안정적으로 보존하기 위한 파싱/직렬화 헬퍼
+    function unpackRaceExtra(race) {
+        if (!race) return race;
+        let loc = String(race.location || "");
+        let hp = String(race.homepage || "");
+        let memo = String(race.memo || "");
+
+        const memoMatch = loc.match(/\|\|MEMO:(.*)$/);
+        if (memoMatch) {
+            if (!memo) memo = memoMatch[1].trim();
+            loc = loc.replace(/\|\|MEMO:.*$/, "").trim();
+        }
+
+        const hpMatch = loc.match(/\|\|HP:(.*)$/);
+        if (hpMatch) {
+            if (!hp) hp = hpMatch[1].trim();
+            loc = loc.replace(/\|\|HP:.*$/, "").trim();
+        }
+
+        race.location = loc;
+        race.homepage = hp;
+        race.memo = memo;
+        return race;
+    }
+
+    function packLocationWithExtra(location, homepage, memo) {
+        let packed = String(location || "").trim();
+        const hp = String(homepage || "").trim();
+        const mm = String(memo || "").trim();
+        if (hp) packed += `||HP:${hp}`;
+        if (mm) packed += `||MEMO:${mm}`;
+        return packed;
+    }
 
     function getCourseRank(course) {
         if (!course) return 99;
@@ -646,7 +719,7 @@
 
     function applyDataPayload(data) {
         globalMembers = data.members || [];
-        globalRaces = data.races || [];
+        globalRaces = (data.races || []).map(r => unpackRaceExtra({ ...r }));
         globalApplications = data.applications || {};
 
         if (data.adminPassword) {
@@ -705,7 +778,7 @@
             const data = await response.json();
 
             applyDataPayload(data);
-            saveCacheData(data);
+            saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
             setSyncIndicator("");
             refreshUI();
         } catch (error) {
@@ -901,7 +974,7 @@
             const courseList = parseCourses(race.courses);
             courseList.forEach(c => {
                 if(c.trim()) {
-                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">- ${c}</div>`;
+                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">- ${escapeHtml(c)}</div>`;
                 }
             });
         }
@@ -932,7 +1005,20 @@
         const ended = isRaceEnded(race);
         const deadlineDisplay = ended 
             ? `<span style="color: var(--danger); font-weight: 800;">접수마감</span>` 
-            : race.deadline;
+            : escapeHtml(race.deadline);
+
+        const safeHomepage = normalizeUrl(race.homepage);
+        const homepageHtml = safeHomepage
+            ? `<div style="margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <span>• 홈페이지:</span>
+                <a href="${escapeHtml(safeHomepage)}" target="_blank" rel="noopener noreferrer" class="homepage-link-btn" onclick="event.stopPropagation();">🔗 홈페이지 바로가기</a>
+               </div>`
+            : "";
+
+        const memoText = String(race.memo || "").trim();
+        const memoHtml = memoText
+            ? `<div style="margin-top: 1px;">• 기타: ${escapeHtml(memoText)}</div>`
+            : "";
 
         card.innerHTML = `
             <div class="race-card-header">
@@ -940,14 +1026,14 @@
                     ${badgeHtml}
                     ${typeBadge}
                     ${ddayBadgeHtml}
-                    <span>${race.name}</span>
+                    <span>${escapeHtml(race.name)}</span>
                 </div>
                 <div class="race-toggle-icon" style="transform: ${isSelected ? 'rotate(180deg)' : 'rotate(0deg)'};">▼</div>
             </div>
             <div class="race-card-body">
                 <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #1e293b; font-weight: 700;">
-                    <div>• 일자: ${race.date}</div>
-                    <div>• 장소: ${race.location || '장소 미정'}</div>
+                    <div>• 일자: ${escapeHtml(race.date)}</div>
+                    <div>• 장소: ${escapeHtml(race.location || '장소 미정')}</div>
                     <div style="margin-top: 1px;">
                         <div>• 항목 및 참가비</div>
                         <div style="padding-left: 12px; margin-top: 1px;">
@@ -955,6 +1041,8 @@
                         </div>
                     </div>
                     <div style="margin-top: 1px;">• 마감일: ${deadlineDisplay}</div>
+                    ${homepageHtml}
+                    ${memoHtml}
                 </div>
             </div>
         `;
@@ -1281,7 +1369,7 @@
 
         let summaryHtml = `
             <div style="background: transparent; border: none; padding: 2px 8px; text-align: center; margin-bottom: 2px;">
-                <div style="font-weight: 800; font-size: 1.0rem; color: var(--primary); margin-bottom: 2px;">[${currentRace.name}]</div>
+                <div style="font-weight: 800; font-size: 1.0rem; color: var(--primary); margin-bottom: 2px;">[${escapeHtml(currentRace.name)}]</div>
                 <div style="font-size: 0.92rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
                     총신청인원 <strong style="color: var(--accent); font-size: 1.1rem;">${totalCount}</strong>명
                 </div>
@@ -1570,10 +1658,17 @@
             const toggleBtnText = isForceClosed ? "🟢 접수 재개하기" : "🔴 강제 접수마감";
             const toggleBtnBg = isForceClosed ? "#059669" : "#dc2626";
 
+            const extraInfoArr = [];
+            if (race.homepage) extraInfoArr.push(`🔗 홈페이지 등록됨`);
+            if (race.memo) extraInfoArr.push(`기타: ${escapeHtml(race.memo)}`);
+            const extraLineHtml = extraInfoArr.length > 0
+                ? `<br><span style="font-size:0.7rem; color:#93c5fd;">${extraInfoArr.join(' / ')}</span>`
+                : "";
+
             const row = document.createElement('div');
             row.className = 'race-admin-row';
             row.innerHTML = `
-                <div style="font-size:0.85rem;"><strong>${typeLabel} ${race.name}</strong> <span style="font-size:0.7rem; color:${isForceClosed?'#fca5a5':'#38bdf8'};">[${statusLabel}]</span><br><span style="font-size:0.72rem; color:#cbd5e1;">내용: ${race.courses}</span><br><span style="font-size:0.7rem; color:#94a3b8;">${race.date} / 마감: ${race.deadline}</span></div>
+                <div style="font-size:0.85rem;"><strong>${typeLabel} ${escapeHtml(race.name)}</strong> <span style="font-size:0.7rem; color:${isForceClosed?'#fca5a5':'#38bdf8'};">[${statusLabel}]</span><br><span style="font-size:0.72rem; color:#cbd5e1;">내용: ${escapeHtml(race.courses)}</span><br><span style="font-size:0.7rem; color:#94a3b8;">${escapeHtml(race.date)} / 마감: ${escapeHtml(race.deadline)}</span>${extraLineHtml}</div>
                 <div style="display:flex; gap:4px; flex-direction:column; align-items:flex-end;">
                     <div style="display:flex; gap:4px;">
                         <button class="race-edit-btn" data-id="${race.id}" style="background:#2563eb; color:white; border:none; padding:4px 7px; border-radius:4px; cursor:pointer; font-size:0.72rem; font-weight:700;">수정</button>
@@ -1612,7 +1707,8 @@
         refreshUI();
 
         try {
-            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(race.id)}&itemType=${encodeURIComponent(race.itemType || 'race')}&raceName=${encodeURIComponent(race.name)}&location=${encodeURIComponent(race.location || '')}&date=${encodeURIComponent(race.date)}&deadline=${encodeURIComponent(race.deadline)}&courses=${encodeURIComponent(race.courses)}&status=${encodeURIComponent(race.status)}`;
+            const packedLocation = packLocationWithExtra(race.location, race.homepage, race.memo);
+            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(race.id)}&itemType=${encodeURIComponent(race.itemType || 'race')}&raceName=${encodeURIComponent(race.name)}&location=${encodeURIComponent(packedLocation)}&date=${encodeURIComponent(race.date)}&deadline=${encodeURIComponent(race.deadline)}&courses=${encodeURIComponent(race.courses)}&status=${encodeURIComponent(race.status)}&homepage=${encodeURIComponent(race.homepage || '')}&memo=${encodeURIComponent(race.memo || '')}`;
             fetch(url).then(() => fetchServerData(true));
         } catch(e) {
             console.error("강제마감 서버 저장 오류:", e);
@@ -1631,6 +1727,8 @@
         document.getElementById('new-race-location').value = race.location || "";
         document.getElementById('new-race-date').value = race.date;
         document.getElementById('new-race-deadline').value = race.deadline;
+        document.getElementById('new-race-homepage').value = race.homepage || "";
+        document.getElementById('new-race-memo').value = race.memo || "";
         document.getElementById('new-race-status').value = race.status || "자동(날짜기준)";
 
         if (race.itemType === 'event') {
@@ -1756,6 +1854,8 @@
         document.getElementById('new-race-location').value = "";
         document.getElementById('new-race-date').value = "";
         document.getElementById('new-race-deadline').value = "";
+        document.getElementById('new-race-homepage').value = "";
+        document.getElementById('new-race-memo').value = "";
         document.getElementById('new-race-status').value = "자동(날짜기준)";
         
         const chks = document.querySelectorAll('.race-course-chk');
@@ -1802,6 +1902,8 @@
         const location = document.getElementById('new-race-location').value.trim();
         const date = document.getElementById('new-race-date').value.trim();
         const deadline = document.getElementById('new-race-deadline').value.trim();
+        const homepage = document.getElementById('new-race-homepage').value.trim();
+        const memo = document.getElementById('new-race-memo').value.trim();
         const status = document.getElementById('new-race-status').value;
 
         if (!name || !date) {
@@ -1877,10 +1979,22 @@
         }
 
         const coursesStr = selectedCourses.join(', ');
+        const finalDeadline = deadline || "마감일 미정";
 
         if (!raceId) {
             const tempId = "race_" + Date.now();
-            globalRaces.push({ id: tempId, itemType, name: name, location: location, date: date, deadline: deadline || "마감일 미정", courses: coursesStr, status: status });
+            globalRaces.push({
+                id: tempId,
+                itemType,
+                name: name,
+                location: location,
+                date: date,
+                deadline: finalDeadline,
+                homepage: homepage,
+                memo: memo,
+                courses: coursesStr,
+                status: status
+            });
             selectedRaceId = tempId;
         } else {
             const target = globalRaces.find(r => r.id === raceId);
@@ -1889,7 +2003,9 @@
                 target.name = name;
                 target.location = location;
                 target.date = date;
-                target.deadline = deadline;
+                target.deadline = finalDeadline;
+                target.homepage = homepage;
+                target.memo = memo;
                 target.courses = coursesStr;
                 target.status = status;
             }
@@ -1901,7 +2017,8 @@
         alert(raceId ? "정보가 수정되었습니다." : `[${name}] 항목이 성공적으로 등록되었습니다.`);
 
         try {
-            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(raceId || '')}&itemType=${encodeURIComponent(itemType)}&raceName=${encodeURIComponent(name)}&location=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}&deadline=${encodeURIComponent(deadline || "마감일 미정")}&courses=${encodeURIComponent(coursesStr)}&status=${encodeURIComponent(status)}`;
+            const packedLocation = packLocationWithExtra(location, homepage, memo);
+            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(raceId || '')}&itemType=${encodeURIComponent(itemType)}&raceName=${encodeURIComponent(name)}&location=${encodeURIComponent(packedLocation)}&date=${encodeURIComponent(date)}&deadline=${encodeURIComponent(finalDeadline)}&courses=${encodeURIComponent(coursesStr)}&status=${encodeURIComponent(status)}&homepage=${encodeURIComponent(homepage)}&memo=${encodeURIComponent(memo)}`;
             fetch(url).then(() => fetchServerData(true));
         } catch(e) {
             console.error("서버 저장 오류:", e);
@@ -2123,7 +2240,7 @@
             }
         } else if (type === 'event') {
             const chk = document.getElementById(`chk-ev-custom-${num}`);
-            const nameInput = document.getElementById(`ev-custom-${num}-name`);
+            const nameInput = document.getElementById(`ev-custom-1-name`.replace('1', num));
             const priceInput = document.getElementById(`price-ev-custom-${num}`);
             if (chk && nameInput && priceInput) {
                 nameInput.disabled = !chk.checked;
