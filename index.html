@@ -260,7 +260,7 @@
         
         .excel-down-btn { background: var(--success); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.95rem; margin-top: 10px; box-shadow: 0 4px 12px rgba(5,150,105,0.25); transition: background 0.2s; }
         .excel-down-btn:hover { background: #047857; }
-        .sync-loading { text-align: center; font-size: 0.82rem; color: var(--accent); font-weight: 800; margin-bottom: 8px; }
+        .sync-loading { text-align: center; font-size: 0.75rem; color: #64748b; font-weight: 700; margin-top: 4px; }
 
         /* 하단 개인정보 안내 및 설정 영역 바닥글 */
         .footer-setting-box { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 14px; border-top: 1.5px solid var(--border); }
@@ -478,6 +478,7 @@
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxk2ZwIvgIc6FtzgrmF63V_YicWzLawgWL5gBshtfHT4yopmdsFHo_t0HsAIY8tKvJN/exec";
+    const CACHE_KEY = "boksagol_total_cache_v1";
 
     let globalMembers = [];
     let globalRaces = [];
@@ -643,31 +644,73 @@
         return false;
     }
 
+    function applyDataPayload(data) {
+        globalMembers = data.members || [];
+        globalRaces = data.races || [];
+        globalApplications = data.applications || {};
+
+        if (data.adminPassword) {
+            adminPassword = data.adminPassword;
+        }
+
+        if (globalRaces.length > 0 && (!selectedRaceId || !globalRaces.some(r => r.id === selectedRaceId))) {
+            const activeRaces = globalRaces.filter(r => !isDatePassed(r));
+            if (activeRaces.length > 0) {
+                selectedRaceId = activeRaces[0].id;
+            } else {
+                selectedRaceId = globalRaces[0].id;
+            }
+        }
+    }
+
+    function saveCacheData(data) {
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+                members: data.members || [],
+                races: data.races || [],
+                applications: data.applications || {},
+                adminPassword: data.adminPassword || adminPassword
+            }));
+        } catch (e) {}
+    }
+
+    function loadCacheData() {
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            return JSON.parse(raw);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setSyncIndicator(text) {
+        const el = document.getElementById('sync-status');
+        if (!el) return;
+        if (text) {
+            el.textContent = text;
+            el.style.display = 'block';
+        } else {
+            el.textContent = '';
+            el.style.display = 'none';
+        }
+    }
+
     async function fetchServerData(silent = false) {
         try {
+            if (!silent) {
+                setSyncIndicator("최신 데이터 동기화 중...");
+            }
             const response = await fetch(API_URL + "?action=getData");
             const data = await response.json();
-            
-            globalMembers = data.members || [];
-            globalRaces = data.races || [];
-            globalApplications = data.applications || {};
-            
-            if (data.adminPassword) {
-                adminPassword = data.adminPassword;
-            }
 
-            if (globalRaces.length > 0 && !selectedRaceId) {
-                const activeRaces = globalRaces.filter(r => !isDatePassed(r));
-                if (activeRaces.length > 0) {
-                    selectedRaceId = activeRaces[0].id;
-                } else {
-                    selectedRaceId = globalRaces[0].id;
-                }
-            }
-
+            applyDataPayload(data);
+            saveCacheData(data);
+            setSyncIndicator("");
             refreshUI();
         } catch (error) {
             console.error("데이터 동기화 실패:", error);
+            setSyncIndicator("");
         }
     }
 
@@ -1144,6 +1187,7 @@
         }
 
         globalApplications[selectedRaceId][memberName] = course;
+        saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
 
         try {
@@ -1165,6 +1209,7 @@
             delete globalApplications[selectedRaceId][memberName];
         }
 
+        saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
 
         try {
@@ -1563,6 +1608,7 @@
             alert(`[${race.name}] 항목이 강제 접수마감 처리되었습니다. (대회일정 유지, 신청 불가)`);
         }
 
+        saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
 
         try {
@@ -1849,6 +1895,7 @@
             }
         }
 
+        saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
         resetRaceForm();
         alert(raceId ? "정보가 수정되었습니다." : `[${name}] 항목이 성공적으로 등록되었습니다.`);
@@ -1868,6 +1915,7 @@
         if (globalRaces.length > 0) selectedRaceId = globalRaces[0].id;
         else selectedRaceId = "";
         
+        saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
         alert("항목이 삭제되었습니다.");
 
@@ -1893,6 +1941,7 @@
         }
 
         globalMembers.push({ name, phone: phone||"-", birth: birth||"-", gender, join: join||"-", size });
+        saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
 
         document.getElementById('admin-add-name').value = '';
@@ -1964,6 +2013,7 @@
         m.gender = newGender.trim() || m.gender;
         m.size = newSize.trim() || m.size;
 
+        saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
         alert("회원 정보가 수정되었습니다.");
 
@@ -1979,6 +2029,7 @@
         if (!confirm(`[${name}] 회원을 정말 명부에서 삭제하시겠습니까?`)) return;
         
         globalMembers = globalMembers.filter(m => m.name !== name);
+        saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
         alert("회원이 삭제되었습니다.");
 
@@ -1999,6 +2050,7 @@
         }
         if (confirm("관리자 비밀번호를 변경하시겠습니까?")) {
             adminPassword = newPwd;
+            saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
             if (input) input.value = '';
             alert("관리자 비밀번호가 변경되었습니다.");
 
@@ -2083,7 +2135,14 @@
 
     function initApp() {
         initEventBindings();
-        fetchServerData(false);
+        const cached = loadCacheData();
+        if (cached) {
+            applyDataPayload(cached);
+            refreshUI();
+            fetchServerData(true);
+        } else {
+            fetchServerData(false);
+        }
     }
 
     if (document.readyState === 'loading') {
