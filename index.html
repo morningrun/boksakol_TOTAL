@@ -9,14 +9,14 @@
     <meta property="og:title" content="복사골 통합 접수시스템">
     <meta property="og:description" content="복사골 통합 접수시스템에서 대회 및 행사 참가 현황을 확인하세요!">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://morningrun.github.io/boksakol_TOTAL/">
-    <meta property="og:image" content="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
+    <meta property="og:url" content="https://morningrun.github.io/boksagol_TOTAL/">
+    <meta property="og:image" content="https://morningrun.github.io/boksagol_TOTAL/BOKSAKOL_TOTAL.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <!-- 스마트폰 홈 화면 추가 아이콘 및 앱 설정 -->
-    <link rel="apple-touch-icon" href="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
-    <link rel="icon" type="image/png" href="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
+    <link rel="apple-touch-icon" href="https://morningrun.github.io/boksagol_TOTAL/BOKSAKOL_TOTAL.png">
+    <link rel="icon" type="image/png" href="https://morningrun.github.io/boksagol_TOTAL/BOKSAKOL_TOTAL.png">
     <link rel="manifest" href="./manifest.json">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -79,7 +79,7 @@
         .search-input:focus { border-color: var(--accent); }
 
         .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .race-content-card-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(37,99,235,0.04); }
+        .race-content-card-box { background: #dbeafe; border: 1.5px solid #93c5fd; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.08); }
 
         .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
         .swipe-container { display: flex; width: 300%; transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; align-items: flex-start; }
@@ -101,10 +101,12 @@
             user-select: none;
         }
         
+        /* 선택/확대된 대회 카드: 진한 배경색으로 가독성 강화 */
         .race-card-item.selected-target { 
-            border-color: var(--accent) !important; 
-            box-shadow: 0 6px 16px rgba(37,99,235,0.12); 
-            background: #f8fafc; 
+            border-color: #1d4ed8 !important; 
+            box-shadow: 0 8px 20px rgba(29,78,216,0.22); 
+            background: #eff6ff !important;
+            opacity: 1 !important;
         }
 
         .race-card-item:not(.selected-target) {
@@ -120,49 +122,63 @@
         .race-card-item.ended-race { 
             background: #f1f5f9 !important; 
             border-color: #cbd5e1 !important; 
-            opacity: 0.75; 
+            opacity: 0.78; 
         }
         .race-card-item.ended-race .race-card-header {
             background: #e2e8f0 !important;
         }
+        .race-card-item.ended-race.selected-target {
+            background: #dbeafe !important;
+            border-color: #1d4ed8 !important;
+            opacity: 1 !important;
+        }
+        .race-card-item.ended-race.selected-target .race-card-header {
+            background: #bfdbfe !important;
+        }
+        .race-card-item.ended-race.selected-target .race-card-body {
+            background: #eff6ff !important;
+        }
         
-        .race-card-header { padding: 14px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; width: 100%; box-sizing: border-box; }
-        .race-card-item.selected-target .race-card-header { background: #eff6ff; }
+        .race-card-header { padding: 14px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; width: 100%; box-sizing: border-box; transition: background-color 0.25s ease; }
+        .race-card-item.selected-target .race-card-header { background: #bfdbfe !important; }
         .race-card-item:not(.selected-target) .race-card-header { background: #fafafa; }
 
-        .race-card-title-area { font-size: 1.02rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #1e293b; flex-wrap: wrap; }
+        .race-card-title-area { font-size: 1.02rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #0f172a; flex-wrap: wrap; }
         
-        .badge-type-race { font-size: 0.76rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .badge-type-race { font-size: 0.76rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
         .badge-type-event { font-size: 0.76rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; background: #fae8ff; color: #86198f; border: 1px solid #f5d0fe; }
 
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
-        .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .status-badge.active-badge { background: #bbf7d0; color: #166534; border: 1px solid #4ade80; }
         .status-badge.ended { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
 
-        .dday-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-        .dday-badge.d-day { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .dday-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .dday-badge.d-day { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
 
-        .race-toggle-icon { font-size: 0.8rem; color: #64748b; transition: transform 0.2s ease; flex-shrink: 0; padding-left: 8px; }
+        .race-toggle-icon { font-size: 0.8rem; color: #334155; transition: transform 0.2s ease; flex-shrink: 0; padding-left: 8px; }
         .race-card-item.expanded .race-toggle-icon { transform: rotate(180deg); }
 
-        .race-card-body { padding: 0 14px 14px 14px; display: none; border-top: 1px solid #e2e8f0; margin-top: 2px; padding-top: 10px; background: #ffffff; width: 100%; box-sizing: border-box; }
+        .race-card-body { padding: 0 14px 14px 14px; display: none; border-top: 1.5px solid #93c5fd; margin-top: 0; padding-top: 12px; background: #eff6ff; width: 100%; box-sizing: border-box; color: #0f172a; }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
-        .race-card-item.ended-race.expanded .race-card-body { background: #f1f5f9; }
+        .race-card-item.ended-race.expanded .race-card-body { background: #e2e8f0; border-top-color: #cbd5e1; }
 
-        /* 하단 대회 박스들 애니메이션 숨김/표시 처리 */
-        #other-races-wrapper {
+        /* 하단 대회 박스들 및 종료된 목록 애니메이션 숨김/표시 처리 */
+        .collapsible-section {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 2000px;
+            max-height: 3000px;
             overflow: hidden;
             transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, margin-top 0.3s ease;
             opacity: 1;
         }
-        #other-races-wrapper.hidden-animated {
+        .collapsible-section.hidden-animated {
             max-height: 0 !important;
             opacity: 0 !important;
             margin-top: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            border-width: 0 !important;
             pointer-events: none;
         }
 
@@ -741,6 +757,8 @@
             }
         });
 
+        const hiddenClass = isOtherRacesHidden ? ' hidden-animated' : '';
+
         if (activeRaces.length > 0) {
             const topRace = activeRaces[0];
             const card = createRaceCardElement(topRace, false, true);
@@ -749,11 +767,7 @@
 
         const othersWrapper = document.createElement('div');
         othersWrapper.id = 'other-races-wrapper';
-        if (isOtherRacesHidden) {
-            othersWrapper.classList.add('hidden-animated');
-        } else {
-            othersWrapper.classList.remove('hidden-animated');
-        }
+        othersWrapper.className = 'collapsible-section' + hiddenClass;
 
         for (let i = 1; i < activeRaces.length; i++) {
             const card = createRaceCardElement(activeRaces[i], false, false);
@@ -765,7 +779,8 @@
 
         if (endedRaces.length > 0) {
             const endedSection = document.createElement('div');
-            endedSection.className = 'ended-section-container';
+            endedSection.id = 'ended-races-wrapper';
+            endedSection.className = 'ended-section-container collapsible-section' + hiddenClass;
             
             const tempWrapper = document.createElement('div');
             tempWrapper.style.display = 'flex';
@@ -778,7 +793,7 @@
             });
 
             endedSection.innerHTML = `
-                <div class="ended-section-header" onclick="this.parentElement.classList.toggle('expanded');">
+                <div class="ended-section-header" onclick="this.parentElement.classList.toggle('expanded'); setTimeout(updateSwipeWrapperHeight, 50);">
                     <div style="display:flex; align-items:center; gap:6px;">
                         <span>🏁 종료된 목록 (${endedRaces.length}개)</span>
                     </div>
@@ -834,7 +849,7 @@
             const courseList = parseCourses(race.courses);
             courseList.forEach(c => {
                 if(c.trim()) {
-                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">- ${c}</div>`;
+                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-top: 2px;">- ${c}</div>`;
                 }
             });
         }
@@ -878,13 +893,13 @@
                 <div class="race-toggle-icon" style="transform: ${isSelected ? 'rotate(180deg)' : 'rotate(0deg)'};">▼</div>
             </div>
             <div class="race-card-body">
-                <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #1e293b; font-weight: 700;">
+                <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #0f172a; font-weight: 700;">
                     <div>• 일자: ${race.date}</div>
                     <div>• 장소: ${race.location || '장소 미정'}</div>
                     <div style="margin-top: 1px;">
                         <div>• 항목 및 참가비</div>
                         <div style="padding-left: 12px; margin-top: 1px;">
-                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">- 참석</div>'}
+                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #0f172a;">- 참석</div>'}
                         </div>
                     </div>
                     <div style="margin-top: 1px;">• 마감일: ${deadlineDisplay}</div>
@@ -896,15 +911,18 @@
             e.stopPropagation();
             if (isTopMost) {
                 isOtherRacesHidden = !isOtherRacesHidden;
-                const wrapper = document.getElementById('other-races-wrapper');
-                if (wrapper) {
-                    if (isOtherRacesHidden) {
-                        wrapper.classList.add('hidden-animated');
-                    } else {
-                        wrapper.classList.remove('hidden-animated');
+                const othersWrapper = document.getElementById('other-races-wrapper');
+                const endedWrapper = document.getElementById('ended-races-wrapper');
+                [othersWrapper, endedWrapper].forEach(el => {
+                    if (el) {
+                        if (isOtherRacesHidden) {
+                            el.classList.add('hidden-animated');
+                        } else {
+                            el.classList.remove('hidden-animated');
+                        }
                     }
-                    setTimeout(updateSwipeWrapperHeight, 400);
-                }
+                });
+                setTimeout(updateSwipeWrapperHeight, 400);
             } else {
                 selectedRaceId = race.id;
                 isOtherRacesHidden = true; 
@@ -951,7 +969,6 @@
             const name = String(member.name || "").trim();
             const appliedCourseRaw = raceApps[name];
 
-            // 검색어가 있을 때 코스별 그룹 내 필터링 대신, 전체 명부에서 이름이 포함된 회원을 모든 코스/미신청 영역에서 일관되게 매칭
             const matchesKeyword = !keyword || name.toLowerCase().includes(keyword);
 
             if (appliedCourseRaw) {
@@ -973,7 +990,6 @@
 
         availableCourses.forEach(courseName => {
             const itemsInCourse = courseGroups[courseName] || [];
-            // 검색어 입력 시 해당 검색어에 매칭되는 회원만 필터링
             const filteredItems = keyword ? itemsInCourse.filter(item => item.matchesKeyword) : itemsInCourse;
 
             if (filteredItems.length === 0 && keyword) return;
