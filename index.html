@@ -556,7 +556,6 @@
         return (race && race.itemType === 'event') ? "행사지 약도" : "대회홈페이지";
     }
 
-    // 백엔드 컬럼 유무와 무관하게 링크명/홈페이지/기타 정보를 안정적으로 보존하기 위한 파싱/직렬화 헬퍼
     function unpackRaceExtra(race) {
         if (!race) return race;
         let loc = String(race.location || "");
@@ -714,7 +713,6 @@
 
         const deadlineStr = String(race.deadline || "").trim();
 
-        // '마감'이라는 텍스트가 포함된 경우 접수마감 처리 (단, 기본값 '마감일 미정' 및 '마감시/마감 시' 안내 문구는 제외)
         if (
             deadlineStr.includes("마감") &&
             !deadlineStr.includes("미정") &&
@@ -1057,7 +1055,7 @@
             ? `<span class="badge-type-event">🎉 행사</span>` 
             : `<span class="badge-type-race">🏃‍♂️ 대회</span>`;
 
-        const ddayText = calculateDDay(race.date);
+        const ddayText = !isEnded ? calculateDDay(race.date) : "";
         let ddayBadgeHtml = "";
         if (ddayText) {
             const isDDay = (ddayText === "D-Day");
