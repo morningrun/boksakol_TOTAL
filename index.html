@@ -148,6 +148,7 @@
 
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 999px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .status-badge.extra-badge { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
         .status-badge.closed-badge { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
         .status-badge.ended { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
 
@@ -400,6 +401,7 @@
                 <select id="new-race-status" style="padding:6px 10px; border-radius:6px; background:#0f172a; color:white; font-weight:700;">
                     <option value="자동(날짜기준)">자동 (마감일·'마감'문구·대회일 자동 전환 / 기본)</option>
                     <option value="진행중">🟢 접수진행중 (수동 강제 오픈)</option>
+                    <option value="추가접수중">🟡 추가접수중 (수동 오픈)</option>
                     <option value="강제마감">🔴 강제 접수마감 (대회일정은 남으나 접수 불가)</option>
                     <option value="종료">완전 종료 (대회 종료)</option>
                 </select>
@@ -701,10 +703,14 @@
         return "70대 이상";
     }
 
+    function isManualOpenStatus(status) {
+        return status === "진행중" || status === "추가접수중";
+    }
+
     function isDeadlinePassed(race) {
         const status = race.status || "";
         if (status === "강제마감") return true;
-        if (status === "진행중") return false;
+        if (isManualOpenStatus(status)) return false;
 
         const deadlineStr = String(race.deadline || "").trim();
 
@@ -745,7 +751,7 @@
     function isDatePassed(race) {
         const status = race.status || "";
         if (status === "종료") return true;
-        if (status === "진행중") return false;
+        if (isManualOpenStatus(status)) return false;
 
         const name = race.name || "";
         if (name.includes("[종료]") || name.includes("종료")) return true;
@@ -1040,6 +1046,9 @@
         } else if (deadlineClosed) {
             badgeText = "접수마감";
             badgeClass = "closed-badge";
+        } else if (race.status === "추가접수중") {
+            badgeText = "추가접수중";
+            badgeClass = "extra-badge";
         }
 
         const badgeHtml = `<span class="status-badge ${badgeClass}">${badgeText}</span>`;
@@ -1764,6 +1773,7 @@
             if (race.status === "강제마감") statusLabel = "🔴 강제마감됨";
             else if (race.status === "종료") statusLabel = "종료(수동)";
             else if (race.status === "진행중") statusLabel = "🟢 접수진행중(수동)";
+            else if (race.status === "추가접수중") statusLabel = "🟡 추가접수중(수동)";
             else if (isPassed) statusLabel = "종료(대회일지남)";
             else if (isDeadPassed) statusLabel = "🔴 접수마감(마감기준)";
 
@@ -1780,10 +1790,14 @@
                 ? `<br><span style="font-size:0.7rem; color:#93c5fd;">${extraInfoArr.join(' / ')}</span>`
                 : "";
 
+            const statusColor = (isForceClosed || isDeadPassed)
+                ? '#fca5a5'
+                : (race.status === '추가접수중' ? '#fcd34d' : '#38bdf8');
+
             const row = document.createElement('div');
             row.className = 'race-admin-row';
             row.innerHTML = `
-                <div style="font-size:0.85rem;"><strong>${typeLabel} ${escapeHtml(race.name)}</strong> <span style="font-size:0.7rem; color:${(isForceClosed || isDeadPassed)?'#fca5a5':'#38bdf8'};">[${statusLabel}]</span><br><span style="font-size:0.72rem; color:#cbd5e1;">내용: ${escapeHtml(race.courses)}</span><br><span style="font-size:0.7rem; color:#94a3b8;">${escapeHtml(race.date)} / 마감: ${escapeHtml(race.deadline)}</span>${extraLineHtml}</div>
+                <div style="font-size:0.85rem;"><strong>${typeLabel} ${escapeHtml(race.name)}</strong> <span style="font-size:0.7rem; color:${statusColor};">[${statusLabel}]</span><br><span style="font-size:0.72rem; color:#cbd5e1;">내용: ${escapeHtml(race.courses)}</span><br><span style="font-size:0.7rem; color:#94a3b8;">${escapeHtml(race.date)} / 마감: ${escapeHtml(race.deadline)}</span>${extraLineHtml}</div>
                 <div style="display:flex; gap:4px; flex-direction:column; align-items:flex-end;">
                     <div style="display:flex; gap:4px;">
                         <button class="race-edit-btn" data-id="${race.id}" style="background:#2563eb; color:white; border:none; padding:4px 7px; border-radius:4px; cursor:pointer; font-size:0.72rem; font-weight:700;">수정</button>
