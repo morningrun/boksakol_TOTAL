@@ -9,14 +9,14 @@
     <meta property="og:title" content="복사골 통합 접수시스템">
     <meta property="og:description" content="복사골 통합 접수시스템에서 대회 및 행사 참가 현황을 확인하세요!">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://morningrun.github.io/boksagol_TOTAL/">
-    <meta property="og:image" content="https://morningrun.github.io/boksagol_TOTAL/BOKSAKOL_TOTAL.png">
+    <meta property="og:url" content="https://morningrun.github.io/boksakol_TOTAL/">
+    <meta property="og:image" content="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <!-- 스마트폰 홈 화면 추가 아이콘 및 앱 설정 -->
-    <link rel="apple-touch-icon" href="https://morningrun.github.io/boksagol_TOTAL/BOKSAKOL_TOTAL.png">
-    <link rel="icon" type="image/png" href="https://morningrun.github.io/boksagol_TOTAL/BOKSAKOL_TOTAL.png">
+    <link rel="apple-touch-icon" href="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
+    <link rel="icon" type="image/png" href="https://morningrun.github.io/boksakol_TOTAL/BOKSAKOL_TOTAL.png">
     <link rel="manifest" href="./manifest.json">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -79,7 +79,8 @@
         .search-input:focus { border-color: var(--accent); }
 
         .content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .race-content-card-box { background: #dbeafe; border: 1.5px solid #93c5fd; border-radius: 14px; padding: 14px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.08); }
+        /* 상단 대회 영역 배경을 하단과 동일한 #f8fafc로 통일 */
+        .race-content-card-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
 
         .swipe-wrapper { overflow: hidden; width: 100%; position: relative; transition: height 0.25s ease-out; }
         .swipe-container { display: flex; width: 300%; transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; align-items: flex-start; }
@@ -101,11 +102,11 @@
             user-select: none;
         }
         
-        /* 선택/확대된 대회 카드: 진한 배경색으로 가독성 강화 */
+        /* 클릭/선택된 대회 카드: 더 진한 파란 배경색으로 선명하게 강조 */
         .race-card-item.selected-target { 
             border-color: #1d4ed8 !important; 
-            box-shadow: 0 8px 20px rgba(29,78,216,0.22); 
-            background: #eff6ff !important;
+            box-shadow: 0 8px 22px rgba(29,78,216,0.25); 
+            background: #dbeafe !important;
             opacity: 1 !important;
         }
 
@@ -133,14 +134,14 @@
             opacity: 1 !important;
         }
         .race-card-item.ended-race.selected-target .race-card-header {
-            background: #bfdbfe !important;
+            background: #93c5fd !important;
         }
         .race-card-item.ended-race.selected-target .race-card-body {
-            background: #eff6ff !important;
+            background: #bfdbfe !important;
         }
         
         .race-card-header { padding: 14px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; width: 100%; box-sizing: border-box; transition: background-color 0.25s ease; }
-        .race-card-item.selected-target .race-card-header { background: #bfdbfe !important; }
+        .race-card-item.selected-target .race-card-header { background: #93c5fd !important; }
         .race-card-item:not(.selected-target) .race-card-header { background: #fafafa; }
 
         .race-card-title-area { font-size: 1.02rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #0f172a; flex-wrap: wrap; }
@@ -155,12 +156,12 @@
         .dday-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; white-space: nowrap; background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
         .dday-badge.d-day { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
 
-        .race-toggle-icon { font-size: 0.8rem; color: #334155; transition: transform 0.2s ease; flex-shrink: 0; padding-left: 8px; }
+        .race-toggle-icon { font-size: 0.8rem; color: #0f172a; transition: transform 0.2s ease; flex-shrink: 0; padding-left: 8px; }
         .race-card-item.expanded .race-toggle-icon { transform: rotate(180deg); }
 
-        .race-card-body { padding: 0 14px 14px 14px; display: none; border-top: 1.5px solid #93c5fd; margin-top: 0; padding-top: 12px; background: #eff6ff; width: 100%; box-sizing: border-box; color: #0f172a; }
+        .race-card-body { padding: 0 14px 14px 14px; display: none; border-top: 1.5px solid #60a5fa; margin-top: 0; padding-top: 12px; background: #bfdbfe; width: 100%; box-sizing: border-box; color: #0f172a; }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
-        .race-card-item.ended-race.expanded .race-card-body { background: #e2e8f0; border-top-color: #cbd5e1; }
+        .race-card-item.ended-race.expanded .race-card-body { background: #bfdbfe; border-top-color: #60a5fa; }
 
         /* 하단 대회 박스들 및 종료된 목록 애니메이션 숨김/표시 처리 */
         .collapsible-section {
