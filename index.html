@@ -269,6 +269,10 @@
         .admin-panel h3 { margin: 12px 0 8px 0; font-size: 0.95rem; color: #38bdf8; }
         .admin-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
         .admin-input-group input, .admin-input-group select { padding: 9px 12px; border-radius: 8px; border: none; font-size: 0.88rem; outline: none; }
+        .admin-link-box { display: flex; flex-direction: column; gap: 6px; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155; }
+        .admin-link-top { display: flex; gap: 6px; }
+        .admin-link-top select { background: #0f172a; color: white; font-weight: 700; flex: 1; }
+        .admin-link-top input { flex: 1.2; min-width: 0; }
         
         .course-setting-grid { display: flex; flex-direction: column; gap: 6px; background: #1e293b; padding: 12px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 6px; }
         .course-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.82rem; font-weight: 700; }
@@ -364,7 +368,7 @@
             
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                 <label style="font-size:0.85rem; font-weight:700; color:#38bdf8;">등록 구분:</label>
-                <select id="new-item-type" onchange="toggleItemTypeFields()" style="flex:1; padding:7px; border-radius:6px; background:#0f172a; color:white; font-weight:700;">
+                <select id="new-item-type" onchange="toggleItemTypeFields(true)" style="flex:1; padding:7px; border-radius:6px; background:#0f172a; color:white; font-weight:700;">
                     <option value="race">🏃‍♂️ 마라톤 대회</option>
                     <option value="event">🎉 일반 행사 (송년회, 야유회 등)</option>
                 </select>
@@ -374,7 +378,20 @@
             <input type="text" id="new-race-location" placeholder="장소 (예: 삼척시민운동장 / 대회의실)">
             <input type="text" id="new-race-date" placeholder="일자 및 요일 (예: 2026.04.13(일))">
             <input type="text" id="new-race-deadline" placeholder="마감일 (예: 2026.03.15까지 / 선착순 / 미지정)">
-            <input type="url" id="new-race-homepage" placeholder="홈페이지 주소 (예: https://... / 선택입력)">
+
+            <div class="admin-link-box">
+                <div style="font-size:0.8rem; font-weight:700; color:#38bdf8;">관련 링크 설정 (선택입력)</div>
+                <div class="admin-link-top">
+                    <select id="new-race-link-type" onchange="handleLinkTypeChange()">
+                        <option value="대회홈페이지">대회홈페이지</option>
+                        <option value="행사지 약도">행사지 약도</option>
+                        <option value="직접입력">직접입력</option>
+                    </select>
+                    <input type="text" id="new-race-link-custom" placeholder="직접 입력 (예: 식당 안내)" class="hidden">
+                </div>
+                <input type="url" id="new-race-homepage" placeholder="URL 주소 (예: https://...)">
+            </div>
+
             <input type="text" id="new-race-memo" placeholder="기타 안내 (예: 집결시간, 준비물, 계좌안내 등 / 선택입력)">
             
             <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
@@ -530,17 +547,30 @@
         return "https://" + trimmed;
     }
 
-    // 백엔드 컬럼 유무와 무관하게 홈페이지/기타 정보를 안정적으로 보존하기 위한 파싱/직렬화 헬퍼
+    function getHomepageLabel(race) {
+        const trimmed = String(race && race.homepageLabel ? race.homepageLabel : "").trim();
+        if (trimmed) return trimmed;
+        return (race && race.itemType === 'event') ? "행사지 약도" : "대회홈페이지";
+    }
+
+    // 백엔드 컬럼 유무와 무관하게 링크명/홈페이지/기타 정보를 안정적으로 보존하기 위한 파싱/직렬화 헬퍼
     function unpackRaceExtra(race) {
         if (!race) return race;
         let loc = String(race.location || "");
         let hp = String(race.homepage || "");
+        let hpLabel = String(race.homepageLabel || "");
         let memo = String(race.memo || "");
 
         const memoMatch = loc.match(/\|\|MEMO:(.*)$/);
         if (memoMatch) {
             if (!memo) memo = memoMatch[1].trim();
             loc = loc.replace(/\|\|MEMO:.*$/, "").trim();
+        }
+
+        const labelMatch = loc.match(/\|\|HPLABEL:(.*)$/);
+        if (labelMatch) {
+            if (!hpLabel) hpLabel = labelMatch[1].trim();
+            loc = loc.replace(/\|\|HPLABEL:.*$/, "").trim();
         }
 
         const hpMatch = loc.match(/\|\|HP:(.*)$/);
@@ -551,15 +581,18 @@
 
         race.location = loc;
         race.homepage = hp;
+        race.homepageLabel = hpLabel;
         race.memo = memo;
         return race;
     }
 
-    function packLocationWithExtra(location, homepage, memo) {
+    function packLocationWithExtra(location, homepage, homepageLabel, memo) {
         let packed = String(location || "").trim();
         const hp = String(homepage || "").trim();
+        const lbl = String(homepageLabel || "").trim();
         const mm = String(memo || "").trim();
         if (hp) packed += `||HP:${hp}`;
+        if (lbl) packed += `||HPLABEL:${lbl}`;
         if (mm) packed += `||MEMO:${mm}`;
         return packed;
     }
@@ -1008,10 +1041,11 @@
             : escapeHtml(race.deadline);
 
         const safeHomepage = normalizeUrl(race.homepage);
+        const homepageLabelText = getHomepageLabel(race);
         const homepageHtml = safeHomepage
             ? `<div style="margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span>• 홈페이지:</span>
-                <a href="${escapeHtml(safeHomepage)}" target="_blank" rel="noopener noreferrer" class="homepage-link-btn" onclick="event.stopPropagation();">🔗 홈페이지 바로가기</a>
+                <span>• ${escapeHtml(homepageLabelText)}:</span>
+                <a href="${escapeHtml(safeHomepage)}" target="_blank" rel="noopener noreferrer" class="homepage-link-btn" onclick="event.stopPropagation();">🔗 바로가기</a>
                </div>`
             : "";
 
@@ -1621,7 +1655,7 @@
         updateSwipeWrapperHeight();
     }
 
-    function toggleItemTypeFields() {
+    function toggleItemTypeFields(autoSetLinkDefault = false) {
         const itemType = document.getElementById('new-item-type').value;
         const raceWrapper = document.getElementById('race-course-setting-wrapper');
         const eventWrapper = document.getElementById('event-option-setting-wrapper');
@@ -1633,6 +1667,60 @@
             raceWrapper.classList.remove('hidden');
             eventWrapper.classList.add('hidden');
         }
+
+        if (autoSetLinkDefault) {
+            const linkTypeSelect = document.getElementById('new-race-link-type');
+            if (linkTypeSelect) {
+                linkTypeSelect.value = (itemType === 'event') ? '행사지 약도' : '대회홈페이지';
+                handleLinkTypeChange();
+            }
+        }
+    }
+
+    function handleLinkTypeChange() {
+        const linkTypeSelect = document.getElementById('new-race-link-type');
+        const customInput = document.getElementById('new-race-link-custom');
+        if (!linkTypeSelect || !customInput) return;
+
+        if (linkTypeSelect.value === '직접입력') {
+            customInput.classList.remove('hidden');
+            customInput.focus();
+        } else {
+            customInput.classList.add('hidden');
+        }
+    }
+
+    function setLinkLabelInputs(itemType, savedLabel) {
+        const linkTypeSelect = document.getElementById('new-race-link-type');
+        const customInput = document.getElementById('new-race-link-custom');
+        const defaultOption = (itemType === 'event') ? '행사지 약도' : '대회홈페이지';
+        const label = String(savedLabel || "").trim();
+
+        if (!label) {
+            linkTypeSelect.value = defaultOption;
+            customInput.value = "";
+            customInput.classList.add('hidden');
+        } else if (label === '대회홈페이지' || label === '행사지 약도') {
+            linkTypeSelect.value = label;
+            customInput.value = "";
+            customInput.classList.add('hidden');
+        } else {
+            linkTypeSelect.value = '직접입력';
+            customInput.value = label;
+            customInput.classList.remove('hidden');
+        }
+    }
+
+    function getSelectedLinkLabel(itemType) {
+        const linkTypeSelect = document.getElementById('new-race-link-type');
+        const customInput = document.getElementById('new-race-link-custom');
+        if (!linkTypeSelect) return (itemType === 'event') ? '행사지 약도' : '대회홈페이지';
+
+        if (linkTypeSelect.value === '직접입력') {
+            const customVal = customInput ? customInput.value.trim() : "";
+            return customVal || ((itemType === 'event') ? '행사지 약도' : '대회홈페이지');
+        }
+        return linkTypeSelect.value;
     }
 
     function renderAdminRaceList() {
@@ -1659,7 +1747,7 @@
             const toggleBtnBg = isForceClosed ? "#059669" : "#dc2626";
 
             const extraInfoArr = [];
-            if (race.homepage) extraInfoArr.push(`🔗 홈페이지 등록됨`);
+            if (race.homepage) extraInfoArr.push(`🔗 ${escapeHtml(getHomepageLabel(race))}`);
             if (race.memo) extraInfoArr.push(`기타: ${escapeHtml(race.memo)}`);
             const extraLineHtml = extraInfoArr.length > 0
                 ? `<br><span style="font-size:0.7rem; color:#93c5fd;">${extraInfoArr.join(' / ')}</span>`
@@ -1707,8 +1795,8 @@
         refreshUI();
 
         try {
-            const packedLocation = packLocationWithExtra(race.location, race.homepage, race.memo);
-            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(race.id)}&itemType=${encodeURIComponent(race.itemType || 'race')}&raceName=${encodeURIComponent(race.name)}&location=${encodeURIComponent(packedLocation)}&date=${encodeURIComponent(race.date)}&deadline=${encodeURIComponent(race.deadline)}&courses=${encodeURIComponent(race.courses)}&status=${encodeURIComponent(race.status)}&homepage=${encodeURIComponent(race.homepage || '')}&memo=${encodeURIComponent(race.memo || '')}`;
+            const packedLocation = packLocationWithExtra(race.location, race.homepage, race.homepageLabel, race.memo);
+            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(race.id)}&itemType=${encodeURIComponent(race.itemType || 'race')}&raceName=${encodeURIComponent(race.name)}&location=${encodeURIComponent(packedLocation)}&date=${encodeURIComponent(race.date)}&deadline=${encodeURIComponent(race.deadline)}&courses=${encodeURIComponent(race.courses)}&status=${encodeURIComponent(race.status)}&homepage=${encodeURIComponent(race.homepage || '')}&homepageLabel=${encodeURIComponent(race.homepageLabel || '')}&memo=${encodeURIComponent(race.memo || '')}`;
             fetch(url).then(() => fetchServerData(true));
         } catch(e) {
             console.error("강제마감 서버 저장 오류:", e);
@@ -1719,19 +1807,21 @@
         const race = globalRaces.find(r => r.id === raceId);
         if (!race) return;
 
+        const itemType = race.itemType || 'race';
         document.getElementById('edit-race-id').value = race.id;
-        document.getElementById('new-item-type').value = race.itemType || 'race';
-        toggleItemTypeFields();
+        document.getElementById('new-item-type').value = itemType;
+        toggleItemTypeFields(false);
 
         document.getElementById('new-race-name').value = race.name;
         document.getElementById('new-race-location').value = race.location || "";
         document.getElementById('new-race-date').value = race.date;
         document.getElementById('new-race-deadline').value = race.deadline;
+        setLinkLabelInputs(itemType, race.homepageLabel);
         document.getElementById('new-race-homepage').value = race.homepage || "";
         document.getElementById('new-race-memo').value = race.memo || "";
         document.getElementById('new-race-status').value = race.status || "자동(날짜기준)";
 
-        if (race.itemType === 'event') {
+        if (itemType === 'event') {
             const parts = parseCourses(race.courses || "");
             const chks = document.querySelectorAll('.event-opt-chk');
             chks.forEach(c => c.checked = false);
@@ -1849,11 +1939,12 @@
     function resetRaceForm() {
         document.getElementById('edit-race-id').value = "";
         document.getElementById('new-item-type').value = "race";
-        toggleItemTypeFields();
+        toggleItemTypeFields(true);
         document.getElementById('new-race-name').value = "";
         document.getElementById('new-race-location').value = "";
         document.getElementById('new-race-date').value = "";
         document.getElementById('new-race-deadline').value = "";
+        document.getElementById('new-race-link-custom').value = "";
         document.getElementById('new-race-homepage').value = "";
         document.getElementById('new-race-memo').value = "";
         document.getElementById('new-race-status').value = "자동(날짜기준)";
@@ -1903,6 +1994,7 @@
         const date = document.getElementById('new-race-date').value.trim();
         const deadline = document.getElementById('new-race-deadline').value.trim();
         const homepage = document.getElementById('new-race-homepage').value.trim();
+        const homepageLabel = homepage ? getSelectedLinkLabel(itemType) : "";
         const memo = document.getElementById('new-race-memo').value.trim();
         const status = document.getElementById('new-race-status').value;
 
@@ -1991,6 +2083,7 @@
                 date: date,
                 deadline: finalDeadline,
                 homepage: homepage,
+                homepageLabel: homepageLabel,
                 memo: memo,
                 courses: coursesStr,
                 status: status
@@ -2005,6 +2098,7 @@
                 target.date = date;
                 target.deadline = finalDeadline;
                 target.homepage = homepage;
+                target.homepageLabel = homepageLabel;
                 target.memo = memo;
                 target.courses = coursesStr;
                 target.status = status;
@@ -2017,8 +2111,8 @@
         alert(raceId ? "정보가 수정되었습니다." : `[${name}] 항목이 성공적으로 등록되었습니다.`);
 
         try {
-            const packedLocation = packLocationWithExtra(location, homepage, memo);
-            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(raceId || '')}&itemType=${encodeURIComponent(itemType)}&raceName=${encodeURIComponent(name)}&location=${encodeURIComponent(packedLocation)}&date=${encodeURIComponent(date)}&deadline=${encodeURIComponent(finalDeadline)}&courses=${encodeURIComponent(coursesStr)}&status=${encodeURIComponent(status)}&homepage=${encodeURIComponent(homepage)}&memo=${encodeURIComponent(memo)}`;
+            const packedLocation = packLocationWithExtra(location, homepage, homepageLabel, memo);
+            const url = `${API_URL}?action=saveRace&raceId=${encodeURIComponent(raceId || '')}&itemType=${encodeURIComponent(itemType)}&raceName=${encodeURIComponent(name)}&location=${encodeURIComponent(packedLocation)}&date=${encodeURIComponent(date)}&deadline=${encodeURIComponent(finalDeadline)}&courses=${encodeURIComponent(coursesStr)}&status=${encodeURIComponent(status)}&homepage=${encodeURIComponent(homepage)}&homepageLabel=${encodeURIComponent(homepageLabel)}&memo=${encodeURIComponent(memo)}`;
             fetch(url).then(() => fetchServerData(true));
         } catch(e) {
             console.error("서버 저장 오류:", e);
