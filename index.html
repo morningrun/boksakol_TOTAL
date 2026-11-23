@@ -148,6 +148,7 @@
 
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 999px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .status-badge.closed-badge { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
         .status-badge.ended { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
 
         .dday-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 999px; font-weight: 800; white-space: nowrap; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
@@ -377,7 +378,7 @@
             <input type="text" id="new-race-name" placeholder="명칭 (예: 2026 삼척황영조마라톤 / 송년의 밤 행사)">
             <input type="text" id="new-race-location" placeholder="장소 (예: 삼척시민운동장 / 대회의실)">
             <input type="text" id="new-race-date" placeholder="일자 및 요일 (예: 2026.04.13(일))">
-            <input type="text" id="new-race-deadline" placeholder="마감일 (예: 2026.03.15까지 / 선착순 / 미지정)">
+            <input type="text" id="new-race-deadline" placeholder="마감일 (예: 2026.03.15까지 / 선착순 마감 / 미지정)">
 
             <div class="admin-link-box">
                 <div style="font-size:0.8rem; font-weight:700; color:#38bdf8;">관련 링크 설정 (선택입력)</div>
@@ -397,9 +398,9 @@
             <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
                 <label style="font-size:0.85rem; font-weight:700; color:#38bdf8;">진행 상태:</label>
                 <select id="new-race-status" style="padding:6px 10px; border-radius:6px; background:#0f172a; color:white; font-weight:700;">
-                    <option value="자동(날짜기준)">자동 (대회일 지나면 자동 종료 / 기본)</option>
+                    <option value="자동(날짜기준)">자동 (마감일·'마감'문구·대회일 자동 전환 / 기본)</option>
+                    <option value="진행중">🟢 접수진행중 (수동 강제 오픈)</option>
                     <option value="강제마감">🔴 강제 접수마감 (대회일정은 남으나 접수 불가)</option>
-                    <option value="진행중">항상 진행중 (수동)</option>
                     <option value="종료">완전 종료 (대회 종료)</option>
                 </select>
             </div>
@@ -700,36 +701,54 @@
         return "70대 이상";
     }
 
-    function isRaceEnded(race) {
+    function isDeadlinePassed(race) {
         const status = race.status || "";
-        if (status === "강제마감" || status === "종료") return true;
+        if (status === "강제마감") return true;
         if (status === "진행중") return false;
 
-        const name = race.name || "";
-        if (name.includes("[종료]") || name.includes("종료")) return true;
+        const deadlineStr = String(race.deadline || "").trim();
 
-        const dateStr = race.date || "";
-        const match = dateStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
+        // '마감'이라는 텍스트가 포함된 경우 접수마감 처리 (단, 기본값 '마감일 미정' 및 '마감시/마감 시' 안내 문구는 제외)
+        if (
+            deadlineStr.includes("마감") &&
+            !deadlineStr.includes("미정") &&
+            !deadlineStr.includes("마감시") &&
+            !deadlineStr.includes("마감 시")
+        ) {
+            return true;
+        }
+
+        const match = deadlineStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
         if (match) {
             const year = parseInt(match[1], 10);
             const month = parseInt(match[2], 10) - 1;
             const day = parseInt(match[3], 10);
-            const raceDate = new Date(year, month, day);
+            const deadlineDate = new Date(year, month, day);
 
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            raceDate.setDate(raceDate.getDate() + 1);
-            if (today >= raceDate) {
+            deadlineDate.setDate(deadlineDate.getDate() + 1);
+            if (today >= deadlineDate) {
                 return true;
             }
         }
         return false;
     }
 
+    function isRaceEnded(race) {
+        if (isDatePassed(race)) return true;
+        if (isDeadlinePassed(race)) return true;
+        return false;
+    }
+
     function isDatePassed(race) {
         const status = race.status || "";
         if (status === "종료") return true;
+        if (status === "진행중") return false;
+
+        const name = race.name || "";
+        if (name.includes("[종료]") || name.includes("종료")) return true;
 
         const dateStr = race.date || "";
         const match = dateStr.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/);
@@ -1012,14 +1031,15 @@
             });
         }
 
-        let badgeText = "진행중";
+        const deadlineClosed = isDeadlinePassed(race);
+        let badgeText = "접수진행중";
         let badgeClass = "active-badge";
-        if (race.status === "강제마감") {
-            badgeText = "접수마감";
-            badgeClass = "ended";
-        } else if (isEnded) {
+        if (isEnded) {
             badgeText = "종료됨";
             badgeClass = "ended";
+        } else if (deadlineClosed) {
+            badgeText = "접수마감";
+            badgeClass = "closed-badge";
         }
 
         const badgeHtml = `<span class="status-badge ${badgeClass}">${badgeText}</span>`;
@@ -1124,8 +1144,13 @@
 
         const ended = isRaceEnded(currentRace);
         if (ended) {
-            const reason = currentRace.status === "강제마감" ? "관리자에 의해 강제 접수 마감된 항목입니다." : "대회 일정이 지나 접수가 종료된 항목입니다.";
-            wrapper.innerHTML = `<div style='text-align:center; padding:12px; color:#dc2626; font-weight:700; background:#fef2f2; border-radius:6px; margin-bottom:8px; font-size:0.82rem;'>🔒 ${reason}</div>`;
+            let reason = "대회 일정이 지나 접수가 종료된 항목입니다.";
+            if (currentRace.status === "강제마감") {
+                reason = "관리자에 의해 강제 접수 마감된 항목입니다.";
+            } else if (!isDatePassed(currentRace) && isDeadlinePassed(currentRace)) {
+                reason = `접수 마감(${currentRace.deadline}) 처리되어 신청할 수 없습니다.`;
+            }
+            wrapper.innerHTML = `<div style='text-align:center; padding:12px; color:#dc2626; font-weight:700; background:#fef2f2; border-radius:6px; margin-bottom:8px; font-size:0.82rem;'>🔒 ${escapeHtml(reason)}</div>`;
         }
 
         const raceApps = globalApplications[selectedRaceId] || {};
@@ -1734,11 +1759,13 @@
 
         globalRaces.forEach(race => {
             const isPassed = isDatePassed(race);
-            let statusLabel = "진행중(자동)";
+            const isDeadPassed = isDeadlinePassed(race);
+            let statusLabel = "접수진행중(자동)";
             if (race.status === "강제마감") statusLabel = "🔴 강제마감됨";
             else if (race.status === "종료") statusLabel = "종료(수동)";
-            else if (race.status === "진행중") statusLabel = "진행중(수동)";
-            else if (isPassed) statusLabel = "종료(날짜지남)";
+            else if (race.status === "진행중") statusLabel = "🟢 접수진행중(수동)";
+            else if (isPassed) statusLabel = "종료(대회일지남)";
+            else if (isDeadPassed) statusLabel = "🔴 접수마감(마감기준)";
 
             const typeLabel = race.itemType === 'event' ? '[행사]' : '[대회]';
 
@@ -1756,7 +1783,7 @@
             const row = document.createElement('div');
             row.className = 'race-admin-row';
             row.innerHTML = `
-                <div style="font-size:0.85rem;"><strong>${typeLabel} ${escapeHtml(race.name)}</strong> <span style="font-size:0.7rem; color:${isForceClosed?'#fca5a5':'#38bdf8'};">[${statusLabel}]</span><br><span style="font-size:0.72rem; color:#cbd5e1;">내용: ${escapeHtml(race.courses)}</span><br><span style="font-size:0.7rem; color:#94a3b8;">${escapeHtml(race.date)} / 마감: ${escapeHtml(race.deadline)}</span>${extraLineHtml}</div>
+                <div style="font-size:0.85rem;"><strong>${typeLabel} ${escapeHtml(race.name)}</strong> <span style="font-size:0.7rem; color:${(isForceClosed || isDeadPassed)?'#fca5a5':'#38bdf8'};">[${statusLabel}]</span><br><span style="font-size:0.72rem; color:#cbd5e1;">내용: ${escapeHtml(race.courses)}</span><br><span style="font-size:0.7rem; color:#94a3b8;">${escapeHtml(race.date)} / 마감: ${escapeHtml(race.deadline)}</span>${extraLineHtml}</div>
                 <div style="display:flex; gap:4px; flex-direction:column; align-items:flex-end;">
                     <div style="display:flex; gap:4px;">
                         <button class="race-edit-btn" data-id="${race.id}" style="background:#2563eb; color:white; border:none; padding:4px 7px; border-radius:4px; cursor:pointer; font-size:0.72rem; font-weight:700;">수정</button>
@@ -1784,8 +1811,8 @@
         if (!race) return;
 
         if (race.status === "강제마감") {
-            race.status = "자동(날짜기준)";
-            alert(`[${race.name}] 항목의 강제 마감이 해제되었습니다. (접수 재개)`);
+            race.status = "진행중";
+            alert(`[${race.name}] 항목이 [접수진행중]으로 변경되었습니다. (접수 재개)`);
         } else {
             race.status = "강제마감";
             alert(`[${race.name}] 항목이 강제 접수마감 처리되었습니다. (대회일정 유지, 신청 불가)`);
