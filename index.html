@@ -28,6 +28,8 @@
             --primary: #0f172a;        
             --accent: #2563eb;          
             --accent-hover: #1d4ed8;
+            --event-accent: #9333ea;
+            --event-accent-dark: #7e22ce;
             --success: #059669;        
             --danger: #dc2626;          
             --bg-color: #f8fafc;       
@@ -101,10 +103,18 @@
             user-select: none;
         }
         
-        /* 선택된 대회 카드: 선명하고 고급스러운 블루 톤 */
-        .race-card-item.selected-target { 
+        /* 선택된 대회 카드: 파란색 톤 유지 */
+        .race-card-item.selected-target.selected-race { 
             border-color: #2563eb !important; 
             box-shadow: 0 8px 20px rgba(37, 99, 235, 0.16); 
+            background: #ffffff !important;
+            opacity: 1 !important;
+        }
+
+        /* 선택된 행사 카드: 보라/바이올렛 톤 */
+        .race-card-item.selected-target.selected-event { 
+            border-color: #9333ea !important; 
+            box-shadow: 0 8px 20px rgba(147, 51, 234, 0.16); 
             background: #ffffff !important;
             opacity: 1 !important;
         }
@@ -127,15 +137,24 @@
         .race-card-item.ended-race .race-card-header {
             background: #f1f5f9 !important;
         }
-        .race-card-item.ended-race.selected-target {
+        .race-card-item.ended-race.selected-target.selected-race {
             background: #ffffff !important;
             border-color: #2563eb !important;
             opacity: 1 !important;
         }
+        .race-card-item.ended-race.selected-target.selected-event {
+            background: #ffffff !important;
+            border-color: #9333ea !important;
+            opacity: 1 !important;
+        }
         
         .race-card-header { padding: 13px 14px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; width: 100%; box-sizing: border-box; transition: background-color 0.25s ease, color 0.25s ease; }
-        .race-card-item.selected-target .race-card-header { 
+        .race-card-item.selected-target.selected-race .race-card-header { 
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important; 
+            color: #ffffff !important;
+        }
+        .race-card-item.selected-target.selected-event .race-card-header { 
+            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%) !important; 
             color: #ffffff !important;
         }
         .race-card-item:not(.selected-target) .race-card-header { background: #ffffff; }
@@ -170,6 +189,11 @@
             box-sizing: border-box; 
             color: #1e293b; 
         }
+        .race-card-item.selected-event .race-card-body {
+            border-top: 1px solid #f3e8ff;
+            border-left: 4px solid #9333ea;
+            background: #fdf8ff;
+        }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
         .race-card-item.ended-race.expanded .race-card-body { background: #f8fafc; border-top-color: #e2e8f0; border-left-color: #64748b; }
 
@@ -190,6 +214,15 @@
         .homepage-link-btn:hover {
             background: #dbeafe;
             border-color: #2563eb;
+        }
+        .selected-event .homepage-link-btn {
+            background: #faf5ff;
+            color: #7e22ce;
+            border-color: #d8b4fe;
+        }
+        .selected-event .homepage-link-btn:hover {
+            background: #f3e8ff;
+            border-color: #9333ea;
         }
 
         /* 하단 대회 박스들 및 종료된 목록 애니메이션 숨김/표시 처리 */
@@ -644,7 +677,6 @@
         return result.filter(c => c.trim().length > 0);
     }
 
-    // 2026.12.05 / 2026-12-05 / 2026/12/05 및 2026년 12월 5일 형식 모두 인식
     function extractParsedDate(str) {
         if (!str) return null;
         const text = String(str);
@@ -1011,6 +1043,7 @@
     function createRaceCardElement(race, isEnded, isTopMost) {
         const card = document.createElement('div');
         const isSelected = (race.id === selectedRaceId);
+        const isEvent = (race.itemType === 'event');
         
         card.setAttribute('data-race-id', race.id);
 
@@ -1018,7 +1051,10 @@
         if (isEnded) cardClasses.push('ended-race');
         else cardClasses.push('active-race');
         
-        if (isSelected) cardClasses.push('selected-target expanded');
+        if (isSelected) {
+            cardClasses.push('selected-target', 'expanded');
+            cardClasses.push(isEvent ? 'selected-event' : 'selected-race');
+        }
 
         card.className = cardClasses.join(' ');
         
@@ -1048,7 +1084,7 @@
 
         const badgeHtml = `<span class="status-badge ${badgeClass}">${badgeText}</span>`;
 
-        const typeBadge = race.itemType === 'event' 
+        const typeBadge = isEvent 
             ? `<span class="badge-type-event">🎉 행사</span>` 
             : `<span class="badge-type-race">🏃‍♂️ 대회</span>`;
 
