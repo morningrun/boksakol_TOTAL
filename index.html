@@ -26,10 +26,10 @@
     <style>
         :root {
             --primary: #0f172a;        
-            --accent: #2563eb;          
-            --accent-hover: #1d4ed8;
-            --event-accent: #9333ea;
-            --event-accent-dark: #7e22ce;
+            --accent: #1d4ed8;          
+            --accent-hover: #1e40af;
+            --event-accent: #7e22ce;
+            --event-accent-dark: #6b21a8;
             --success: #059669;        
             --danger: #dc2626;          
             --bg-color: #f8fafc;       
@@ -103,67 +103,89 @@
             user-select: none;
         }
         
-        /* 선택된 대회 카드: 파란색 톤 유지 */
-        .race-card-item.selected-target.selected-race { 
-            border-color: #2563eb !important; 
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.16); 
-            background: #ffffff !important;
-            opacity: 1 !important;
-        }
-
-        /* 선택된 행사 카드: 보라/바이올렛 톤 */
-        .race-card-item.selected-target.selected-event { 
-            border-color: #9333ea !important; 
-            box-shadow: 0 8px 20px rgba(147, 51, 234, 0.16); 
-            background: #ffffff !important;
-            opacity: 1 !important;
-        }
-
-        .race-card-item:not(.selected-target) {
-            border-color: #e2e8f0 !important;
+        /* 미선택 상태에서도 좌측 컬러 바를 통해 대회(파랑)/행사(보라) 선명하게 구분 */
+        .race-card-item:not(.selected-target).type-race-card {
+            border-color: #cbd5e1 !important;
+            border-left: 4px solid #3b82f6 !important;
             background: #ffffff;
-            opacity: 0.92;
+            opacity: 0.96;
+        }
+        .race-card-item:not(.selected-target).type-event-card {
+            border-color: #cbd5e1 !important;
+            border-left: 4px solid #a855f7 !important;
+            background: #ffffff;
+            opacity: 0.96;
         }
         .race-card-item:not(.selected-target):hover {
             opacity: 1;
-            border-color: #94a3b8 !important;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+        }
+
+        /* 선택된 대회 카드: 선명하고 강렬한 코발트 블루 */
+        .race-card-item.selected-target.selected-race { 
+            border: 2px solid #1d4ed8 !important; 
+            box-shadow: 0 10px 24px rgba(29, 78, 216, 0.24); 
+            background: #ffffff !important;
+            opacity: 1 !important;
+        }
+
+        /* 선택된 행사 카드: 선명하고 강렬한 로열 퍼플 */
+        .race-card-item.selected-target.selected-event { 
+            border: 2px solid #7e22ce !important; 
+            box-shadow: 0 10px 24px rgba(126, 34, 206, 0.24); 
+            background: #ffffff !important;
+            opacity: 1 !important;
         }
 
         .race-card-item.ended-race { 
             background: #f8fafc !important; 
-            border-color: #e2e8f0 !important; 
-            opacity: 0.82; 
+            border-color: #cbd5e1 !important; 
+            opacity: 0.88; 
         }
         .race-card-item.ended-race .race-card-header {
             background: #f1f5f9 !important;
         }
         .race-card-item.ended-race.selected-target.selected-race {
             background: #ffffff !important;
-            border-color: #2563eb !important;
+            border: 2px solid #1d4ed8 !important;
             opacity: 1 !important;
         }
         .race-card-item.ended-race.selected-target.selected-event {
             background: #ffffff !important;
-            border-color: #9333ea !important;
+            border: 2px solid #7e22ce !important;
             opacity: 1 !important;
         }
         
         .race-card-header { padding: 13px 14px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; width: 100%; box-sizing: border-box; transition: background-color 0.25s ease, color 0.25s ease; }
         .race-card-item.selected-target.selected-race .race-card-header { 
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important; 
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important; 
             color: #ffffff !important;
         }
         .race-card-item.selected-target.selected-event .race-card-header { 
-            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%) !important; 
+            background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%) !important; 
             color: #ffffff !important;
         }
         .race-card-item:not(.selected-target) .race-card-header { background: #ffffff; }
 
-        .race-card-title-area { font-size: 1.02rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #0f172a; flex-wrap: wrap; }
-        .race-card-item.selected-target .race-card-title-area { color: #ffffff !important; }
+        .race-card-title-area { font-size: 1.03rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #0f172a; flex-wrap: wrap; }
+        .race-card-item.selected-target .race-card-title-area { color: #ffffff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.18); }
         
-        .badge-type-race { font-size: 0.74rem; padding: 2px 8px; border-radius: 999px; font-weight: 800; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-        .badge-type-event { font-size: 0.74rem; padding: 2px 8px; border-radius: 999px; font-weight: 800; background: #fdf4ff; color: #86198f; border: 1px solid #f5d0fe; }
+        /* 대회/행사 배지 선명도 강화 */
+        .badge-type-race { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; font-weight: 900; background: #dbeafe; color: #1e40af; border: 1.5px solid #60a5fa; letter-spacing: -0.2px; }
+        .badge-type-event { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; font-weight: 900; background: #f3e8ff; color: #6b21a8; border: 1.5px solid #c084fc; letter-spacing: -0.2px; }
+
+        .race-card-item.selected-target .badge-type-race {
+            background: #ffffff;
+            color: #1e40af;
+            border-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+        }
+        .race-card-item.selected-target .badge-type-event {
+            background: #ffffff;
+            color: #6b21a8;
+            border-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+        }
 
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 999px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
@@ -181,29 +203,30 @@
         .race-card-body { 
             padding: 12px 14px 14px 16px; 
             display: none; 
-            border-top: 1px solid #dbeafe; 
-            border-left: 4px solid #2563eb;
+            border-top: 1.5px solid #bfdbfe; 
+            border-left: 5px solid #1d4ed8;
             margin-top: 0; 
-            background: #f8fbff; 
+            background: #eef6ff; 
             width: 100%; 
             box-sizing: border-box; 
-            color: #1e293b; 
+            color: #0f172a; 
         }
         .race-card-item.selected-event .race-card-body {
-            border-top: 1px solid #f3e8ff;
-            border-left: 4px solid #9333ea;
-            background: #fdf8ff;
+            border-top: 1.5px solid #e9d5ff;
+            border-left: 5px solid #7e22ce;
+            background: #f6eeff;
         }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
-        .race-card-item.ended-race.expanded .race-card-body { background: #f8fafc; border-top-color: #e2e8f0; border-left-color: #64748b; }
+        .race-card-item.ended-race.expanded.selected-race .race-card-body { background: #eff6ff; border-top-color: #bfdbfe; border-left-color: #1d4ed8; }
+        .race-card-item.ended-race.expanded.selected-event .race-card-body { background: #f5f3ff; border-top-color: #e9d5ff; border-left-color: #7e22ce; }
 
         .homepage-link-btn {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            background: #eff6ff;
+            background: #ffffff;
             color: #1d4ed8;
-            border: 1px solid #93c5fd;
+            border: 1.5px solid #60a5fa;
             padding: 2px 8px;
             border-radius: 6px;
             font-size: 0.78rem;
@@ -213,16 +236,16 @@
         }
         .homepage-link-btn:hover {
             background: #dbeafe;
-            border-color: #2563eb;
+            border-color: #1d4ed8;
         }
         .selected-event .homepage-link-btn {
-            background: #faf5ff;
+            background: #ffffff;
             color: #7e22ce;
-            border-color: #d8b4fe;
+            border-color: #c084fc;
         }
         .selected-event .homepage-link-btn:hover {
             background: #f3e8ff;
-            border-color: #9333ea;
+            border-color: #7e22ce;
         }
 
         /* 하단 대회 박스들 및 종료된 목록 애니메이션 숨김/표시 처리 */
@@ -692,6 +715,14 @@
         return parsed;
     }
 
+    function formatKoreanYearMonthDay(dateStr) {
+        const parsed = extractParsedDate(dateStr);
+        if (parsed) {
+            return `${parsed.getFullYear()}년 ${parsed.getMonth() + 1}월 ${parsed.getDate()}일`;
+        }
+        return String(dateStr || "").trim();
+    }
+
     function calculateDDay(dateStr) {
         const targetDate = extractParsedDate(dateStr);
         if (!targetDate) return "";
@@ -1047,7 +1078,7 @@
         
         card.setAttribute('data-race-id', race.id);
 
-        let cardClasses = ['race-card-item'];
+        let cardClasses = ['race-card-item', isEvent ? 'type-event-card' : 'type-race-card'];
         if (isEnded) cardClasses.push('ended-race');
         else cardClasses.push('active-race');
         
@@ -1466,9 +1497,15 @@
         });
         let courseSummaryStr = `(${courseSummaryTextArr.join(' / ')})`;
 
+        const formattedDate = formatKoreanYearMonthDay(currentRace.date);
+        const dateSubtitleHtml = formattedDate
+            ? `<div style="font-size: 0.82rem; font-weight: 700; color: #475569; margin-bottom: 4px;">📅 ${escapeHtml(formattedDate)}</div>`
+            : "";
+
         let summaryHtml = `
             <div style="background: transparent; border: none; padding: 2px 8px; text-align: center; margin-bottom: 2px;">
                 <div style="font-weight: 800; font-size: 1.0rem; color: var(--primary); margin-bottom: 2px;">[${escapeHtml(currentRace.name)}]</div>
+                ${dateSubtitleHtml}
                 <div style="font-size: 0.92rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
                     총신청인원 <strong style="color: var(--accent); font-size: 1.1rem;">${totalCount}</strong>명
                 </div>
