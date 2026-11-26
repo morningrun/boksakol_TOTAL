@@ -137,67 +137,88 @@
             opacity: 1 !important;
         }
 
+        /* 종료된 행사·대회 카드: 회색 톤으로 통일 */
         .race-card-item.ended-race { 
-            background: #f8fafc !important; 
-            border-color: #cbd5e1 !important; 
-            opacity: 0.88; 
+            background: #e2e8f0 !important; 
+            border: 1.5px solid #94a3b8 !important; 
+            border-left: 4px solid #64748b !important;
+            opacity: 0.94; 
+            box-shadow: none;
         }
         .race-card-item.ended-race .race-card-header {
-            background: #f1f5f9 !important;
+            background: #e2e8f0 !important;
+            color: #334155 !important;
         }
-        .race-card-item.ended-race.selected-target.selected-race {
-            background: #ffffff !important;
-            border: 2px solid #1d4ed8 !important;
+        .race-card-item.ended-race .race-card-title-area {
+            color: #334155 !important;
+        }
+        .race-card-item.ended-race.selected-target {
+            background: #e2e8f0 !important;
+            border: 2px solid #64748b !important;
+            box-shadow: 0 4px 12px rgba(71, 85, 105, 0.16);
             opacity: 1 !important;
         }
-        .race-card-item.ended-race.selected-target.selected-event {
-            background: #ffffff !important;
-            border: 2px solid #7e22ce !important;
-            opacity: 1 !important;
+        .race-card-item.ended-race.selected-target .race-card-header {
+            background: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        .race-card-item.ended-race.selected-target .race-card-title-area {
+            color: #0f172a !important;
+            text-shadow: none !important;
+        }
+        .race-card-item.ended-race.selected-target .race-toggle-icon {
+            color: #334155 !important;
         }
         
         .race-card-header { padding: 13px 14px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; width: 100%; box-sizing: border-box; transition: background-color 0.25s ease, color 0.25s ease; }
-        .race-card-item.selected-target.selected-race .race-card-header { 
+        .race-card-item.selected-target.selected-race:not(.ended-race) .race-card-header { 
             background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important; 
             color: #ffffff !important;
         }
-        .race-card-item.selected-target.selected-event .race-card-header { 
+        .race-card-item.selected-target.selected-event:not(.ended-race) .race-card-header { 
             background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%) !important; 
             color: #ffffff !important;
         }
-        .race-card-item:not(.selected-target) .race-card-header { background: #ffffff; }
+        .race-card-item:not(.selected-target):not(.ended-race) .race-card-header { background: #ffffff; }
 
         .race-card-title-area { font-size: 1.03rem; font-weight: 800; display: flex; align-items: center; gap: 6px; line-height: 1.3; color: #0f172a; flex-wrap: wrap; }
-        .race-card-item.selected-target .race-card-title-area { color: #ffffff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.18); }
+        .race-card-item.selected-target:not(.ended-race) .race-card-title-area { color: #ffffff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.18); }
         
         /* 대회/행사 배지 선명도 강화 */
         .badge-type-race { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; font-weight: 900; background: #dbeafe; color: #1e40af; border: 1.5px solid #60a5fa; letter-spacing: -0.2px; }
         .badge-type-event { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; font-weight: 900; background: #f3e8ff; color: #6b21a8; border: 1.5px solid #c084fc; letter-spacing: -0.2px; }
 
-        .race-card-item.selected-target .badge-type-race {
+        .race-card-item.selected-target:not(.ended-race) .badge-type-race {
             background: #ffffff;
             color: #1e40af;
             border-color: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
         }
-        .race-card-item.selected-target .badge-type-event {
+        .race-card-item.selected-target:not(.ended-race) .badge-type-event {
             background: #ffffff;
             color: #6b21a8;
             border-color: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+        }
+        .race-card-item.ended-race .badge-type-race,
+        .race-card-item.ended-race .badge-type-event {
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #cbd5e1;
+            box-shadow: none;
         }
 
         .status-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 999px; font-weight: 800; white-space: nowrap; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
         .status-badge.active-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
         .status-badge.extra-badge { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
         .status-badge.closed-badge { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-        .status-badge.ended { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
+        .status-badge.ended { background: #cbd5e1; color: #334155; border: 1px solid #94a3b8; }
 
         .dday-badge { font-size: 0.72rem; padding: 2px 7px; border-radius: 999px; font-weight: 800; white-space: nowrap; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
         .dday-badge.d-day { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 
         .race-toggle-icon { font-size: 0.8rem; color: #475569; transition: transform 0.2s ease; flex-shrink: 0; padding-left: 8px; }
-        .race-card-item.selected-target .race-toggle-icon { color: #ffffff !important; }
+        .race-card-item.selected-target:not(.ended-race) .race-toggle-icon { color: #ffffff !important; }
         .race-card-item.expanded .race-toggle-icon { transform: rotate(180deg); }
 
         .race-card-body { 
@@ -211,14 +232,18 @@
             box-sizing: border-box; 
             color: #0f172a; 
         }
-        .race-card-item.selected-event .race-card-body {
+        .race-card-item.selected-event:not(.ended-race) .race-card-body {
             border-top: 1.5px solid #e9d5ff;
             border-left: 5px solid #7e22ce;
             background: #f6eeff;
         }
         .race-card-item.expanded .race-card-body { display: flex; flex-direction: column; gap: 4px; }
-        .race-card-item.ended-race.expanded.selected-race .race-card-body { background: #eff6ff; border-top-color: #bfdbfe; border-left-color: #1d4ed8; }
-        .race-card-item.ended-race.expanded.selected-event .race-card-body { background: #f5f3ff; border-top-color: #e9d5ff; border-left-color: #7e22ce; }
+        .race-card-item.ended-race .race-card-body { 
+            background: #f1f5f9 !important; 
+            border-top: 1.5px solid #cbd5e1 !important; 
+            border-left: 5px solid #64748b !important; 
+            color: #334155 !important;
+        }
 
         .homepage-link-btn {
             display: inline-flex;
@@ -238,14 +263,22 @@
             background: #dbeafe;
             border-color: #1d4ed8;
         }
-        .selected-event .homepage-link-btn {
+        .selected-event:not(.ended-race) .homepage-link-btn {
             background: #ffffff;
             color: #7e22ce;
             border-color: #c084fc;
         }
-        .selected-event .homepage-link-btn:hover {
+        .selected-event:not(.ended-race) .homepage-link-btn:hover {
             background: #f3e8ff;
             border-color: #7e22ce;
+        }
+        .ended-race .homepage-link-btn {
+            color: #334155;
+            border-color: #94a3b8;
+        }
+        .ended-race .homepage-link-btn:hover {
+            background: #e2e8f0;
+            border-color: #475569;
         }
 
         /* 하단 대회 박스들 및 종료된 목록 애니메이션 숨김/표시 처리 */
@@ -581,10 +614,9 @@
     let globalRaces = [];
     let globalApplications = {};
     let adminPassword = "1234";
-    let selectedRaceId = localStorage.getItem('boksagol_selected_race_v25') || "";
+    let selectedRaceId = "";
     let activePaneIndex = 0;
-    
-    let isOtherRacesHidden = false;
+    let isOtherRacesHidden = true;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "3.5km": 5, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
 
@@ -848,7 +880,17 @@
         return String(a.name || "").localeCompare(String(b.name || ""), 'ko');
     }
 
-    function applyDataPayload(data) {
+    function pickDefaultNearestRaceId(races) {
+        if (!races || races.length === 0) return "";
+        const activeRaces = races.filter(r => !isDatePassed(r)).sort(compareByClosestDate);
+        if (activeRaces.length > 0) {
+            return activeRaces[0].id;
+        }
+        const sortedEnded = [...races].sort((a, b) => compareByClosestDate(b, a));
+        return sortedEnded[0].id;
+    }
+
+    function applyDataPayload(data, forceNearestDefault = false) {
         globalMembers = data.members || [];
         globalRaces = (data.races || []).map(r => unpackRaceExtra({ ...r }));
         globalApplications = data.applications || {};
@@ -857,14 +899,13 @@
             adminPassword = data.adminPassword;
         }
 
-        if (globalRaces.length > 0 && (!selectedRaceId || !globalRaces.some(r => r.id === selectedRaceId))) {
-            const activeRaces = globalRaces.filter(r => !isDatePassed(r)).sort(compareByClosestDate);
-            if (activeRaces.length > 0) {
-                selectedRaceId = activeRaces[0].id;
-            } else {
-                const sortedAll = [...globalRaces].sort((a, b) => compareByClosestDate(b, a));
-                selectedRaceId = sortedAll[0].id;
-            }
+        if (globalRaces.length === 0) {
+            selectedRaceId = "";
+            return;
+        }
+
+        if (forceNearestDefault || !selectedRaceId || !globalRaces.some(r => r.id === selectedRaceId)) {
+            selectedRaceId = pickDefaultNearestRaceId(globalRaces);
         }
     }
 
@@ -901,7 +942,7 @@
         }
     }
 
-    async function fetchServerData(silent = false) {
+    async function fetchServerData(silent = false, forceNearestDefault = false) {
         try {
             if (!silent) {
                 setSyncIndicator("최신 데이터 동기화 중...");
@@ -909,7 +950,7 @@
             const response = await fetch(API_URL + "?action=getData");
             const data = await response.json();
 
-            applyDataPayload(data);
+            applyDataPayload(data, forceNearestDefault);
             saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
             setSyncIndicator("");
             refreshUI();
@@ -1015,34 +1056,34 @@
             return compareByClosestDate(a, b);
         });
 
-        // 종료된 목록은 선택된 항목 우선, 나머지는 최근 종료순(날짜 내림차순)으로 정렬
-        endedRaces.sort((a, b) => {
-            if (a.id === selectedRaceId) return -1;
-            if (b.id === selectedRaceId) return 1;
-            return compareByClosestDate(b, a);
-        });
+        // 종료된 목록은 최근 종료순(날짜 내림차순)으로 정렬
+        endedRaces.sort((a, b) => compareByClosestDate(b, a));
 
         const hiddenClass = isOtherRacesHidden ? ' hidden-animated' : '';
+        const selectedRace = globalRaces.find(r => r.id === selectedRaceId);
+        const isSelectedEnded = selectedRace ? isDatePassed(selectedRace) : false;
 
-        if (activeRaces.length > 0) {
-            const topRace = activeRaces[0];
-            const card = createRaceCardElement(topRace, false, true);
-            container.appendChild(card);
+        if (selectedRace) {
+            const topCard = createRaceCardElement(selectedRace, isSelectedEnded, true);
+            container.appendChild(topCard);
         }
+
+        const remainingActive = activeRaces.filter(r => r.id !== selectedRaceId);
+        const remainingEnded = endedRaces.filter(r => r.id !== selectedRaceId);
 
         const othersWrapper = document.createElement('div');
         othersWrapper.id = 'other-races-wrapper';
         othersWrapper.className = 'collapsible-section' + hiddenClass;
 
-        for (let i = 1; i < activeRaces.length; i++) {
-            const card = createRaceCardElement(activeRaces[i], false, false);
+        remainingActive.forEach((race) => {
+            const card = createRaceCardElement(race, false, false);
             othersWrapper.appendChild(card);
-        }
-        if (activeRaces.length > 1) {
+        });
+        if (remainingActive.length > 0) {
             container.appendChild(othersWrapper);
         }
 
-        if (endedRaces.length > 0) {
+        if (remainingEnded.length > 0) {
             const endedSection = document.createElement('div');
             endedSection.id = 'ended-races-wrapper';
             endedSection.className = 'ended-section-container collapsible-section' + hiddenClass;
@@ -1052,7 +1093,7 @@
             tempWrapper.style.flexDirection = 'column';
             tempWrapper.style.gap = '6px';
 
-            endedRaces.forEach((race) => {
+            remainingEnded.forEach((race) => {
                 const card = createRaceCardElement(race, true, false);
                 tempWrapper.appendChild(card);
             });
@@ -1060,7 +1101,7 @@
             endedSection.innerHTML = `
                 <div class="ended-section-header" onclick="this.parentElement.classList.toggle('expanded'); setTimeout(updateSwipeWrapperHeight, 50);">
                     <div style="display:flex; align-items:center; gap:6px;">
-                        <span>🏁 종료된 목록 (${endedRaces.length}개)</span>
+                        <span>🏁 종료된 목록 (${remainingEnded.length}개)</span>
                     </div>
                     <div class="ended-toggle-icon" style="transition: transform 0.2s;">▼</div>
                 </div>
@@ -1118,7 +1159,7 @@
             const courseList = parseCourses(race.courses);
             courseList.forEach(c => {
                 if(c.trim()) {
-                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 2px;">- ${escapeHtml(c)}</div>`;
+                    coursesHtml += `<div style="font-size: 0.82rem; font-weight: 700; color: inherit; margin-top: 2px;">- ${escapeHtml(c)}</div>`;
                 }
             });
         }
@@ -1180,13 +1221,13 @@
                 <div class="race-toggle-icon" style="transform: ${isSelected ? 'rotate(180deg)' : 'rotate(0deg)'};">▼</div>
             </div>
             <div class="race-card-body">
-                <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #1e293b; font-weight: 700;">
+                <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: inherit; font-weight: 700;">
                     <div>• 일자: ${escapeHtml(race.date)}</div>
                     <div>• 장소: ${escapeHtml(race.location || '장소 미정')}</div>
                     <div style="margin-top: 1px;">
                         <div>• 항목 및 참가비</div>
                         <div style="padding-left: 12px; margin-top: 1px;">
-                            ${coursesHtml || '<div style="font-size: 0.82rem; color: #1e293b;">- 참석</div>'}
+                            ${coursesHtml || '<div style="font-size: 0.82rem; color: inherit;">- 참석</div>'}
                         </div>
                     </div>
                     <div style="margin-top: 1px;">• 마감일: ${deadlineDisplay}</div>
@@ -1215,7 +1256,6 @@
             } else {
                 selectedRaceId = race.id;
                 isOtherRacesHidden = true; 
-                localStorage.setItem('boksagol_selected_race_v25', selectedRaceId);
                 refreshUI();
             }
         };
@@ -2256,8 +2296,7 @@
         if (!confirm("정말 이 항목을 삭제하시겠습니까? 신청된 기록도 함께 삭제됩니다.")) return;
         
         globalRaces = globalRaces.filter(r => r.id !== raceId);
-        if (globalRaces.length > 0) selectedRaceId = globalRaces[0].id;
-        else selectedRaceId = "";
+        selectedRaceId = pickDefaultNearestRaceId(globalRaces);
         
         saveCacheData({ members: globalMembers, races: globalRaces, applications: globalApplications, adminPassword });
         refreshUI();
@@ -2478,14 +2517,15 @@
     }
 
     function initApp() {
+        isOtherRacesHidden = true;
         initEventBindings();
         const cached = loadCacheData();
         if (cached) {
-            applyDataPayload(cached);
+            applyDataPayload(cached, true);
             refreshUI();
-            fetchServerData(true);
+            fetchServerData(true, true);
         } else {
-            fetchServerData(false);
+            fetchServerData(false, true);
         }
     }
 
