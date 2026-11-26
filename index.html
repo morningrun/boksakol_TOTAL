@@ -616,7 +616,7 @@
     let adminPassword = "1234";
     let selectedRaceId = "";
     let activePaneIndex = 0;
-    let isOtherRacesHidden = true;
+    let isOtherRacesHidden = false;
 
     const courseRank = { "풀코스": 1, "하프": 2, "10km": 3, "5km": 4, "3.5km": 5, "참석(가족동반)": 1, "참석": 2, "불참": 3 };
 
@@ -1255,7 +1255,7 @@
                 setTimeout(updateSwipeWrapperHeight, 400);
             } else {
                 selectedRaceId = race.id;
-                isOtherRacesHidden = true; 
+                isOtherRacesHidden = false;
                 refreshUI();
             }
         };
@@ -2517,7 +2517,7 @@
     }
 
     function initApp() {
-        isOtherRacesHidden = true;
+        isOtherRacesHidden = false;
         initEventBindings();
         const cached = loadCacheData();
         if (cached) {
